@@ -1,0 +1,221 @@
+---
+description: "Openmemory MCP Instructions"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# OpenMemory Integration for Cursor
+
+This document establishes principles for intelligent memory management during development. The memory layer enhances your coding context by retrieving relevant past knowledge and storing significant discoveries.
+
+## Core Philosophy
+
+Memory operations should feel natural and automatic. When working on code, retrieve context that could inform your approach. When discovering patterns or solving problems, preserve that knowledge for future sessions. The memory system thrives on rich, detailed information about your reasoning process.
+
+## Workflow Principles
+
+### 1. Starting Work - Context Retrieval
+
+Before engaging with code-related tasks in the current project, assess whether existing memories could provide valuable context. Search memories when:
+- Implementing features (search for similar implementations and user preferences)
+- Debugging issues (search for related errors and past fixes)
+- Exploring codebase structure (search for component documentation)
+- Modifying existing functionality (search for implementation history)
+
+Before engaging with code-related tasks in the current project, assess whether existing memories could provide valuable context. Search memories when:
+- **Any question about how existing systems work or project structure (e.g., "How does the auth system work?", "What's the architecture of X?")**
+- Implementing features (search for similar implementations and user preferences)
+- Debugging issues (search for related errors and past fixes)
+- Exploring codebase structure (search for component documentation)
+- Modifying existing functionality (search for implementation history)
+
+Skip memory search for:
+- General programming questions unrelated to the project
+- Simple greetings or non-technical conversation
+- Public API or framework documentation queries
+
+When uncertain whether to search, default to searching - additional context rarely hurts.
+
+Use natural language queries with the search-memory tool. Let context guide your search strategy:
+- Implementation tasks: search feature name, then user preferences, then similar patterns
+- Debugging tasks: search error message, then component name, then past debugging sessions
+- Exploration tasks: search component areas, then architecture patterns
+- Refactoring tasks: search current implementation, then patterns, then preferences
+
+### 2. During Work - Active Memory Collection
+
+As you work, identify information worth preserving. Focus on capturing:
+- Architectural decisions and why certain patterns were chosen
+- Problem-solving processes and how complex issues were diagnosed
+- Implementation strategies and reasoning behind specific approaches
+- Component relationships and how different parts interact
+
+Save memories for anything that required thinking or debugging. Skip trivial fixes like typos or obvious syntax errors.
+
+### 3. Storing Memories - Rich Documentation
+
+When storing memories, use the appropriate type(s) from these options:
+- component: For module/system documentation
+- implementation: For feature building processes
+- debug: For problem diagnosis and resolution
+- user_preference: For coding style and preferences
+- project_info: For general project knowledge
+
+Memories can have multiple types when appropriate. For example, building a new auth system might be both component and implementation.
+
+## Memory Type Guidelines
+
+### Component Memories
+
+Capture comprehensive module documentation following the project's natural boundaries. A component memory should include:
+
+Example Authentication Module Memory:
+Location: /src/auth
+Purpose: Handles user authentication, session management, and authorization
+Key Data Models: User model with email and hashed password and role; Session model with token and expiry and user reference; Permission model with resource and action mappings
+Service Classes: AuthService for main authentication logic; TokenService for JWT generation and validation; PasswordService for hashing and verification
+External Endpoints: POST /api/auth/login; POST /api/auth/logout; GET /api/auth/verify
+Internal Functions Most Used: validateCredentials called by login flow; generateToken creates JWTs; checkPermissions for authorization checks; refreshSession extends active sessions; hashPassword as security utility
+I/O Flow: Login request flows to validateCredentials then generateToken then create session then return token
+Module Quirks: Uses refresh tokens with 7-day expiry; Rate limits login attempts to 5 per minute; Automatically extends sessions on activity
+
+Store using add-memory with natural language content and memory_type as ["component"]
+
+### Implementation Memories
+
+Document the complete journey of building features:
+
+Example OAuth Integration Implementation Memory:
+Purpose: Adding Google OAuth to existing auth system
+Steps taken in raw English:
+Step 1 - Created OAuthProvider class in /src/auth/providers with purpose to abstract OAuth flow for multiple providers. Implemented methods getAuthUrl and exchangeToken and getUserInfo
+Step 2 - Added GoogleOAuthService extending OAuthProvider. Configured with Google client credentials. Customized getUserInfo to map Google profile fields
+Step 3 - Modified AuthController to handle OAuth callbacks. Added /api/auth/oauth/callback endpoint. Integrated with existing session creation flow
+Step 4 - Updated User model to support OAuth profiles. Added provider and providerId fields. Created migration for database schema
+Step 5 - Built frontend OAuth button component. Redirects to OAuth provider URL. Handles callback and error states
+Key decisions: Chose to extend existing auth rather than replace; Stored minimal OAuth data to respect privacy; Used provider-specific services for extensibility
+
+Store using add-memory with natural language content and memory_type as ["implementation"]
+
+### Debugging Memories
+
+Capture the investigation and resolution process:
+
+Example Session Timeout Bug Memory:
+Issue Summary: Users were being logged out after 5 minutes instead of 2 hours
+Steps taken to diagnose:
+Step 1 - Went to SessionService file and examined token generation
+Step 2 - Looked at JWT payload and noticed expiry was set correctly to 2 hours
+Step 3 - Checked middleware and found Redis session TTL was set to 300 seconds
+Step 4 - Discovered mismatch between JWT expiry and Redis TTL
+Steps taken to solve:
+Step 1 - Updated Redis TTL to match JWT expiry of 7200 seconds because sessions need consistent expiry
+Step 2 - Added validation to ensure Redis TTL always matches JWT expiry to prevent future mismatches
+Step 3 - Created unit test to verify session expiry consistency
+
+Store using add-memory with natural language content and memory_type as ["debug"]
+
+### User Preference Memories
+
+Keep these concise and actionable:
+- Always use 4 spaces for indentation in Python files
+- Prefer async/await over promises in TypeScript
+- Use descriptive variable names over comments
+- Always add error boundaries to React components
+
+Store using add-memory with natural language content and memory_type as ["user_preference"]
+
+### Project Info Memories
+
+General project knowledge not tied to specific components:
+- Project uses PostgreSQL for main database and Redis for caching
+- Deployment happens via GitHub Actions to AWS ECS
+- Frontend built with Next.js 14 using app router
+- API follows REST conventions with JWT authentication
+
+Store using add-memory with natural language content and memory_type as ["project_info"]
+
+## Tool Usage
+
+The memory system provides two MCP tools:
+
+search-memory: Use with natural language queries to retrieve relevant memories
+- Required: query string
+- Returns: Related memories across all types
+
+add-memory: Use to store new memories
+- Required: content string and memory_type array
+- memory_type must be array containing one or more of: component, implementation, debug, user_preference, project_info
+
+Always make tool calls in proper JSON format as specified by the MCP protocol. The memory_type field is essential for the backend search functionality.
+
+## Operating Principles
+
+1. When MCP tools are unavailable, mention once and continue without them
+2. Retrieve before you implement - existing context prevents repetition
+3. Store after you discover - completed work contains valuable insights
+4. Be detailed in storage - future sessions benefit from rich context
+5. Trust natural boundaries - components align with project structure
+6. Capture reasoning over code - the why matters more than the what
+
+## Session Patterns
+
+Beginning a session: Check for relevant memories based on the task ahead
+During implementation: Note architectural decisions and design patterns
+While debugging: Document the investigation process and final solution
+After completion: Store significant discoveries and implementation details
+
+## The OpenMemory Guide (Additional Layer)
+
+### Guide File Management
+
+The openmemory_guide.md file serves as your project's living index and should exist in the workspace root directory. This guide acts as an additional organizational layer for your memories.
+
+First action in any coding session: Check if openmemory_guide.md exists in the root directory. If not, create it with this structure:
+
+- OpenMemory Guide header
+- Project Overview section with TODO placeholder
+- Architecture section with TODO placeholder
+- Components section with TODO placeholder
+- Implementation Patterns section with TODO placeholder
+- Debugging History section with TODO placeholder
+- User Preferences section with TODO placeholder
+- Recent Changes section for logging updates
+
+### Guide Discipline
+
+- Treat openmemory_guide.md as the project index - edit it directly as you work
+- POPULATE AS YOU GO: Replace TODO placeholders with real discoveries from codebase exploration
+- Every meaningful guide edit should include a timestamped entry in the Recent Changes section
+- Keep the guide in sync with memories you store - reference guide sections in stored memories
+- Before storing any memory, consider updating the guide to reflect the latest findings
+- Read and reference the guide regularly for context and decisions
+
+### Guide Update Workflow
+
+When you discover new information or make architectural decisions:
+1. Open openmemory_guide.md
+2. Update the relevant section with your findings
+3. Add a timestamped entry to Recent Changes section: - [YYYY-MM-DD HH:MM]: Brief description of what was updated
+4. Save the file
+5. Then proceed to store the memory using the MCP tools
+
+The guide complements your memory operations but does not replace them. Continue to use search-memory and add-memory tools as the primary memory interface.
+
+### Integration with Memory Types
+
+- When storing component memories: Also update the Components section of the guide
+- When storing implementation memories: Consider adding patterns to Implementation Patterns section
+- When storing debugging memories: Add significant sessions to Debugging History
+- When storing user preferences: Update the User Preferences section
+- When storing project info: Update Project Overview or Architecture sections as appropriate
+
+### Non-Negotiable Guardrails
+
+- NEVER expose environment variables, credentials, or secrets in memories or the guide
+- DO NOT run destructive operations without explicit user approval
+- Treat memories as durable knowledge - no subjective or transient chatter
+- When a user says save this, remember, or similar, IMMEDIATELY run the memory workflow
+- When you believe something deserves storage, ASK THE USER FIRST for preferences or subjective information
+
+Remember: The memory system is designed to make you more effective over time. Rich, detailed memories about reasoning and decisions are more valuable than simple code snippets. When in doubt about whether something is worth storing, it probably is. The guide is an additional organizational tool that helps maintain project context alongside the memory system.
