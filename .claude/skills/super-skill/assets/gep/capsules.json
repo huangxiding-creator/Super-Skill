@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "capsules": [
+    {
+      "type": "Capsule",
+      "id": "capsule_gep_integration_20260303",
+      "schema_version": "1.5.0",
+      "trigger": ["evolver_integration", "gep_protocol"],
+      "gene": "gene_gep_innovate_from_opportunity",
+      "summary": "Successfully integrated GEP protocol from evolver into Super-Skill darwin-evolution",
+      "confidence": 0.92,
+      "blast_radius": { "files": 3, "lines": 450 },
+      "created_at": "2026-03-03T00:00:00Z"
+    }
+  ]
+}

@@ -5,6 +5,477 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.13.0] - 2026-03-19
+
+### Added - AI-Assisted Engineering Best Practices
+
+**MAJOR FEATURE**: Comprehensive integration of industry-leading AI development patterns
+
+#### Sources Integrated
+| Source | Author | Focus |
+|--------|--------|-------|
+| [LLM Coding Workflow 2026](https://medium.com/@addyosmani/my-llm-coding-workflow-going-into-2026-52fe1681325e) | Addy Osmani | AI-assisted engineering |
+| [Skill Authoring Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) | Anthropic | Skill creation |
+| [AI Agent Frameworks 2026](https://openagents.org/blog/posts/2026-02-23-open-source-ai-agent-frameworks-compared) | OpenAgents | Framework comparison |
+
+#### 10 Core Principles (Addy Osmani 2026)
+
+1. **Specs Before Code** - "Waterfall in 15 minutes" planning pattern
+2. **Iterative Chunks** - Manageable tasks, not whole codebase
+3. **Context Packing** - Show relevant code, docs, constraints
+4. **Model Selection** - Right tool for each task
+5. **Human in Loop** - Verify, test, review everything
+6. **Commit Often** - Version control as safety net
+7. **Customize with Rules** - CLAUDE.md, style guides, examples
+8. **Automation Force Multiplier** - CI/CD, linters, review bots
+9. **Continuous Learning** - AI amplifies existing skills
+10. **Accountable Engineer** - Human remains the director
+
+#### Key Patterns Added
+
+- **Waterfall-in-15-Minutes**: Rapid structured planning before coding
+- **Context Packing Checklist**: High-level goals, examples, warnings, constraints
+- **Never Commit Code You Can't Explain**: Understanding requirement
+- **Progressive Disclosure**: Keep SKILL.md under 500 lines
+- **Validation Loops**: Run validator → fix errors → repeat
+- **Evaluation-Driven Development**: Create evaluations BEFORE documentation
+
+### Changed
+- Updated description with AI-assisted engineering patterns
+- Added `references/best-practices-2026.md` for comprehensive patterns
+- Updated `references/trending-standards.md` with Addy Osmani patterns
+- Updated header to V3.13
+
+### Technical
+- New reference file: `references/best-practices-2026.md`
+- Updated `references/trending-standards.md` with Section 0 for AI-Assisted Engineering
+- SKILL.md updated with V3.13 capabilities
+
+## [3.12.0] - 2026-03-14
+
+### Added - Pre-Run Upgrade System
+
+**MAJOR FEATURE**: Automated pre-session upgrade and best practices discovery
+
+#### Pre-Run Upgrade Sequence (STEP -1)
+Executes before every Super-Skill session:
+1. **Version Check** - Check all sub-skills for available updates
+2. **Sub-Skill Upgrade** - Upgrade outdated skills via `npx skills update`
+3. **Best Practices Search** - Search GitHub trending for new patterns
+4. **Pattern Integration** - Integrate discovered best practices
+5. **Context Hub Sync** - Update Context Hub registry
+6. **Evolution Sync** - Sync learnings from previous sessions
+
+#### Best Practices Sources
+- GitHub trending AI agent repositories
+- LangChain/AutoGen/CrewAI patterns
+- MCP Protocol latest standards
+- Anthropic Skills best practices
+
+#### Configuration
+```bash
+PRE_RUN_UPGRADE=true                    # Enable pre-run upgrade
+PRE_RUN_BEST_PRACTICES_SEARCH=true      # Search for best practices
+PRE_RUN_SEARCH_LIMIT=10                 # Max repos to search
+```
+
+#### New Sub-Skill: pre-run-upgrade
+- Created `skills/pre-run-upgrade/SKILL.md`
+- 6-step upgrade sequence
+- Pre-run report generation
+- Integration with startup sequence
+
+### Added - Post-Run Evolution System
+
+**MAJOR FEATURE**: Comprehensive post-project review and self-evolution
+
+#### Post-Run Evolution Sequence (After Phase 12)
+7-step evolution process after project completion:
+1. **Project Retrospective** - Comprehensive project analysis
+2. **Signal Extraction** - Defensive, opportunity, stagnation signals
+3. **Quality Scoring** - 5-dimension quality analysis
+4. **Evolution Decision** - Matrix-based evolution triggering
+5. **Mutation Build & Apply** - Safe mutation with rollback
+6. **Capsule Packaging** - Package successful patterns
+7. **Cross-Session Learning Sync** - Persist learnings
+
+#### Signal Types
+| Type | Trigger | Priority |
+|------|---------|----------|
+| Defensive | Errors, failures, blockers | High |
+| Opportunity | New patterns, optimizations | Medium |
+| Stagnation | Repeated patterns, no improvement | Low |
+
+#### Quality Dimensions
+| Dimension | Weight | Criteria |
+|-----------|--------|----------|
+| Correctness | 40% | Does it work? Bug count |
+| Reliability | 25% | Will it keep working? |
+| Maintainability | 20% | Can others understand it? |
+| Performance | 10% | Is it fast enough? |
+| Elegance | 5% | Is it clean? |
+
+#### Evolution Types
+- **REPAIR**: Fix identified issues
+- **OPTIMIZE**: Improve existing capabilities
+- **INNOVATE**: Add new capabilities
+
+#### Configuration
+```bash
+POST_RUN_EVOLUTION=true                  # Enable post-run evolution
+POST_RUN_RETROSPECTIVE=true              # Enable retrospective
+POST_RUN_AUTO_EVOLVE=true                # Auto-apply evolutions
+EVOLUTION_SIGNAL_THRESHOLD=12            # Minimum score for auto-evolution
+```
+
+#### New Sub-Skill: post-run-evolution
+- Created `skills/post-run-evolution/SKILL.md`
+- 7-step evolution sequence
+- Signal extraction and scoring
+- Mutation safety system
+- Capsule packaging
+- Cross-session learning sync
+
+### Changed
+- Updated description with pre-run upgrade and post-run evolution
+- Added `pre-run-upgrade` and `post-run-evolution` to Core Skills
+- Startup sequence now includes STEP -1: Pre-Run Upgrade
+- Phase 12 now includes post-run evolution workflow
+- Total skills count: 30 → 32
+
+### Technical
+- New sub-skill: `skills/pre-run-upgrade/SKILL.md`
+- New sub-skill: `skills/post-run-evolution/SKILL.md`
+- SKILL.md updated with V3.12 capabilities
+- Enhanced startup sequence documentation
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- Both new skills available as sub-skills immediately
+- Pre-run upgrade executes automatically before Phase 0
+- Post-run evolution executes automatically after Phase 12
+- Configure with environment variables as needed
+
+## [3.11.0] - 2026-03-14
+
+### Added - High-Agency Execution Methodology (from pua/tanweai)
+
+**MAJOR FEATURE**: Integrated high-agency execution methodology from PUA skill
+
+#### Three Iron Rules
+1. **Exhaust All Options** - Forbidden from saying "I can't solve this"
+2. **Act Before Asking** - Use tools first, questions must include diagnostic results
+3. **Take Initiative** - Deliver results end-to-end, don't wait to be pushed
+
+#### Pressure Escalation System
+- **L1** (2nd failure) → Switch to fundamentally different approach
+- **L2** (3rd failure) → WebSearch + read source code + external docs
+- **L3** (4th failure) → Complete 7-point checklist
+- **L4** (5th+ failure) → Desperation mode - all resources deployed
+
+#### Five-Step Debugging Methodology
+- **Smell** → Pattern recognition (similar issues?)
+- **Elevate** → Scope expansion (right layer?)
+- **Mirror** → Reproduction (minimal test case?)
+- **Execute** → Systematic fix (one at a time)
+- **Retrospective** → Learning (prevent recurrence)
+
+#### Proactivity Matrix
+| Score | Behavior |
+|-------|----------|
+| 3.25 | Passive - Waits for instructions |
+| 3.5 | Reactive - Responds to issues |
+| 3.75 | Proactive - Anticipates problems (target) |
+| 4.0 | Super-Proactive - Prevents problems |
+
+#### Benchmark Results (from research)
+- +36% fix count
+- +65% verification
+- +50% tool calls
+- +50% hidden issue discovery
+
+#### New Sub-Skill: high-agency
+- Created `skills/high-agency/SKILL.md`
+- Phase 8 integration for development debugging
+- Phase 9 integration for QA issue investigation
+- Recovery Protocol and Quality Compass
+
+### Added - Cognitive Modes (from gstack/Garry Tan/YC)
+
+**MAJOR FEATURE**: Six cognitive modes for AI development from Y Combinator CEO
+
+#### Mode Overview
+| Mode | Trigger | Focus |
+|------|---------|-------|
+| **CEO** | `/plan-ceo-review` | 10-star product vision |
+| **Eng Manager** | `/plan-eng-review` | Architecture, edge cases |
+| **Paranoid Reviewer** | `/review` | Production bug hunting |
+| **Release Engineer** | `/ship` | Deploy automation |
+| **QA Engineer** | `/browse` | Browser automation (Playwright) |
+| **Eng Manager (Retro)** | `/retro` | Retrospectives |
+
+#### Mode Integration with Super-Skill Phases
+- **CEO Mode** → Phase 0 (Vision), Phase 4 (Requirements)
+- **Eng Manager Mode** → Phase 5 (Architecture), Phase 5b (Design)
+- **Paranoid Reviewer Mode** → Phase 8 (Development), Phase 9 (QA)
+- **Release Engineer Mode** → Phase 7 (Init), Phase 11 (Deployment)
+- **QA Engineer Mode** → Phase 9 (QA)
+- **Eng Manager Retro Mode** → Phase 12 (Evolution)
+
+#### New Sub-Skill: cognitive-modes
+- Created `skills/cognitive-modes/SKILL.md`
+- Mode-specific prompts and checklists
+- Phase integration mapping
+- Mode combination patterns
+
+### Changed
+- Updated description with 6 cognitive modes and high-agency methodology
+- Added `high-agency` and `cognitive-modes` to Core Skills
+- Total skills count: 28 → 30
+- Enhanced phase integration with cognitive mode recommendations
+
+### Technical
+- New sub-skill: `skills/high-agency/SKILL.md`
+- New sub-skill: `skills/cognitive-modes/SKILL.md`
+- SKILL.md updated with V3.11 capabilities
+
+### Research Sources
+- [pua (tanweai)](https://github.com/tanweai/pua) - High-agency AI methodology
+- [gstack (Garry Tan)](https://github.com/garrytan/gstack) - 6 cognitive modes for AI development
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- Both new skills available as sub-skills immediately
+- High-agency methodology applies automatically in Phase 8/9
+- Cognitive modes can be invoked via trigger commands
+
+## [3.10.0] - 2026-03-14
+
+### Added - Context Hub Integration (Andrew Ng)
+
+**MAJOR FEATURE**: Integrated Context Hub for curated, versioned API documentation
+
+#### Context Hub (chub) Integration
+- **Search** curated API docs with `chub search <query>`
+- **Get** versioned docs with `chub get <id> --lang <language>`
+- **Annotate** docs with persistent local notes
+- **Feedback** loop to improve documentation quality
+- **Self-improving** annotation system across sessions
+
+#### New Sub-Skill: get-api-docs
+- Created `skills/get-api-docs/SKILL.md`
+- Phase 3 integration for knowledge base building
+- Phase 8 integration for quick development reference
+- Annotation persistence for learning across sessions
+
+### Added - Auto-Update Mechanism
+
+**MAJOR FEATURE**: Super-Skill now auto-updates before each development session
+
+#### Auto-Update Sequence
+```
+STEP 0: Auto-Update → Self-update Super-Skill and all dependent skills
+STEP 1: Version Check → python scripts/auto_update.py
+STEP 2: Evolver Check → python scripts/check_evolver.py
+...
+```
+
+#### Update Capabilities
+- Check Super-Skill version from GitHub
+- Pull latest changes if update available
+- Check all dependent skills for updates
+- Update skills with: `npx skills update <skill-name>`
+- Refresh Context Hub registry: `chub update`
+
+#### New Environment Variables
+```bash
+SUPER_SKILL_AUTO_UPDATE=true       # Enable auto-update (default: true)
+SUPER_SKILL_UPDATE_CHECK=true      # Check for updates (default: true)
+SUPER_SKILL_SKILLS_UPDATE=true     # Update dependent skills (default: true)
+CHUB_AUTO_UPDATE=true              # Update Context Hub registry (default: true)
+```
+
+### Changed
+- Updated 2026 GitHub Trending Standards table to include Context Hub
+- Added `get-api-docs` to Core Skills (Always Available)
+- Total skills count: 27 → 28
+- Updated startup sequence to include STEP 0: Auto-Update
+
+### Technical
+- New sub-skill: `skills/get-api-docs/SKILL.md`
+- Context Hub CLI integration (`pip install chub`)
+- Annotation persistence in `~/.chub/cache/`
+
+### Research Sources
+- [Context Hub](https://github.com/andrewyng/context-hub) - Andrew Ng's curated API documentation
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- Install Context Hub CLI: `pip install chub`
+- Auto-update is enabled by default
+- Configure with environment variables as needed
+
+## [3.9.0] - 2026-03-14
+
+### Added - GitHub Trending Standards Integration
+
+**MAJOR FEATURE**: Integrated best practices from top GitHub trending projects
+
+#### AI Agent Framework Patterns
+- **LangChain (122K★)** - Chain-based workflow patterns
+- **LangGraph (24K+★)** - Graph-based orchestration with state persistence
+- **AutoGen (52K+★)** - Multi-agent conversation patterns
+- **CrewAI (30K+★)** - Role-based task delegation patterns
+
+#### MCP Protocol 2026 Integration
+- MCP Server configuration patterns
+- Tool discovery and invocation patterns
+- Resource access patterns
+- 2026 MCP Roadmap alignment
+
+#### Anthropic Skills Best Practices
+- 15-30 minute skill build methodology
+- Progressive disclosure patterns
+- Hook integration patterns
+- Metadata formatting standards
+
+#### Production Deployment Patterns
+- OpenTelemetry observability integration
+- Health check endpoints (liveness/readiness)
+- Metrics collection with Prometheus
+- Distributed tracing with Jaeger
+
+### Added
+- `references/trending-standards.md` - Complete GitHub trending standards reference
+- LangGraph graph-based phase orchestration patterns
+- AutoGen multi-agent conversation patterns
+- CrewAI role-based task delegation patterns
+- MCP tool discovery and invocation code patterns
+- Token budget management patterns
+- Memory persistence with ChromaDB patterns
+- OpenTelemetry integration patterns
+- Health check endpoint patterns
+
+### Changed
+- Updated description with 2026 GitHub trending standards
+- Enhanced multi-agent orchestration with production patterns
+- Added MCP Protocol integration to core capabilities
+
+### Technical
+- New reference file: `references/trending-standards.md` (comprehensive 2026 standards)
+- Integration matrix expanded with framework comparisons
+- Code examples for LangGraph, AutoGen, CrewAI, MCP
+
+### Research Sources
+- [LangChain](https://github.com/langchain-ai/langchain) - 122K+ stars
+- [AutoGen](https://github.com/microsoft/autogen) - 52K+ stars
+- [LangGraph](https://github.com/langchain-ai/langgraph) - 24K+ stars
+- [CrewAI](https://github.com/crewAIInc/crewAI) - 30K+ stars
+- [MCP Protocol](https://github.com/modelcontextprotocol) - Official Anthropic
+- [Anthropic Skills Guide](https://resources.anthropic.com/) - 33-page official guide
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- All new patterns available in `references/trending-standards.md`
+- Existing workflows continue unchanged
+- Optional: Adopt new framework patterns as needed
+
+## [3.8.1] - 2026-03-11
+
+### Changed - skill-creator Best Practices Refactor
+
+**MAJOR REFACTOR**: Optimized Super-Skill following skill-creator guidelines
+
+#### SKILL.md Optimization
+- **Reduced from ~70KB to ~12KB** (82% token reduction)
+- Implemented **progressive disclosure** pattern
+- Streamlined description for better triggering
+- Moved detailed phase content to `references/phases.md`
+- Moved skill integration details to `references/skills-matrix.md`
+- Under 500 lines as recommended by skill-creator
+
+#### Progressive Disclosure Structure
+```
+SKILL.md (core workflow)
+├── references/phases.md (detailed phase specs)
+├── references/skills-matrix.md (27+ skill mapping)
+├── EVOLUTION.md (GEP Protocol)
+└── skills/ (27 sub-skills)
+```
+
+#### Description Optimization
+- Before: 600+ characters, exhaustive feature list
+- After: ~200 characters, focused triggering keywords
+- Better signal-to-noise ratio for skill selection
+
+### Added
+- `references/phases.md` - Complete 14-phase workflow reference
+- `references/skills-matrix.md` - Full skills integration matrix
+
+### Technical
+- SKILL.md: 70KB → 12KB (82% reduction)
+- Lines: 2000+ → ~400 (80% reduction)
+- Token efficiency: Significant improvement for context loading
+- Follows skill-creator best practices for skill design
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- All functionality preserved in reference files
+- Sub-skills unchanged
+- Phase workflow identical
+
+## [3.8.0] - 2026-03-03
+
+### Added
+- **GEP Protocol Integration from autogame-17/evolver**
+  - Integrated GEP (Genome Evolution Protocol) from autogame-17/evolver
+  - Signal extraction with de-duplication (signals.js)
+  - Gene/Capsule selection with drift intensity (selector.js)
+  - Mutation building with safety constraints (mutation.js)
+  - Personality state evolution (personality.js)
+  - Evolution archive (events.jsonl)
+  - Strategy presets: balanced, innovate, harden, repair-only, early-stabilize, steady-state, auto
+
+- **Enhanced darwin-evolution Skill (V2.0)**
+  - Upgraded from V1.0 to V2.0 with full GEP Protocol implementation
+  - 5 GEP Protocol Objects: Mutation, PersonalityState, EvolutionEvent, Gene, Capsule
+  - Comprehensive signal detection system (defensive, opportunity, stagnation)
+  - Population-dependent drift intensity for exploration
+  - Safety mechanisms: constitutional constraints, blast radius control
+  - Integration with Super-Skill Phase 12 evolution workflow
+
+- **GEP Asset Files**
+  - `assets/gep/genes.json` - Default gene definitions (5 genes)
+  - `assets/gep/capsules.json` - Success capsule archive
+  - `assets/gep/events.jsonl` - Append-only evolution event log
+
+- **Evolution Support Modules**
+  - `skills/darwin-evolution/signals.js` - Signal extraction and analysis
+  - `skills/darwin-evolution/selector.js` - Gene/Capsule selection with drift
+  - Lifecycle management, self-repair, skills monitor from evolver ops module
+
+### Changed
+- Updated main SKILL.md description with GEP Protocol self-evolution emphasis
+- Enhanced EVOLUTION.md with full GEP Protocol documentation
+- Updated description to reflect 27+ specialized skills (was 25+)
+
+### Technical
+- Enhanced integration with autogame-17/evolver (MIT License)
+- Strategy presets configurable via EVOLVE_STRATEGY environment variable
+- Blast radius policy: 60 files / 20000 lines hard cap
+- Validation command safety with prefix whitelist
+
+### Research Sources
+- [autogame-17/evolver](https://github.com/autogame-17/evolver) - GEP Protocol implementation
+- [Darwin Gödel Machine](https://arxiv.org/abs/2505.22954) - Self-evolution theory
+- [EvoMap Network](https://evomap.ai) - Evolution ecosystem
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- darwin-evolution V2.0 replaces V1.0 seamlessly
+- GEP assets auto-initialized on first evolution run
+- Existing evolution workflows continue to work
+
 ## [3.7.0] - 2026-03-02
 
 ### Added - Comprehensive Production-Grade Skills Expansion

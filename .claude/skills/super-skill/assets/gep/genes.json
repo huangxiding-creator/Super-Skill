@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "genes": [
+    {
+      "type": "Gene",
+      "id": "gene_gep_repair_from_errors",
+      "category": "repair",
+      "signals_match": [
+        "error",
+        "exception",
+        "failed",
+        "unstable",
+        "log_error",
+        "errsig"
+      ],
+      "preconditions": [
+        "signals contains error-related indicators"
+      ],
+      "strategy": [
+        "Extract structured signals from logs and user instructions",
+        "Select an existing Gene by signals match (no improvisation)",
+        "Estimate blast radius (files, lines) before editing",
+        "Apply smallest reversible patch",
+        "Validate using declared validation steps; rollback on failure",
+        "Solidify knowledge: append EvolutionEvent, update Gene/Capsule store"
+      ],
+      "constraints": {
+        "max_files": 20,
+        "forbidden_paths": [".git", "node_modules"]
+      },
+      "validation": [
+        "node -e \"require('./skills/super-skill').evolution; console.log('ok')\""
+        "node -e \"require('./skills/super-skill/darwin-evolution'); console.log('ok')\""
+      ]
+    },
+    {
+      "type": "Gene",
+      "id": "gene_gep_optimize_prompt_and_assets",
+      "category": "optimize",
+      "signals_match": [
+        "protocol",
+        "gep",
+        "prompt",
+        "audit",
+        "reusable",
+        "protocol_drift"
+      ],
+      "preconditions": [
+        "need stricter, auditable evolution protocol outputs"
+      ],
+      "strategy": [
+        "Extract signals and determine selection rationale via Selector JSON",
+        "Prefer reusing existing Gene/Capsule; only create if no match exists",
+        "Refactor prompt assembly to embed assets (genes, capsules, parent event)",
+        "Reduce noise and ambiguity; enforce strict output schema",
+        "Validate by running evolution cycle and ensuring no runtime errors",
+        "Solidify: record EvolutionEvent, update Gene definitions, create Capsule on success"
+      ],
+      "constraints": {
+        "max_files": 20,
+        "forbidden_paths": [".git", "node_modules"]
+      },
+      "validation": [
+        "node -e \"require('./skills/super-skill').evolution; console.log('ok')\""
+      ]
+    },
+    {
+      "type": "Gene",
+      "id": "gene_gep_innovate_from_opportunity",
+      "category": "innovate",
+      "signals_match": [
+        "user_feature_request",
+        "user_improvement_suggestion",
+        "perf_bottleneck",
+        "capability_gap",
+        "stable_success_plateau",
+        "external_opportunity",
+        "evolution_stagnation_detected"
+      ],
+      "preconditions": [
+        "at least one opportunity signal is present",
+        "no active log_error signals (stability first)"
+      ],
+      "strategy": [
+        "Extract opportunity signals and identify the specific user need or system gap",
+        "Search existing Genes and Capsules for partial matches (avoid reinventing)",
+        "Design a minimal, testable implementation plan (prefer small increments)",
+        "Estimate blast radius; innovate changes may touch more files but must stay within constraints",
+        "Implement the change with clear validation criteria",
+        "Validate using declared validation steps; rollback on failure",
+        "Solidify: record EvolutionEvent with intent=innovate, create new Gene if pattern is novel, create Capsule on success"
+      ],
+      "constraints": {
+        "max_files": 25,
+        "forbidden_paths": [".git", "node_modules", "assets/gep/events.jsonl"]
+      },
+      "validation": [
+        "node -e \"require('./skills/super-skill').evolution; console.log('ok')\""
+      ]
+    },
+    {
+      "type": "Gene",
+      "id": "gene_gep_skill_creation",
+      "category": "innovate",
+      "signals_match": [
+        "user_feature_request",
+        "capability_gap",
+        "skill_missing"
+      ],
+      "preconditions": [
+        "identified need for new skill capability",
+        "no existing skill covers the requirement"
+      ],
+      "strategy": [
+        "Analyze the capability gap and define skill scope",
+        "Check existing skills to avoid duplication (skill_overlap prevention)",
+        "Design minimal skill structure: index.js + SKILL.md + package.json",
+        "Implement core functionality with proper error handling",
+        "Add YAML frontmatter to SKILL.md with name and description",
+        "Test skill exports and functionality",
+        "Validate: node -e \"require('./skills/<name>'); console.log(Object.keys(s))\"",
+        "Solidify: create Gene for pattern, record Capsule"
+      ],
+      "constraints": {
+        "max_files": 10,
+        "forbidden_paths": [".git", "node_modules", "skills/evolver", "skills/feishu-*"]
+      },
+      "validation": [
+        "node -e \"require('./skills/super-skill').evolution; console.log('ok')\""
+      ]
+    },
+    {
+      "type": "Gene",
+      "id": "gene_gep_documentation_update",
+      "category": "optimize",
+      "signals_match": [
+        "documentation_missing",
+        "memory_missing",
+        "changelog_needed",
+        "readme_outdated"
+      ],
+      "preconditions": [
+        "significant changes made that need documentation",
+        "existing documentation is outdated"
+      ],
+      "strategy": [
+        "Identify documentation gaps from recent changes",
+        "Update MEMORY.md with new patterns and decisions",
+        "Update CHANGELOG.md with version history",
+        "Ensure documentation is concise (under 500 lines)",
+        "Validate: check all links and references",
+        "Solidify: record EvolutionEvent with documentation updates"
+      ],
+      "constraints": {
+        "max_files": 5,
+        "forbidden_paths": [".git", "node_modules"]
+      },
+      "validation": [
+        "node -e \"require('./skills/super-skill').evolution; console.log('ok')\""
+      ]
+    }
+  ]
+}

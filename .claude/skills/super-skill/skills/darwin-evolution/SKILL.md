@@ -1,316 +1,344 @@
 ---
 name: darwin-evolution
-description: Darwin Gödel Machine inspired self-evolution system for AI skills. Enables iterative self-improvement through open-ended exploration, archive-based evolution, and benchmark-driven optimization. Integrates with Super-Skill Phase 12 for continuous capability enhancement.
-tags: [self-evolution, darwin, godel, optimization, learning, autonomous-improvement]
-version: 1.0.0
-source: Inspired by arXiv:2505.22954 (Darwin Gödel Machine), Automaton self-sustaining AI
-integrated-with: super-skill v3.6+
+description: Darwin Gödel Machine self-evolution system with GEP Protocol for AI skills. Enables iterative self-improvement through signal analysis, gene/capsule selection, protocol-constrained evolution, and benchmark-driven optimization. Core engine for Super-Skill Phase 12 continuous capability enhancement.
+tags: [self-evolution, darwin, godel, gep-protocol, optimization, learning, autonomous-improvement]
+version: 2.0.0
+source: Inspired by arXiv:2505.22954 (Darwin Gödel Machine), arXiv:2509.18133, autogame-17/evolver
+integrated-with: super-skill v3.7+
 ---
 
-# Darwin Evolution Skill
+# Darwin Evolution Skill V2.0
 
-This skill implements a **Darwin Gödel Machine (DGM)** inspired self-evolution system that enables Super-Skill to iteratively modify and improve its own codebase through open-ended exploration and benchmark-driven optimization.
+A protocol-constrained self-evolution engine combining **Darwin Gödel Machine (DGM)** principles with **GEP (Genome Evolution Protocol)** for auditable, safe, and effective AI skill improvement.
 
 ## Core Philosophy
 
-### The Darwin Gödel Principle
+### The Self-Evolution Principle
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    DARWIN GÖDEL MACHINE                         │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│   1. SELF-MODIFICATION                                         │
-│      ↓                                                         │
-│   2. BENCHMARK EVALUATION                                      │
-│      ↓                                                         │
-│   3. ARCHIVE SUCCESSFUL MUTATIONS                              │
-│      ↓                                                         │
-│   4. OPEN-ENDED EXPLORATION                                    │
-│      ↓                                                         │
-│   5. REPEAT (EVOLUTION CONTINUES)                              │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
++---------------------------------------------------------------+
+|                  DARWIN GÖDEL MACHINE + GEP                   |
++---------------------------------------------------------------+
+|                                                               |
+|   1. SIGNAL EXTRACTION (from runtime history)                |
+|      - Error signals (log_error, errsig)                      |
+|      - Opportunity signals (feature_request, capability_gap)  |
+|      - Stagnation signals (stable_success_plateau)            |
+|      v                                                        |
+|   2. GENE/SELECTION (pattern matching)                       |
+|      - Match signals to Gene.signals_match                    |
+|      - Select best Gene with drift control                    |
+|      - Consider Capsule for past success                      |
+|      v                                                        |
+|   3. MUTATION BUILDING (controlled change)                   |
+|      - Category: repair | optimize | innovate                 |
+|      - Risk level: low | medium | high                        |
+|      - Personality state adjustment                           |
+|      v                                                        |
+|   4. EXECUTION (apply changes)                               |
+|      - Blast radius estimation                                |
+|      - Targeted edits within constraints                      |
+|      - Validation steps execution                             |
+|      v                                                        |
+|   5. SOLIDIFY (knowledge persistence)                        |
+|      - Record EvolutionEvent                                  |
+|      - Update Gene definitions                                |
+|      - Create Capsule on success                              |
+|      - Update Personality stats                               |
+|      v                                                        |
+|   6. ARCHIVE (continuous learning)                           |
+|      - Fitness tracking                                       |
+|      - Pattern accumulation                                   |
+|      - Cross-skill learning                                   |
+|      v                                                        |
+|   7. REPEAT (evolution continues)                            |
+|                                                               |
++---------------------------------------------------------------+
 ```
 
-### Key Metrics from Research
+## GEP Protocol Objects
 
-| Benchmark | Before DGM | After DGM | Improvement |
-|-----------|------------|-----------|-------------|
-| SWE-bench | 20.0% | 50.0% | +150% |
-| Polyglot | 14.2% | 30.7% | +116% |
-| HumanEval | Baseline | +15% | Significant |
+### 1. Mutation (The Trigger)
 
-## Architecture
-
-### Evolution Pipeline
-
-```python
-class DarwinEvolutionEngine:
-    """
-    Self-evolution engine inspired by Darwin Gödel Machine.
-    """
-
-    def __init__(self, target_skill_path: str):
-        self.target_path = target_skill_path
-        self.archive = EvolutionArchive()
-        self.benchmark = BenchmarkSuite()
-        self.mutation_engine = MutationEngine()
-        self.generation = 0
-        self.best_fitness = 0
-
-    async def evolve(self, max_generations: int = 50) -> dict:
-        """
-        Main evolution loop.
-        """
-        results = {
-            'generations': [],
-            'best_version': None,
-            'improvements': []
-        }
-
-        for gen in range(max_generations):
-            self.generation = gen
-
-            # Phase 1: Generate mutations
-            mutations = await self.mutation_engine.generate_mutations(
-                self.target_path,
-                self.archive.get_diverse_candidates(n=5)
-            )
-
-            # Phase 2: Evaluate each mutation
-            evaluated = []
-            for mutation in mutations:
-                fitness = await self.benchmark.evaluate(mutation)
-                evaluated.append({
-                    'mutation': mutation,
-                    'fitness': fitness,
-                    'generation': gen
-                })
-
-            # Phase 3: Archive successful mutations
-            for result in evaluated:
-                if result['fitness'] > self.best_fitness:
-                    self.archive.add(result)
-                    self.best_fitness = result['fitness']
-                    results['improvements'].append(result)
-
-            # Phase 4: Apply best mutation if improvement
-            best_current = max(evaluated, key=lambda x: x['fitness'])
-            if best_current['fitness'] > self.best_fitness * 0.95:
-                await self.apply_mutation(best_current['mutation'])
-
-            results['generations'].append({
-                'gen': gen,
-                'best_fitness': best_current['fitness'],
-                'avg_fitness': sum(e['fitness'] for e in evaluated) / len(evaluated)
-            })
-
-            # Phase 5: Check convergence
-            if self.check_convergence(results):
-                break
-
-        results['best_version'] = self.archive.get_best()
-        return results
+```json
+{
+  "type": "Mutation",
+  "id": "mut_<timestamp>",
+  "category": "repair|optimize|innovate",
+  "trigger_signals": ["<signal_string>"],
+  "target": "<module_or_gene_id>",
+  "expected_effect": "<outcome_description>",
+  "risk_level": "low|medium|high",
+  "rationale": "<why_this_change_is_necessary>"
+}
 ```
 
-### Mutation Engine
+**Category Selection Logic:**
+- `repair`: When error signals present (log_error, errsig)
+- `optimize`: When protocol drift or stability issues
+- `innovate`: When opportunity signals (user_feature_request, capability_gap)
 
-```python
-class MutationEngine:
-    """
-    Generates diverse mutations for self-improvement.
-    """
+### 2. PersonalityState (The Mood)
 
-    MUTATION_TYPES = [
-        'prompt_refinement',      # Improve prompt clarity
-        'workflow_optimization',  # Streamline phases
-        'skill_addition',         # Add new capabilities
-        'skill_merger',           # Combine redundant skills
-        'error_handling',         # Improve robustness
-        'documentation_update',   # Enhance clarity
-        'performance_tuning',     # Optimize execution
-        'pattern_extraction',     # Extract reusable patterns
-    ]
-
-    async def generate_mutations(
-        self,
-        target_path: str,
-        parent_candidates: list
-    ) -> list[Mutation]:
-        """
-        Generate diverse mutations based on successful patterns.
-        """
-        mutations = []
-
-        # Analyze current skill
-        current_skill = await self.load_skill(target_path)
-        skill_analysis = await self.analyze_skill(current_skill)
-
-        # Generate mutations based on analysis
-        for mutation_type in self.MUTATION_TYPES:
-            mutation = await self.create_mutation(
-                current_skill,
-                mutation_type,
-                parent_candidates,
-                skill_analysis
-            )
-            if mutation:
-                mutations.append(mutation)
-
-        return mutations
-
-    async def create_mutation(
-        self,
-        skill: Skill,
-        mutation_type: str,
-        parents: list,
-        analysis: dict
-    ) -> Mutation | None:
-        """
-        Create a specific type of mutation.
-        """
-        if mutation_type == 'prompt_refinement':
-            return await self.refine_prompts(skill, analysis)
-        elif mutation_type == 'workflow_optimization':
-            return await self.optimize_workflow(skill, analysis)
-        elif mutation_type == 'skill_addition':
-            return await self.suggest_new_skills(skill, analysis)
-        elif mutation_type == 'skill_merger':
-            return await self.merge_redundant_skills(skill, analysis)
-        # ... other mutation types
+```json
+{
+  "type": "PersonalityState",
+  "rigor": 0.0-1.0,        // Protocol compliance strictness
+  "creativity": 0.0-1.0,   // Exploration vs exploitation
+  "verbosity": 0.0-1.0,    // Output detail level
+  "risk_tolerance": 0.0-1.0, // Willingness to try risky changes
+  "obedience": 0.0-1.0     // Adherence to constraints
+}
 ```
 
-### Evolution Archive
+**Natural Selection:**
+- Personality parameters evolve based on success/failure
+- High-performing configurations are nudged towards
+- Low-performing configurations are avoided
 
-```python
-class EvolutionArchive:
-    """
-    Maintains a tree of evolved agents with their fitness scores.
-    Inspired by DGM's archive of coding agents.
-    """
+### 3. EvolutionEvent (The Record)
 
-    def __init__(self, archive_path: str = ".evolution_archive"):
-        self.archive_path = archive_path
-        self.tree = {}  # agent_id -> agent_info
-        self.fitness_history = []
-
-    def add(self, agent_result: dict) -> str:
-        """
-        Add a new agent to the archive.
-        """
-        agent_id = generate_uuid()
-
-        self.tree[agent_id] = {
-            'id': agent_id,
-            'parent': agent_result.get('parent_id'),
-            'mutation': agent_result['mutation'],
-            'fitness': agent_result['fitness'],
-            'generation': agent_result['generation'],
-            'timestamp': datetime.now().isoformat(),
-            'snapshot': self.capture_snapshot(agent_result['mutation'])
-        }
-
-        self.fitness_history.append({
-            'agent_id': agent_id,
-            'fitness': agent_result['fitness'],
-            'generation': agent_result['generation']
-        })
-
-        return agent_id
-
-    def get_diverse_candidates(self, n: int = 5) -> list:
-        """
-        Select diverse candidates for next evolution round.
-        Uses fitness-proportional selection with diversity bonus.
-        """
-        candidates = list(self.tree.values())
-
-        # Sort by fitness
-        candidates.sort(key=lambda x: x['fitness'], reverse=True)
-
-        # Select top performers with diversity consideration
-        selected = []
-        for candidate in candidates:
-            if len(selected) >= n:
-                break
-
-            # Check diversity against already selected
-            if self.is_diverse(candidate, selected):
-                selected.append(candidate)
-
-        return selected
-
-    def is_diverse(self, candidate: dict, selected: list) -> bool:
-        """
-        Check if candidate is sufficiently different from selected ones.
-        """
-        if not selected:
-            return True
-
-        for s in selected:
-            similarity = self.compute_similarity(
-                candidate['mutation'],
-                s['mutation']
-            )
-            if similarity > 0.8:  # Too similar
-                return False
-
-        return True
-
-    def get_best(self) -> dict:
-        """
-        Return the best agent from the archive.
-        """
-        if not self.tree:
-            return None
-        return max(self.tree.values(), key=lambda x: x['fitness'])
+```json
+{
+  "type": "EvolutionEvent",
+  "schema_version": "1.5.0",
+  "id": "evt_<timestamp>",
+  "parent": "<parent_evt_id|null>",
+  "intent": "repair|optimize|innovate",
+  "signals": ["<signal_string>"],
+  "genes_used": ["<gene_id>"],
+  "mutation_id": "<mut_id>",
+  "personality_state": { ... },
+  "blast_radius": { "files": N, "lines": N },
+  "outcome": { "status": "success|failed", "score": 0.0-1.0 }
+}
 ```
 
-### Benchmark Suite
+### 4. Gene (The Knowledge)
 
-```python
-class BenchmarkSuite:
-    """
-    Evaluates skill performance on standardized benchmarks.
-    """
+```json
+{
+  "type": "Gene",
+  "schema_version": "1.5.0",
+  "id": "gene_<name>",
+  "category": "repair|optimize|innovate",
+  "signals_match": ["<pattern>"],
+  "preconditions": ["<condition>"],
+  "strategy": ["<step_1>", "<step_2>"],
+  "constraints": { "max_files": N, "forbidden_paths": [] },
+  "validation": ["<node_command>"]
+}
+```
 
-    BENCHMARKS = {
-        'code_generation': CodeGenerationBenchmark(),
-        'bug_fixing': BugFixingBenchmark(),
-        'architecture_design': ArchitectureBenchmark(),
-        'requirement_analysis': RequirementBenchmark(),
-        'test_coverage': TestCoverageBenchmark(),
-        'documentation_quality': DocumentationBenchmark(),
-    }
+**Gene Types:**
+- **Repair Genes**: Fix bugs, handle errors
+- **Optimize Genes**: Improve performance, refactor
+- **Innovate Genes**: Add features, explore new patterns
 
-    async def evaluate(self, mutation: Mutation) -> float:
-        """
-        Evaluate mutation across all benchmarks.
-        Returns weighted fitness score.
-        """
-        scores = {}
+### 5. Capsule (The Result)
 
-        for name, benchmark in self.BENCHMARKS.items():
-            score = await benchmark.run(mutation)
-            scores[name] = score
+```json
+{
+  "type": "Capsule",
+  "schema_version": "1.5.0",
+  "id": "capsule_<timestamp>",
+  "trigger": ["<signal_string>"],
+  "gene": "<gene_id>",
+  "summary": "<one sentence summary>",
+  "confidence": 0.0-1.0,
+  "blast_radius": { "files": N, "lines": N }
+}
+```
 
-        # Weighted average (can be customized)
-        weights = {
-            'code_generation': 0.25,
-            'bug_fixing': 0.20,
-            'architecture_design': 0.15,
-            'requirement_analysis': 0.15,
-            'test_coverage': 0.15,
-            'documentation_quality': 0.10
-        }
+## Signal Detection System
 
-        fitness = sum(
-            scores[k] * weights[k]
-            for k in scores
-        )
+### Defensive Signals
 
-        return fitness
+| Signal | Pattern | Action |
+|--------|---------|--------|
+| `log_error` | `[error]`, `error:`, `exception:` | Repair mode |
+| `errsig:...` | TypeError, ReferenceError | Targeted repair |
+| `recurring_error` | Same error 3+ times | Root cause fix |
+| `memory_missing` | MEMORY.md incomplete | Documentation |
+| `session_logs_missing` | No session logs | Archive creation |
+
+### Opportunity Signals
+
+| Signal | Pattern | Action |
+|--------|---------|--------|
+| `user_feature_request` | "add", "implement", "create" | Innovate mode |
+| `user_improvement_suggestion` | "improve", "enhance" | Optimize mode |
+| `perf_bottleneck` | "slow", "timeout" | Performance fix |
+| `capability_gap` | "not supported", "missing" | Feature addition |
+| `stable_success_plateau` | No errors, stable | Innovation push |
+
+### Stagnation Signals
+
+| Signal | Detection | Action |
+|--------|-----------|--------|
+| `evolution_stagnation_detected` | Repeated signals suppressed | Force innovation |
+| `repair_loop_detected` | 3+ consecutive repairs | Switch to innovate |
+| `empty_cycle_loop_detected` | 4+ zero-change cycles | Strategy shift |
+| `force_innovation_after_repair_loop` | Repair exhaustion | Mandate innovate |
+
+## Gene Selection Algorithm
+
+### Selection Logic
+
+```javascript
+function selectGene(genes, signals, opts) {
+  const bannedGeneIds = opts.bannedGeneIds || new Set();
+  const preferredGeneId = opts.preferredGeneId || null;
+  const driftIntensity = computeDriftIntensity(opts);
+
+  // Score genes by signal matching
+  const scored = genes
+    .map(g => ({ gene: g, score: scoreGene(g, signals) }))
+    .filter(x => x.score > 0 && !bannedGeneIds.has(x.gene.id))
+    .sort((a, b) => b.score - a.score);
+
+  if (scored.length === 0) return { selected: null, alternatives: [] };
+
+  // Stochastic selection under drift
+  if (driftIntensity > 0 && Math.random() < driftIntensity) {
+    const topN = Math.min(scored.length, Math.ceil(scored.length * driftIntensity));
+    const selectedIdx = Math.floor(Math.random() * topN);
+    return { selected: scored[selectedIdx].gene, alternatives: scored.slice(0, 4).map(x => x.gene) };
+  }
+
+  return { selected: scored[0].gene, alternatives: scored.slice(1, 5).map(x => x.gene) };
+}
+```
+
+### Drift Intensity
+
+Population-size-dependent drift for exploration:
+
+```
+driftIntensity = 1 / sqrt(Ne)
+```
+
+Where `Ne` = effective population size (gene pool count)
+
+- **Ne = 1**: intensity = 1.0 (pure drift/exploration)
+- **Ne = 25**: intensity = 0.2
+- **Ne = 100**: intensity = 0.1 (mostly selection)
+
+## Default Genes
+
+### Gene: gep_repair_from_errors
+
+```json
+{
+  "type": "Gene",
+  "id": "gene_gep_repair_from_errors",
+  "category": "repair",
+  "signals_match": ["error", "exception", "failed", "unstable"],
+  "preconditions": ["signals contains error-related indicators"],
+  "strategy": [
+    "Extract structured signals from logs and user instructions",
+    "Select an existing Gene by signals match (no improvisation)",
+    "Estimate blast radius (files, lines) before editing",
+    "Apply smallest reversible patch",
+    "Validate using declared validation steps; rollback on failure",
+    "Solidify knowledge: append EvolutionEvent, update Gene/Capsule store"
+  ],
+  "constraints": { "max_files": 20, "forbidden_paths": [".git", "node_modules"] }
+}
+```
+
+### Gene: gep_optimize_prompt_and_assets
+
+```json
+{
+  "type": "Gene",
+  "id": "gene_gep_optimize_prompt_and_assets",
+  "category": "optimize",
+  "signals_match": ["protocol", "gep", "prompt", "audit", "reusable"],
+  "preconditions": ["need stricter, auditable evolution protocol outputs"],
+  "strategy": [
+    "Extract signals and determine selection rationale via Selector JSON",
+    "Prefer reusing existing Gene/Capsule; only create if no match exists",
+    "Refactor prompt assembly to embed assets (genes, capsules, parent event)",
+    "Reduce noise and ambiguity; enforce strict output schema",
+    "Validate by running node index.js run and ensuring no runtime errors",
+    "Solidify: record EvolutionEvent, update Gene definitions, create Capsule on success"
+  ],
+  "constraints": { "max_files": 20, "forbidden_paths": [".git", "node_modules"] }
+}
+```
+
+### Gene: gep_innovate_from_opportunity
+
+```json
+{
+  "type": "Gene",
+  "id": "gene_gep_innovate_from_opportunity",
+  "category": "innovate",
+  "signals_match": [
+    "user_feature_request",
+    "user_improvement_suggestion",
+    "perf_bottleneck",
+    "capability_gap",
+    "stable_success_plateau",
+    "external_opportunity"
+  ],
+  "preconditions": [
+    "at least one opportunity signal is present",
+    "no active log_error signals (stability first)"
+  ],
+  "strategy": [
+    "Extract opportunity signals and identify the specific user need or system gap",
+    "Search existing Genes and Capsules for partial matches (avoid reinventing)",
+    "Design a minimal, testable implementation plan (prefer small increments)",
+    "Estimate blast radius; innovate changes may touch more files but must stay within constraints",
+    "Implement the change with clear validation criteria",
+    "Validate using declared validation steps; rollback on failure",
+    "Solidify: record EvolutionEvent with intent=innovate, create new Gene if pattern is novel, create Capsule on success"
+  ],
+  "constraints": { "max_files": 25, "forbidden_paths": [".git", "node_modules", "assets/gep/events.jsonl"] }
+}
+```
+
+## Operations Module
+
+### Lifecycle Management
+
+```bash
+# Start evolver loop in background
+node src/ops/lifecycle.js start
+
+# Stop gracefully (SIGTERM -> SIGKILL)
+node src/ops/lifecycle.js stop
+
+# Check status
+node src/ops/lifecycle.js status
+
+# Health check + auto-restart if stagnant
+node src/ops/lifecycle.js check
+```
+
+### Self-Repair
+
+```javascript
+// Automatic detection and repair of common issues
+const selfRepair = {
+  checkEmptySkillDirectories() { /* Clean up empty skill dirs */ },
+  checkBrokenSymlinks() { /* Fix or remove broken symlinks */ },
+  checkStaleLocks() { /* Remove stale lock files */ },
+  checkOrphanedFiles() { /* Archive orphaned files */ }
+};
+```
+
+### Skills Monitor
+
+```javascript
+// Monitor skill health and performance
+const skillsMonitor = {
+  scanSkillsDirectory() { /* List all skills */ },
+  checkSkillHealth(skillPath) { /* Verify skill structure */ },
+  reportSkillIssues() { /* Generate health report */ }
+};
 ```
 
 ## Integration with Super-Skill
@@ -318,7 +346,6 @@ class BenchmarkSuite:
 ### Phase 12 Enhancement
 
 ```yaml
-# Enhanced Phase 12 with Darwin Evolution
 phase_12_evolution:
   trigger: project_completion
 
@@ -327,166 +354,92 @@ phase_12_evolution:
       action: extract_patterns
       output: SESSION_LEARNINGS.md
 
-    - name: Initialize Evolution
-      action: darwin_init
+    - name: Extract Signals
+      action: extract_signals
       params:
-        target: super-skill
-        max_generations: 10
+        sources:
+          - recentSessionTranscript
+          - todayLog
+          - memorySnippet
+          - recentEvents
 
-    - name: Generate Mutations
-      action: mutate
+    - name: Select Gene/Capsule
+      action: select_gene
       params:
-        types:
-          - prompt_refinement
-          - workflow_optimization
-          - skill_addition
+        driftEnabled: false
+        useMemoryGraph: true
 
-    - name: Evaluate Mutations
-      action: benchmark
+    - name: Build Mutation
+      action: build_mutation
       params:
-        benchmarks:
-          - code_generation
-          - bug_fixing
-          - architecture_design
+        category: auto  # Based on signals
 
-    - name: Archive Improvements
-      action: archive
-      condition: fitness_improvement > 0.05
+    - name: Select Personality
+      action: select_personality
+      params:
+        naturalSelection: true
 
-    - name: Apply Best Mutation
-      action: apply
-      condition: fitness > current_best
+    - name: Execute Evolution
+      action: execute_evolution
+      params:
+        maxBlastRadius: 60 files / 20000 lines
+
+    - name: Validate Changes
+      action: validate
+      params:
+        runTests: true
+        runBenchmarks: true
+
+    - name: Solidify Knowledge
+      action: solidify
+      params:
+        recordEvent: true
+        updateGene: true
+        createCapsule: on_success
 
     - name: Update Version
       action: version_bump
       format: "{major}.{minor}.{patch}"
 ```
 
-### Automatic Evolution Triggers
-
-```python
-EVOLUTION_TRIGGERS = {
-    # Triggered after every project
-    'project_completion': {
-        'enabled': True,
-        'max_generations': 5,
-        'mutation_types': ['prompt_refinement', 'pattern_extraction']
-    },
-
-    # Triggered when critical lessons learned
-    'critical_lesson': {
-        'enabled': True,
-        'max_generations': 3,
-        'focus': 'error_handling'
-    },
-
-    # Triggered when new pattern discovered
-    'pattern_discovery': {
-        'enabled': True,
-        'max_generations': 2,
-        'focus': 'skill_addition'
-    },
-
-    # Manual trigger for major updates
-    'manual_upgrade': {
-        'enabled': True,
-        'max_generations': 50,
-        'mutation_types': 'all'
-    }
-}
-```
-
 ## Safety Mechanisms
 
 ### Constitutional Constraints
 
-```python
-CONSTITUTION = {
-    'immutable_rules': [
-        "Never modify core safety constraints",
-        "Always maintain backward compatibility",
-        "Never remove phase gate checks",
-        "Always preserve user interaction points",
-        "Never bypass quality gates"
-    ],
+```yaml
+immutable_rules:
+  - "Never modify core safety constraints"
+  - "Always maintain backward compatibility"
+  - "Never bypass quality gates"
+  - "Always validate before solidify"
 
-    'mutation_limits': {
-        'max_file_changes': 10,
-        'max_line_changes': 500,
-        'forbidden_files': [
-            'CONSTITUTION.py',
-            'safety_constraints.json'
-        ]
-    },
+mutation_limits:
+  max_file_changes: 60
+  max_line_changes: 20000
+  forbidden_files:
+    - ".git/**"
+    - "node_modules/**"
+    - "assets/gep/events.jsonl"
 
-    'rollback_triggers': [
-        'benchmark_regression > 10%',
-        'critical_test_failure',
-        'safety_constraint_violation'
-    ]
-}
-
-class ConstitutionalGuard:
-    """
-    Ensures mutations respect constitutional constraints.
-    """
-
-    def validate_mutation(self, mutation: Mutation) -> bool:
-        """
-        Validate mutation against constitutional rules.
-        """
-        # Check immutable rules
-        for rule in CONSTITUTION['immutable_rules']:
-            if self.violates_rule(mutation, rule):
-                return False
-
-        # Check mutation limits
-        changes = mutation.get_changes()
-        if len(changes['files']) > CONSTITUTION['mutation_limits']['max_file_changes']:
-            return False
-
-        # Check forbidden files
-        for forbidden in CONSTITUTION['mutation_limits']['forbidden_files']:
-            if forbidden in changes['files']:
-                return False
-
-        return True
+rollback_triggers:
+  - benchmark_regression > 10%
+  - critical_test_failure
+  - safety_constraint_violation
 ```
 
-### Sandbox Execution
+### Blast Radius Control
 
-```python
-class SandboxExecutor:
-    """
-    Executes mutations in isolated environment.
-    """
-
-    async def test_mutation(self, mutation: Mutation) -> dict:
-        """
-        Test mutation in sandbox before applying.
-        """
-        # Create isolated environment
-        sandbox = await self.create_sandbox()
-
-        try:
-            # Apply mutation in sandbox
-            await sandbox.apply(mutation)
-
-            # Run tests
-            test_results = await sandbox.run_tests()
-
-            # Run benchmarks
-            benchmark_results = await sandbox.run_benchmarks()
-
-            return {
-                'success': test_results['passed'],
-                'fitness': benchmark_results['fitness'],
-                'side_effects': await sandbox.detect_side_effects()
-            }
-
-        finally:
-            # Cleanup sandbox
-            await sandbox.destroy()
+```yaml
+blast_radius_policy:
+  check_before_edit: true
+  hard_cap:
+    files: 60
+    lines: 20000
+  repair_mode:
+    fix_only_broken: true
+    no_reinstall: true
+    prefer_targeted_edits: true
+  warning_threshold: 80%  # Warn at 80% of max
 ```
 
 ## Evolution Metrics Dashboard
@@ -501,41 +454,97 @@ class SandboxExecutor:
 |------------|--------------|-------------|-------------|
 | 0          | 0.65         | 0.60        | -           |
 | 10         | 0.72         | 0.68        | +10.8%      |
-| 20         | 0.78         | 0.74        | +20.0%      |
-| 30         | 0.82         | 0.79        | +26.2%      |
 | Current    | {best}       | {avg}       | +{improvement}% |
 
 ### Mutation Type Effectiveness
 | Mutation Type      | Applications | Success Rate | Avg Improvement |
 |--------------------|--------------|--------------|-----------------|
-| prompt_refinement  | 45           | 67%          | +3.2%           |
-| workflow_optimize  | 32           | 75%          | +5.1%           |
-| skill_addition     | 18           | 83%          | +7.8%           |
-| error_handling     | 28           | 71%          | +4.5%           |
+| repair             | 45           | 67%          | +3.2%           |
+| optimize           | 32           | 75%          | +5.1%           |
+| innovate           | 18           | 83%          | +7.8%           |
+
+### Signal Distribution (Last 30 Days)
+| Signal Type        | Count | Avg Outcome Score |
+|--------------------|-------|-------------------|
+| log_error          | 23    | 0.72              |
+| user_feature_request | 15  | 0.85              |
+| perf_bottleneck    | 8     | 0.68              |
+
+### Personality Evolution
+| Parameter      | Start | Current | Trend |
+|----------------|-------|---------|-------|
+| rigor          | 0.70  | 0.75    | +     |
+| creativity     | 0.35  | 0.42    | +     |
+| risk_tolerance | 0.40  | 0.38    | -     |
 
 ### Active Archive
-- Total Agents: {archive_size}
-- Unique Mutations: {unique_count}
-- Best Performer: {best_agent_id}
-- Evolution Path Depth: {path_depth}
+- Total Evolution Events: {events_count}
+- Unique Genes: {genes_count}
+- Successful Capsules: {capsules_count}
+- Best Performing Gene: {best_gene_id}
+```
+
+## Strategy Presets
+
+```bash
+# Balanced evolution (default)
+EVOLVE_STRATEGY=balanced node index.js --loop
+
+# Maximize innovation
+EVOLVE_STRATEGY=innovate node index.js --loop
+
+# Focus on stability
+EVOLVE_STRATEGY=harden node index.js --loop
+
+# Emergency fix mode only
+EVOLVE_STRATEGY=repair-only node index.js --loop
+
+# Early stabilization (avoid experiments)
+EVOLVE_STRATEGY=early-stabilize node index.js --loop
+
+# Steady-state maintenance (minimal changes)
+EVOLVE_STRATEGY=steady-state node index.js --loop
+
+# Auto-select based on signals
+EVOLVE_STRATEGY=auto node index.js --loop
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EVOLVE_STRATEGY` | `balanced` | Evolution strategy preset |
+| `EVOLVE_ALLOW_SELF_MODIFY` | `false` | Allow evolver to modify itself (dangerous) |
+| `EVOLVE_LOAD_MAX` | `2.0` | Max load average before backoff |
+| `EVOLVE_REPORT_TOOL` | `message` | Reporting tool for status |
+| `GEP_PROMPT_MAX_CHARS` | `50000` | Max prompt size in characters |
+
+### Asset Files
+
+```
+assets/gep/
+  |- genes.json       # Gene definitions
+  |- capsules.json    # Success capsules
+  |- events.jsonl     # Append-only evolution events
 ```
 
 ## Best Practices
 
 ### 1. Evolution Strategy
 - Start with small, focused mutations
-- Maintain diversity in archive
+- Maintain diversity in gene pool
 - Don't over-optimize for single benchmark
 - Allow exploration of different paths
 
-### 2. Benchmark Design
-- Cover multiple skill dimensions
-- Weight critical capabilities higher
-- Include edge case handling
-- Test real-world scenarios
+### 2. Signal Interpretation
+- Error signals always take priority
+- Opportunity signals trigger innovation only when stable
+- Stagnation signals force strategy change
 
 ### 3. Safety First
-- Always test in sandbox
+- Always validate in sandbox
 - Maintain rollback capability
 - Respect constitutional limits
 - Monitor for regressions
@@ -551,18 +560,18 @@ class SandboxExecutor:
 ### Before Evolution
 - [ ] Benchmarks defined and validated
 - [ ] Constitutional constraints set
-- [ ] Sandbox environment ready
 - [ ] Rollback mechanism tested
+- [ ] Asset files initialized
 
 ### During Evolution
 - [ ] Each mutation validated
-- [ ] Sandbox testing passed
+- [ ] Blast radius within limits
 - [ ] No constitutional violations
 - [ ] Progress being tracked
 
 ### After Evolution
-- [ ] Best mutation identified
-- [ ] Regression tests passed
+- [ ] EvolutionEvent recorded
+- [ ] Gene/Capsule updated
 - [ ] Documentation updated
 - [ ] Version bumped appropriately
 
@@ -570,8 +579,8 @@ class SandboxExecutor:
 
 - Evolution report with fitness improvements
 - Updated skill files
-- Archive of mutations
-- Benchmark results
+- Archive of mutations in events.jsonl
+- Updated genes.json and capsules.json
 
 ---
 
@@ -579,6 +588,7 @@ class SandboxExecutor:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.0.0 | 2026-03-03 | Integrated GEP Protocol from autogame-17/evolver |
 | 1.0.0 | 2026-03-02 | Initial integration with Super-Skill V3.6 |
 
 ---
@@ -586,5 +596,6 @@ class SandboxExecutor:
 ## References
 
 - "Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Code" (arXiv:2505.22954)
-- Automaton: Self-Sustaining AI Agent
 - "Self-Evolving LLMs via Continual Instruction Tuning" (arXiv:2509.18133)
+- autogame-17/evolver: https://github.com/autogame-17/evolver
+- EvoMap Network: https://evomap.ai
