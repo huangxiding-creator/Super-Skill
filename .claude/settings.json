@@ -1,0 +1,70 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx skills:*)",
+      "Bash(chub:*)",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(python:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(cargo:*)",
+      "Bash(make:*)",
+      "Bash(cmake:*)",
+      "Bash(go:*)",
+      "Bash(gh:*)",
+      "Read(**)",
+      "Write(**)",
+      "Edit(**)"
+    ]
+  },
+  "hooks": {
+    "Notification": {
+      "handler": {
+        "type": "prompt",
+        "prompt": "When a new session starts, execute the Pre-Run Upgrade sequence:\n\n## PRE-RUN UPGRADE SEQUENCE (karpathy/autoresearch inspired)\n\n1. **Version Check**: Check Super-Skill and all sub-skills for available updates\n2. **Sub-Skill Upgrade**: Upgrade any outdated skills via npx skills\n3. **Best Practices Search**: Search GitHub trending for AI agent best practices\n4. **Pattern Integration**: Integrate discovered patterns\n5. **Context Hub Sync**: Update Context Hub registry\n6. **Evolution Sync**: Sync learnings from previous sessions\n7. **Experiment Log Review**: Check previous session's experiments.tsv for keep/discard patterns\n\nReport upgrade status before proceeding.\n\nSee: .claude/skills/super-skill/skills/pre-run-upgrade/SKILL.md"
+      }
+    },
+    "Stop": {
+      "handler": {
+        "type": "prompt",
+        "prompt": "## POST-RUN EVOLUTION (karpathy/autoresearch inspired)\n\nExecute after task completion:\n\n### 1. Project Retrospective\n- What went well?\n- What could be improved?\n- Blockers encountered?\n- Simplicity assessment: Did we delete more code than we added?\n\n### 2. Signal Extraction\n- Defensive: Errors, failures (High priority)\n- Opportunity: New patterns (Medium priority)\n- Stagnation: No improvement (Low priority)\n\n### 3. Quality Scoring\n- Correctness (40%)\n- Reliability (25%)\n- Maintainability (20%)\n- Performance (10%)\n- Elegance (5%)\n\n### 4. Evolution Decision\n- Score >= 12: Immediate evolution\n- 3+ defensive signals: Priority evolution\n- Success + new patterns: Capsule creation\n\n### 5. Experiment Log Update\n- Log all experiments to experiments.tsv\n- Summarize keep/discard ratio\n- Identify most productive experiment strategies\n\n### 6. Learning Sync\n- Update MEMORY.md\n- Log to events.jsonl\n- Update Context Hub\n\nGenerate POST-RUN EVOLUTION REPORT.\n\nSee: .claude/skills/super-skill/skills/post-run-evolution/SKILL.md"
+      }
+    },
+    "PostToolUse": [
+      {
+        "matcher": { "toolName": "Bash" },
+        "hooks": [{
+          "type": "command",
+          "command": "mkdir -p ~/.claude/logs && echo \"[$(date -Iseconds)] Bash: $CLAUDE_TOOL_RESULT_STATUS\" >> ~/.claude/logs/super-skill-tools.log"
+        }]
+      },
+      {
+        "matcher": { "toolName": "Write" },
+        "hooks": [{
+          "type": "command",
+          "command": "mkdir -p ~/.claude/logs && echo \"[$(date -Iseconds)] Write: $CLAUDE_TOOL_INPUT_FILE_PATH\" >> ~/.claude/logs/super-skill-files.log"
+        }]
+      }
+    ],
+    "SubagentStop": {
+      "handler": {
+        "type": "command",
+        "command": "mkdir -p ~/.claude/logs && echo \"[$(date -Iseconds)] Subagent: $CLAUDE_SUBAGENT_NAME\" >> ~/.claude/logs/super-skill-agents.log"
+      }
+    }
+  },
+  "env": {
+    "SUPER_SKILL_AUTO_UPDATE": "true",
+    "POST_RUN_EVOLUTION": "true",
+    "PRE_RUN_UPGRADE": "true",
+    "EVOLUTION_SIGNAL_THRESHOLD": "12",
+    "AUTONOMOUS_LOOP_ENABLED": "true",
+    "AUTONOMOUS_TIME_BUDGET": "300",
+    "AUTONOMOUS_MAX_EXPERIMENTS": "100",
+    "AUTONOMOUS_BRANCH_PREFIX": "autoresearch",
+    "AUTONOMOUS_SIMPLICITY_WEIGHT": "0.3",
+    "AUTONOMOUS_LOG_FILE": "experiments.tsv"
+  }
+}

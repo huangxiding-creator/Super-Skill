@@ -48,11 +48,14 @@ coverage/
 .tmp/
 .temp/
 
-# Claude Code specific
+# Claude Code session files
 .claude/memories/
 .claude/sessions/
 .claude/projects/
 .snapshots/
 
-# Evolver specific
+# Experiment logs (user-specific)
+experiments.tsv
+
+# Evolver submodule
 evolver/.git/

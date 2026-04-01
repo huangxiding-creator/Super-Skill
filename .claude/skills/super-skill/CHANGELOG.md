@@ -5,6 +5,284 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.17.0] - 2026-04-01
+
+### Added - Research-Driven Self-Iteration
+
+Applied 5 insights from latest AI agent research (March-April 2026):
+
+#### 1. Hierarchical Orchestration (Planner-Worker-Judge)
+Evidence: Flat multi-agent architectures fail (Cursor tried 20 equal-status agents → throughput of 2-3). Success requires three roles:
+- **Planner**: Explores codebase, creates tasks, assigns priorities
+- **Worker**: Executes tasks in git worktree isolation
+- **Judge**: Evaluates results, decides keep/discard/rollback
+
+Applied to Phase 8 (Autonomous Development).
+
+#### 2. Context Engineering > Prompt Engineering
+The key discipline shift: ensure the agent sees the right information at the right time.
+- **Just-in-Time Context**: Load data at runtime via tools, not pre-embedded
+- **Progressive Disclosure**: SKILL.md < 500 lines, references loaded on demand
+- **Compaction Survival**: CLAUDE.md documents accumulated learnings
+- **Token Budget Discipline**: Every paragraph must earn its tokens
+
+Added new "Context Engineering" section.
+
+#### 3. Freedom Levels (Anthropic Official)
+Match freedom level to task fragility:
+- **High freedom**: Code reviews, refactoring (multiple valid approaches)
+- **Medium freedom**: Feature implementation (preferred pattern, acceptable variation)
+- **Low freedom**: Database migrations, deployments (exact scripts required)
+
+Applied to Phase 8 task assignments.
+
+#### 4. Variance Inequality (Meta-Insight)
+When self-improvement stalls, strengthen the verifier, not the generator.
+A weaker generator + strong verifier > strong generator + weak verifier.
+Invest more tokens and logic in validation than generation.
+
+Added to Core Philosophy section.
+
+#### 5. Hooks as Deterministic Orchestration
+Convert behavioral instructions that MUST always happen from SKILL.md to hooks.
+LLM compliance is probabilistic; hook execution is guaranteed.
+PostToolUse hooks for auto-logging already in place.
+
+### Changed
+- Phase 8 enhanced with Planner-Worker-Judge hierarchical orchestration
+- Added Context Engineering section with token budget discipline
+- Added Freedom Levels to Phase 8 task assignments
+- Added Variance Inequality to Core Philosophy
+- Updated description with "hierarchical multi-agent orchestration"
+- Updated header to V3.17
+
+### Research Sources
+- [AI Coding Agents 2026: Coherence Through Orchestration](https://mikemason.ca/writing/ai-coding-agents-jan-2026/) - Planner-Worker-Judge pattern
+- [Anthropic Skill Authoring Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) - Freedom levels, progressive disclosure
+- [Self-Improving AI Agents: The 2026 Guide](https://o-mega.ai/articles/self-improving-ai-agents-the-2026-guide) - Variance inequality
+- [Claude Code Hooks Guide](https://code.claude.com/docs/en/hooks-guide) - Deterministic orchestration
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- Phase 8 automatically uses hierarchical orchestration
+- Context engineering patterns apply to all phases
+- Freedom levels guide task assignment granularity
+
+## [3.16.0] - 2026-04-01
+
+### Changed - Self-Iteration Upgrade (Simplicity Criterion)
+
+Applied the autoresearch simplicity criterion to Super-Skill itself.
+
+#### Diagnosed Issues
+1. **Duplicate section**: "2026 AI-Assisted Engineering Standards" table appeared twice (lines 14-31 and 88-104)
+2. **Stale version in duplicate**: Duplicate section header said V3.13 instead of V3.15
+3. **File bloat**: SKILL.md at 603 lines (recommended <500 lines per skill-creator)
+4. **Overlong description**: Frontmatter description was 600+ chars (recommended <200)
+5. **Version history bloat**: 120+ lines of version history in SKILL.md (belongs in CHANGELOG.md)
+6. **Skill count inconsistency**: Said "32+" in some places, 33 in others
+
+#### Changes Applied (KEEP decisions)
+| Change | Lines | Rationale |
+|--------|-------|-----------|
+| Removed duplicate standards table | -17 | Identical information, stale version |
+| Trimmed frontmatter description | -400 chars | 70% shorter, same information density |
+| Moved version history to CHANGELOG | -100 | Single source of truth |
+| Fixed skill count to 33+ | Consistency | All references now match |
+| Updated to V3.16 | Versioning | Current version |
+
+#### Metrics
+- SKILL.md: 603 → ~420 lines (30% reduction)
+- Frontmatter description: 600+ → ~200 chars (70% reduction)
+- Zero functionality lost (simplicity criterion: equal capability, simpler file)
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- All version history preserved in CHANGELOG.md
+- SKILL.md is leaner and faster to load
+
+## [3.15.0] - 2026-03-29
+
+### Added - Autonomous Experiment Loop (from karpathy/autoresearch)
+
+**MAJOR FEATURE**: Integrated autonomous experiment loop from Andrej Karpathy's autoresearch (58K+ stars)
+
+#### Source
+- [karpathy/autoresearch](https://github.com/karpathy/autoresearch) - Fully autonomous AI-driven research
+- 58,226 stars, 8,074 forks, MIT License
+- Core idea: AI agent runs unsupervised overnight, modifying code, running experiments, evaluating results
+
+#### Core Philosophy: Human Programs the Process, AI Executes
+- Human edits instructions (SKILL.md / program.md)
+- AI modifies implementation code
+- Infrastructure (tests, CI/CD, lint) is read-only ground truth
+
+#### The Infinite Experiment Loop
+```
+1. READ    → Analyze current git state and codebase
+2. MODIFY  → Implement experimental improvement
+3. COMMIT  → Git commit with experiment description
+4. TEST    → Run tests, capture output (NOT streamed)
+5. EVALUATE → Parse results against acceptance criteria
+6. DECIDE  → KEEP (improved) or DISCARD (worse/equal)
+7. LOG     → Record to experiments.tsv
+8. NEXT    → Advance to next experiment idea
+```
+
+#### Decision Rules
+| Outcome | Action | Criteria |
+|---------|--------|----------|
+| KEEP | Advance branch | Tests pass + metric improved + complexity justified |
+| DISCARD | git reset | Tests fail OR metric regressed OR unnecessary complexity |
+| CRASH | Fix or skip | Timeout/OOM/NaN → log error → next idea |
+
+#### Simplicity Criterion (from autoresearch)
+- Small improvement + ugly complexity = NOT worth it
+- Small improvement from **deleting code** = definitely keep
+- Equal performance + simpler code = keep
+- ~0 improvement + much simpler code = keep
+
+#### NEVER STOP Protocol
+- Do NOT pause to ask the human between experiments
+- The human might be asleep
+- If out of ideas: re-read code, combine approaches, try radical changes
+
+#### Git-as-Experiment-Tracker
+- Branch-per-session isolation (`autoresearch/session-N`)
+- Branch advances only on improvements
+- Failed experiments reverted via `git reset`
+- Experiment log in `experiments.tsv` (NOT git-tracked)
+
+#### Budget Constraints
+```bash
+TIME_BUDGET_PER_EXPERIMENT=300    # 5 min per experiment
+MAX_EXPERIMENTS_PER_SESSION=100   # ~100 experiments overnight
+MEMORY_BUDGET_MB=4096             # Max memory per experiment
+```
+
+#### New Sub-Skill: autonomous-loop
+- Created `skills/autonomous-loop/SKILL.md`
+- Infinite experiment loop with keep/discard cycles
+- Git-as-experiment-tracker pattern
+- Simplicity criterion and NEVER STOP protocol
+- Budget constraints and failure handling
+- Integration with Super-Skill Phase 8, 10, 12
+
+### Changed
+- Updated title to "Autonomous Development Orchestrator"
+- Enhanced description with autoresearch integration
+- Phase 8 now uses autonomous experiment loop
+- Phase 10 (Ralph Loop) enhanced as autonomous loop instance
+- Added autoresearch to 2026 AI-Assisted Engineering Standards table
+- Core Skills table now includes `autonomous-loop`
+- Total skills count: 32 → 33
+- Settings.json env expanded with autonomous loop configuration
+- Notification hook enhanced with experiment log review
+- Stop hook enhanced with experiment log update and simplicity assessment
+
+### Technical
+- New sub-skill: `skills/autonomous-loop/SKILL.md`
+- Updated `.claude/settings.json` with autonomous loop env vars
+- SKILL.md updated with Autonomous Experiment Loop section
+- Updated description and header to V3.15
+
+### Research Sources
+- [karpathy/autoresearch](https://github.com/karpathy/autoresearch) - 58K+ stars
+- Three-file design: prepare.py (infrastructure), train.py (agent-modifiable), program.md (instructions)
+- Key patterns: keep/discard loop, git-as-experiment-tracker, fixed budget single metric, simplicity criterion
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- New `autonomous-loop` skill available as sub-skill
+- Phase 8 automatically uses experiment loop when enabled
+- Configure via environment variables as needed
+- Set `AUTONOMOUS_LOOP_ENABLED=true` to enable
+
+## [3.14.0] - 2026-03-26
+
+### Added - Hooks-Based Auto-Execution System
+
+**MAJOR FEATURE**: Automatic execution via Claude Code hooks configuration
+
+#### Problem Solved
+Super-Skill V3.13 had three critical issues:
+1. Auto-update not running at startup
+2. Not strictly executing all development steps
+3. No automatic retrospective after task completion
+
+#### Solution: Hooks Configuration
+
+| Hook | Trigger | Action |
+|------|---------|--------|
+| **Notification** | Session start | Pre-Run Upgrade sequence |
+| **Stop** | Session end | Post-Run Evolution sequence |
+| **PostToolUse** | After tool execution | Logging and tracking |
+| **SubagentStop** | Subagent completion | Agent activity logging |
+
+#### New Files
+- `.claude/settings.json` - Complete hooks configuration
+- `scripts/phase-tracker.sh` - Phase tracking utility
+
+#### Hooks Configuration
+```json
+{
+  "hooks": {
+    "Notification": {
+      "handler": {
+        "type": "prompt",
+        "prompt": "Pre-Run Upgrade: 6-step sequence..."
+      }
+    },
+    "Stop": {
+      "handler": {
+        "type": "prompt",
+        "prompt": "Post-Run Evolution: 7-step sequence..."
+      }
+    },
+    "PostToolUse": [...],
+    "SubagentStop": {...}
+  }
+}
+```
+
+#### Automatic Execution Flow
+```
+NOTIFICATION HOOK (Session Start)
+└→ Pre-Run Upgrade: Version Check → Upgrade → Best Practices → Sync
+
+MAIN EXECUTION (14-Phase Workflow)
+└→ Phase 0-12: Vision → ... → Deployment
+
+STOP HOOK (Session End)
+└→ Post-Run Evolution: Retrospective → Signal Extraction → Evolution
+```
+
+#### Environment Variables
+```bash
+SUPER_SKILL_AUTO_UPDATE=true
+POST_RUN_EVOLUTION=true
+PRE_RUN_UPGRADE=true
+EVOLUTION_SIGNAL_THRESHOLD=12
+```
+
+### Changed
+- Updated description with hooks-based auto-execution capability
+- Enhanced startup sequence documentation with hooks integration
+- Updated version to V3.14
+
+### Technical
+- New file: `.claude/settings.json` - Hooks configuration
+- New file: `scripts/phase-tracker.sh` - Phase tracking utility
+- SKILL.md updated with Hooks System section
+- Full automatic workflow enforcement
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- Hooks configuration in `.claude/settings.json` is automatically loaded
+- Pre-run upgrade now executes via Notification hook at session start
+- Post-run evolution now executes via Stop hook at session end
+- All tool executions are logged for workflow tracking
+
 ## [3.13.0] - 2026-03-19
 
 ### Added - AI-Assisted Engineering Best Practices

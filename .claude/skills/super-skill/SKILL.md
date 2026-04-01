@@ -1,9 +1,9 @@
 ---
 name: super-skill
-description: AI-Native 14-phase development orchestrator with GEP Protocol self-evolution. TRIGGER when users request full-stack development, complex products, systematic execution, or comprehensive project delivery. Capabilities: (1) Visionary requirement elevation (Phase 0), (2) Autonomous 14-phase lifecycle, (3) GEP Protocol self-evolution, (4) Multi-agent orchestration (LangGraph/AutoGen/CrewAI), (5) MCP Protocol integration, (6) Context Hub curated docs, (7) Pre-run upgrade and best practices search, (8) Post-run review and self-evolution, (9) 6 cognitive modes (gstack), (10) High-agency execution methodology, (11) AI-assisted engineering patterns (Addy Osmani 2026), (12) 32+ integrated skills. Core workflow: Pre-Run Upgrade → Vision → Feasibility → GitHub Discovery → Skills Discovery → Knowledge Base → Requirements → Design → WBS → Development → QA → Ralph Loop → Deployment → Post-Run Evolution. Integrates 2026 GitHub trending standards from LangChain (122K★), AutoGen (52K★), CrewAI (30K★), MCP Protocol, Context Hub (Andrew Ng), gstack (Garry Tan/YC), and Anthropic Skills best practices.
+description: 14-phase autonomous development orchestrator with self-evolution. TRIGGER on full-stack development, complex products, or 24h unattended operation. Hooks-based auto-execution, experiment loop, GEP evolution, hierarchical multi-agent orchestration, 33+ skills. Workflow: Pre-Run Upgrade → 14 Phases → Post-Run Evolution.
 ---
 
-# Super-Skill V3.13: AI-Native Development Orchestrator
+# Super-Skill V3.17: Autonomous Development Orchestrator
 
 ## Core Philosophy
 
@@ -11,12 +11,15 @@ description: AI-Native 14-phase development orchestrator with GEP Protocol self-
 
 **Three Interaction Points**: Initial input → Requirement confirmation → Plan approval. After Phase 4: Zero user interaction required.
 
+**Variance Inequality**: When improvement stalls, strengthen the verifier, not the generator. Invest more in validation than generation.
+
 ## 2026 AI-Assisted Engineering Standards
 
-Super-Skill V3.13 integrates best practices from industry leaders:
+Super-Skill V3.15 integrates best practices from industry leaders:
 
 | Source | Author | Integration |
 |--------|--------|-------------|
+| [Autoresearch](https://github.com/karpathy/autoresearch) | Andrej Karpathy | Autonomous experiment loop |
 | [LLM Coding Workflow 2026](https://medium.com/@addyosmani/my-llm-coding-workflow-going-into-2026-52fe1681325e) | Addy Osmani | AI-assisted engineering patterns |
 | [Skill Authoring Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) | Anthropic | Skill creation guidelines |
 | [LangChain](https://github.com/langchain-ai/langchain) | 122K+ | Chain-based workflows |
@@ -29,13 +32,80 @@ Super-Skill V3.13 integrates best practices from industry leaders:
 
 **See**: [references/trending-standards.md](references/trending-standards.md) for complete integration patterns.
 
+## Autonomous Experiment Loop (karpathy/autoresearch)
+
+Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (58K+ stars). Enables 24-hour unattended autonomous development.
+
+### Core Principle: Human Programs the Process, AI Executes
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Human edits: SKILL.md / program.md (instructions)          │
+│  AI modifies: implementation code                           │
+│  Infrastructure: tests, CI/CD, lint (read-only ground truth)│
+└─────────────────────────────────────────────────────────────┘
+```
+
+### The Infinite Loop (runs until human interrupts)
+
+```
+1. READ    → Analyze current git state and codebase
+2. MODIFY  → Implement experimental improvement
+3. COMMIT  → Git commit with experiment description
+4. TEST    → Run tests, capture output
+5. EVALUATE → Parse results against acceptance criteria
+6. DECIDE  → KEEP (improved) or DISCARD (worse/equal)
+7. LOG     → Record to experiments.tsv
+8. NEXT    → Advance to next experiment idea
+```
+
+### Decision Rules
+
+| Outcome | Action | Criteria |
+|---------|--------|----------|
+| **KEEP** | Advance branch | Tests pass + metric improved + complexity justified |
+| **DISCARD** | `git reset` | Tests fail OR metric regressed OR unnecessary complexity |
+| **CRASH** | Fix or skip | Timeout/OOM/NaN → log error → next idea |
+
+### Simplicity Criterion
+- Small improvement + ugly complexity = NOT worth it
+- Small improvement from **deleting code** = definitely keep
+- Equal performance + simpler code = keep
+- ~0 improvement + much simpler code = keep
+
+### NEVER STOP Protocol
+- Do NOT pause to ask the human between experiments
+- The human might be asleep
+- If out of ideas: re-read code, combine approaches, try radical changes, search best practices
+
+### Budget Constraints
+```bash
+TIME_BUDGET_PER_EXPERIMENT=300    # 5 min per experiment
+MAX_EXPERIMENTS_PER_SESSION=100   # ~100 experiments overnight
+AUTONOMOUS_BRANCH_PREFIX="autoresearch"
+```
+
+**See**: [skills/autonomous-loop/SKILL.md](skills/autonomous-loop/SKILL.md) for full documentation.
+
+## Context Engineering
+
+Context engineering > prompt engineering. Ensure the agent sees the right information at the right time.
+
+### Three Patterns
+1. **Just-in-Time Context**: Load data at runtime via tools (grep, Read), not pre-embedded RAG
+2. **Progressive Disclosure**: SKILL.md < 500 lines, references loaded on demand, never nest deeper than 2 levels
+3. **Compaction Survival**: CLAUDE.md documents accumulated learnings; every mistake becomes a rule
+
+### Token Budget Discipline
+- SKILL.md frontmatter: < 200 chars (loaded every session)
+- SKILL.md body: < 500 lines (loaded on trigger)
+- Reference files: loaded on demand only
+- Each paragraph in SKILL.md must earn its tokens: "Does Claude really need this?"
+
 ## 14-Phase Workflow
 
 ### Phase 0: Visionary Elevation
-Transform requirements into AI-native vision through breakthrough thinking.
-- 7-step visionary process
-- Two-dimensional output (AI-Enhanced vs AI-Native)
-- Output: `VISION.md`, `AI_NATIVE_OPTIONS.md`
+Transform requirements into AI-native vision. Output: `VISION.md`, `AI_NATIVE_OPTIONS.md`
 - **See**: [darwin-evolution/SKILL.md](skills/darwin-evolution/SKILL.md) for GEP Protocol
 
 ### Phase 1: Feasibility Analysis
@@ -91,8 +161,30 @@ Set up project infrastructure.
 - **Skills**: `auto-git-create`, `cicd-automation`
 
 ### Phase 8: Autonomous Development
-Execute development with zero user interaction.
+Execute development with zero user interaction using hierarchical orchestration.
+
+**Hierarchical Orchestration** (Planner-Worker-Judge pattern):
+- **Planner** (Phase 6/7 output): Continuously explores codebase, creates tasks, assigns priorities
+- **Worker** (Autonomous Loop): Executes assigned tasks in isolated git worktrees
+- **Judge** (Phase 9/10): Evaluates results, decides keep/discard, triggers rollback
+
+```
+Planner → assigns task → Worker (worktree isolation)
+                         ↓ modify → test → evaluate
+Judge ← evaluates result ← Worker
+  ↓ keep: merge to branch
+  ↓ discard: git reset, next task
+```
+
+- **Autonomous Loop**: Modify → Test → Evaluate → Keep/Discard × N experiments
 - TDD-first, small commits, continuous integration
+- Git-as-experiment-tracker: branch advances only on improvements
+- Simplicity criterion: prefer deleting code over adding complexity
+- NEVER STOP protocol: continue until human interrupts
+- **Freedom Level by Task**:
+  - High freedom: Code reviews, refactoring (multiple valid approaches)
+  - Medium freedom: Feature implementation (preferred pattern, acceptable variation)
+  - Low freedom: Database migrations, deployments (exact scripts required)
 - **Skills by Task**:
   - Testing: `testing-automation`
   - APIs: `api-patterns`
@@ -126,11 +218,12 @@ Capture learnings and evolve Super-Skill.
 
 ## Skill Integration Matrix
 
-Super-Skill integrates 32+ specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
+Super-Skill integrates 33+ specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
 
 ### Core Skills (Always Available)
 | Skill | Purpose |
 |-------|---------|
+| `autonomous-loop` | Infinite experiment loop (karpathy/autoresearch) |
 | `pre-run-upgrade` | Sub-skill upgrade + best practices search |
 | `post-run-evolution` | Review + self-evolution after completion |
 | `darwin-evolution` | GEP Protocol self-evolution |
@@ -148,10 +241,58 @@ Super-Skill integrates 32+ specialized skills. See [references/skills-matrix.md]
 - **Phase 8-9**: `testing-automation`, `security-scanning`, `accessibility-a11y`
 - **Phase 12**: `darwin-evolution`, `capability-evolver`
 
+## Hooks System (V3.14)
+
+Super-Skill V3.14 implements automatic execution via Claude Code hooks:
+
+### Hooks Configuration
+
+| Hook | Trigger | Action |
+|------|---------|--------|
+| **Notification** | Session start | Pre-Run Upgrade sequence |
+| **Stop** | Session end | Post-Run Evolution sequence |
+| **PostToolUse** | After tool execution | Logging and tracking |
+| **SubagentStop** | Subagent completion | Agent activity logging |
+
+### Automatic Execution Flow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  NOTIFICATION HOOK (Session Start)                      │
+│  └→ Pre-Run Upgrade: Version Check → Upgrade → Sync     │
+├─────────────────────────────────────────────────────────┤
+│  MAIN EXECUTION (14-Phase Workflow)                     │
+│  └→ Phase 0-12: Vision → ... → Deployment              │
+├─────────────────────────────────────────────────────────┤
+│  STOP HOOK (Session End)                                │
+│  └→ Post-Run Evolution: Retrospective → Evolution       │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Configuration File
+
+Hooks are configured in `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "Notification": { "handler": { "type": "prompt", "prompt": "..." } },
+    "Stop": { "handler": { "type": "prompt", "prompt": "..." } },
+    "PostToolUse": [...],
+    "SubagentStop": {...}
+  },
+  "env": {
+    "SUPER_SKILL_AUTO_UPDATE": "true",
+    "POST_RUN_EVOLUTION": "true",
+    "PRE_RUN_UPGRADE": "true"
+  }
+}
+```
+
 ## Startup Sequence
 
 ```
-STEP -1: Pre-Run Upgrade → Upgrade sub-skills + search best practices
+STEP -1: Pre-Run Upgrade → Upgrade sub-skills + search best practices (HOOK)
 STEP 0: Auto-Update → Self-update Super-Skill and all dependent skills
 STEP 1: Version Check → python scripts/auto_update.py
 STEP 2: Evolver Check → python scripts/check_evolver.py
@@ -308,8 +449,9 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 
 ## Sub-Skills
 
-32 specialized skills in `skills/` directory. Key sub-skills:
+33 specialized skills in `skills/` directory. Key sub-skills:
 
+- **[autonomous-loop](skills/autonomous-loop/SKILL.md)** - Infinite experiment loop (karpathy/autoresearch)
 - **[pre-run-upgrade](skills/pre-run-upgrade/SKILL.md)** - Sub-skill upgrade + best practices search
 - **[post-run-evolution](skills/post-run-evolution/SKILL.md)** - Review + self-evolution after completion
 - **[darwin-evolution](skills/darwin-evolution/SKILL.md)** - GEP Protocol engine
@@ -346,99 +488,18 @@ Phase 12: Evolution → Learn and improve
 
 ## Version
 
-**V3.13.0** - 2026-03-19
-- **AI-Assisted Engineering Best Practices** (from Addy Osmani 2026):
-  - 10 core principles for LLM coding workflow
-  - "Waterfall in 15 minutes" planning pattern
-  - Context packing checklist
-  - Iterative chunks pattern
-  - Human-in-the-loop verification
-  - Version control as safety net
-  - Customization with rules and examples
-  - Automation as force multiplier
-- **Anthropic Skill Authoring Best Practices**:
-  - Concise is key principle
-  - Degrees of freedom matching
-  - Progressive disclosure patterns
-  - Validation loops
-  - Evaluation-driven development
-- **New Reference Files**:
-  - `references/best-practices-2026.md` - Comprehensive best practices
-  - Updated `references/trending-standards.md` - Latest 2026 standards
-- Total: 32 integrated skills
+**V3.17.0** - 2026-04-01
+- **Hierarchical Orchestration**: Planner-Worker-Judge pattern for Phase 8
+- **Context Engineering**: JIT context, progressive disclosure, compaction survival
+- **Freedom Levels**: High/Medium/Low freedom matched to task fragility
+- **Variance Inequality**: Strengthen verifier, not generator, when improvement stalls
+- **Token Budget Discipline**: Every paragraph must earn its tokens
 
-**V3.12.0** - 2026-03-14
-- **Pre-Run Upgrade System**:
-  - Sub-skill version checking and auto-upgrade
-  - GitHub trending best practices search
-  - Pattern integration workflow
-  - Context Hub registry sync
-  - Evolution learnings sync from previous sessions
-  - New sub-skill: `pre-run-upgrade`
-- **Post-Run Evolution System**:
-  - 7-step evolution sequence after project completion
-  - Signal extraction (defensive, opportunity, stagnation)
-  - Quality dimension scoring
-  - Mutation build and apply with safety constraints
-  - Capsule packaging of successful patterns
-  - Cross-session learning sync
-  - New sub-skill: `post-run-evolution`
-- Total: 32 integrated skills
+**V3.16.0** - 2026-04-01
+- Self-iteration: removed duplicates, trimmed frontmatter, consolidated version history
 
-**V3.11.0** - 2026-03-14
-- **High-Agency Methodology** (from pua/tanweai):
-  - Three Iron Rules: Exhaust options, Act before asking, Take initiative
-  - Four-level pressure escalation (L1-L4)
-  - Five-step debugging: Smell → Elevate → Mirror → Execute → Retrospective
-  - Proactivity Matrix (3.25-4.0 scale)
-  - Recovery Protocol and Quality Compass
-  - Benchmark: +36% fix count, +65% verification, +50% tool calls
-- **Cognitive Modes** (from gstack/Garry Tan/YC):
-  - CEO Mode: 10-star product vision
-  - Eng Manager Mode: Architecture, edge cases
-  - Paranoid Reviewer Mode: Production bug hunting
-  - Release Engineer Mode: Deploy automation
-  - QA Engineer Mode: Browser automation (Playwright)
-  - Engineering Manager Mode: Retrospectives
-- New sub-skills: `high-agency`, `cognitive-modes`
-- Total: 30 integrated skills
-
-**V3.10.0** - 2026-03-14
-- **Context Hub Integration** (Andrew Ng):
-  - Curated, versioned API documentation
-  - `chub search/get/annotate/feedback` workflow
-  - Self-improving documentation loop
-  - New sub-skill: `get-api-docs`
-- **Auto-Update Mechanism**:
-  - Self-update before each development session
-  - Automatic dependent skills updates
-  - Context Hub registry refresh
-  - Update logging and configuration
-- Total: 28 integrated skills
-
-**V3.9.0** - 2026-03-14
-- **GitHub Trending Standards Integration**:
-  - LangChain (122K★) chain-based workflow patterns
-  - AutoGen (52K★) multi-agent conversation patterns
-  - LangGraph (24K★) graph-based orchestration
-  - CrewAI (30K★) role-based task delegation
-  - MCP Protocol 2026 Roadmap integration
-  - Anthropic Skills best practices (15-30 min build)
-- New reference file: `references/trending-standards.md`
-- Enhanced multi-agent orchestration with production patterns
-- MCP tool discovery and invocation patterns
-- OpenTelemetry observability integration
-
-**V3.8.1** - 2026-03-11
-- skill-creator best practices refactor (82% token reduction)
-- Progressive disclosure pattern implementation
-- SKILL.md reduced from 2000+ to 256 lines
-
-**V3.8.0** - 2026-03-03
-- GEP Protocol integration from autogame-17/evolver
-- Enhanced darwin-evolution skill V2.0
-- 5 default genes, signal extraction, personality evolution
+Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V3.13: AI-Native Development Orchestrator with AI-Assisted Engineering Best Practices*
+*Super-Skill V3.17: Autonomous Development Orchestrator with Context Engineering*
