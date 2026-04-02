@@ -5,6 +5,42 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.18.0] - 2026-04-02
+
+### Changed - Self-Iteration: Simplicity Criterion Applied to Itself
+
+Applied the autoresearch simplicity criterion to Super-Skill's own SKILL.md.
+
+#### Diagnosed Issues
+| # | Issue | Type | Severity |
+|---|-------|------|----------|
+| 1 | Stale "V3.15" reference in standards header | Outdated | HIGH |
+| 2 | Stale "V3.14" reference in hooks header | Outdated | HIGH |
+| 3 | Stale "V3.10" reference in auto-update header | Outdated | MEDIUM |
+| 4 | Redundant JSON config block (already in settings.json) | Duplication | HIGH |
+| 5 | Redundant Context Hub commands (already in sub-skill) | Duplication | MEDIUM |
+| 6 | Redundant auto-update env vars (already in settings.json) | Duplication | MEDIUM |
+| 7 | Frontmatter 355 chars (recommended <200) | Bloat | MEDIUM |
+
+#### Changes Applied
+| Change | Lines Saved | Rationale |
+|--------|------------|-----------|
+| Fixed 3 stale version refs | 0 (correctness) | Accuracy |
+| Removed JSON config block | -13 | Lives in settings.json |
+| Removed Context Hub commands | -12 | Lives in sub-skill |
+| Removed auto-update config | -10 | Lives in settings.json |
+| Trimmed frontmatter | -158 chars (44%) | Token budget |
+
+#### Metrics
+- SKILL.md: 505 → 459 lines (**9% reduction**)
+- Frontmatter: 355 → 197 chars (**44% reduction**)
+- Zero functionality lost (simplicity criterion: equal capability, simpler file)
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- All removed content preserved in settings.json or sub-skill files
+- SKILL.md is leaner and faster to load
+
 ## [3.17.0] - 2026-04-01
 
 ### Added - Research-Driven Self-Iteration

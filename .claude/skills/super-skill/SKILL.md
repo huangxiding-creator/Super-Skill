@@ -1,9 +1,9 @@
 ---
 name: super-skill
-description: 14-phase autonomous development orchestrator with self-evolution. TRIGGER on full-stack development, complex products, or 24h unattended operation. Hooks-based auto-execution, experiment loop, GEP evolution, hierarchical multi-agent orchestration, 33+ skills. Workflow: Pre-Run Upgrade → 14 Phases → Post-Run Evolution.
+description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, 33+ skills.
 ---
 
-# Super-Skill V3.17: Autonomous Development Orchestrator
+# Super-Skill V3.18: Autonomous Development Orchestrator
 
 ## Core Philosophy
 
@@ -15,7 +15,7 @@ description: 14-phase autonomous development orchestrator with self-evolution. T
 
 ## 2026 AI-Assisted Engineering Standards
 
-Super-Skill V3.15 integrates best practices from industry leaders:
+Super-Skill integrates best practices from industry leaders:
 
 | Source | Author | Integration |
 |--------|--------|-------------|
@@ -241,9 +241,9 @@ Super-Skill integrates 33+ specialized skills. See [references/skills-matrix.md]
 - **Phase 8-9**: `testing-automation`, `security-scanning`, `accessibility-a11y`
 - **Phase 12**: `darwin-evolution`, `capability-evolver`
 
-## Hooks System (V3.14)
+## Hooks System
 
-Super-Skill V3.14 implements automatic execution via Claude Code hooks:
+Automatic execution via Claude Code hooks:
 
 ### Hooks Configuration
 
@@ -271,23 +271,7 @@ Super-Skill V3.14 implements automatic execution via Claude Code hooks:
 
 ### Configuration File
 
-Hooks are configured in `.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "Notification": { "handler": { "type": "prompt", "prompt": "..." } },
-    "Stop": { "handler": { "type": "prompt", "prompt": "..." } },
-    "PostToolUse": [...],
-    "SubagentStop": {...}
-  },
-  "env": {
-    "SUPER_SKILL_AUTO_UPDATE": "true",
-    "POST_RUN_EVOLUTION": "true",
-    "PRE_RUN_UPGRADE": "true"
-  }
-}
-```
+Configured in `.claude/settings.json`. See the file for full hook definitions and env vars.
 
 ## Startup Sequence
 
@@ -317,56 +301,23 @@ Executes before each session to ensure maximum capability readiness:
 
 **See**: [skills/pre-run-upgrade/SKILL.md](skills/pre-run-upgrade/SKILL.md) for full documentation.
 
-### Auto-Update Mechanism (V3.10)
+### Auto-Update Mechanism
 
-Super-Skill automatically updates before each development session:
-
-```bash
-# Auto-update sequence
-1. Check Super-Skill version from GitHub
-2. If update available → Pull latest changes
-3. Check all dependent skills for updates
-4. Update skills with: npx skills update <skill-name>
-5. Refresh Context Hub registry: chub update
-6. Log update status to ~/.claude/logs/super-skill-updates.log
-```
-
-**Configuration**:
-```bash
-SUPER_SKILL_AUTO_UPDATE=true       # Enable auto-update (default: true)
-SUPER_SKILL_UPDATE_CHECK=true      # Check for updates (default: true)
-SUPER_SKILL_SKILLS_UPDATE=true     # Update dependent skills (default: true)
-CHUB_AUTO_UPDATE=true              # Update Context Hub registry (default: true)
-```
+Auto-updates before each session: check version → pull → update skills → refresh Context Hub.
+Configure via env vars in `.claude/settings.json`.
 
 ## Context Hub Integration
 
-[Context Hub](https://github.com/andrewyng/context-hub) by Andrew Ng provides curated, versioned API documentation.
-
-### Quick Commands
-```bash
-chub search "react hooks"          # Search for docs
-chub get <doc-id> --lang ts        # Fetch with language preference
-chub annotate <doc-id> "note"      # Add persistent local notes
-chub feedback <doc-id> up|down     # Rate doc quality
-chub update                        # Refresh cached registry
-```
+[Context Hub](https://github.com/andrewyng/context-hub) by Andrew Ng provides curated API docs.
 
 ### Phase Integration
-| Phase | Context Hub Usage |
-|-------|-------------------|
+| Phase | Usage |
+|-------|-------|
 | Phase 3 | Fetch library docs for knowledge base |
 | Phase 5 | Get API patterns and architecture docs |
 | Phase 8 | Quick reference during development |
 
-### Self-Improving Loop
-```
-Search → Get → Apply → Annotate → Feedback
-         ↑_________________________|
-         Annotations persist across sessions
-```
-
-**See**: [skills/get-api-docs/SKILL.md](skills/get-api-docs/SKILL.md) for full Context Hub integration.
+**See**: [skills/get-api-docs/SKILL.md](skills/get-api-docs/SKILL.md) for full integration.
 
 ## Phase Transition Rules
 
@@ -488,18 +439,21 @@ Phase 12: Evolution → Learn and improve
 
 ## Version
 
-**V3.17.0** - 2026-04-01
-- **Hierarchical Orchestration**: Planner-Worker-Judge pattern for Phase 8
-- **Context Engineering**: JIT context, progressive disclosure, compaction survival
-- **Freedom Levels**: High/Medium/Low freedom matched to task fragility
-- **Variance Inequality**: Strengthen verifier, not generator, when improvement stalls
-- **Token Budget Discipline**: Every paragraph must earn its tokens
+**V3.18.0** - 2026-04-02
+- **Self-Iteration (simplicity criterion applied to itself)**:
+  - Removed 3 stale version references (V3.10, V3.14, V3.15)
+  - Removed redundant JSON config block (lives in settings.json)
+  - Removed redundant Context Hub commands (lives in sub-skill)
+  - Removed redundant auto-update config (lives in settings.json)
+  - Trimmed frontmatter from 355 → 197 chars (44% shorter)
+  - File reduced from 505 → ~460 lines (9% shorter)
+  - Zero functionality lost: equal capability, simpler file
 
-**V3.16.0** - 2026-04-01
-- Self-iteration: removed duplicates, trimmed frontmatter, consolidated version history
+**V3.17.0** - 2026-04-01
+- Hierarchical Orchestration, Context Engineering, Freedom Levels, Variance Inequality
 
 Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V3.17: Autonomous Development Orchestrator with Context Engineering*
+*Super-Skill V3.18: Autonomous Development Orchestrator — Self-Iterating*
