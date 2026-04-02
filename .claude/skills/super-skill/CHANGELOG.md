@@ -5,6 +5,68 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.19.0] - 2026-04-02
+
+### Added - cc-harness-skills Integration (from LearnPrompt/cc-harness-skills)
+
+Integrated 3 core skills and 6 key patterns from [cc-harness-skills](https://github.com/LearnPrompt/cc-harness-skills).
+
+#### New Sub-Skills
+
+##### verification-gate
+Read-only challenge pass after implementation. Distinguishes "verified" from merely "claimed done."
+- Three-state verdict: VERIFIED / UNVERIFIED / FAILED
+- Checks: does change match request? did validation actually run? any regressions?
+- Rules: read-only by default, findings before summary, never overstate
+- Integration: wire as post-implementation gate before marking tasks complete
+
+##### memory-pipeline
+Dual-phase memory system combining dream-memory + memory-extractor from cc-harness-skills.
+- Phase A (Extract): 4 typed categories — user, feedback, project, reference
+- Phase B (Consolidate): dedup, prune stale entries, reindex MEMORY.md
+- Rules: MEMORY.md is an INDEX (never content dump, cap 200 lines / 25KB)
+- Rules: never store code-state facts that can drift (file paths, function names)
+- Rules: organize by topic not chronology, update existing before creating new
+
+##### context-compressor
+9-part structured continuation summary for long sessions and handoffs.
+- Sections: Request → Concepts → Files → Errors → Problem Solving → User Messages → Pending → Current → Next Step
+- Critical rule: preserve ALL user messages — corrections changed direction of work
+- Integration: use before agent-to-agent handoffs, context window pressure, session pause/resume
+
+#### Key Patterns Adopted
+
+| Pattern | Source Skill | Application |
+|---------|-------------|-------------|
+| **Index Not Dump** | dream-memory | MEMORY.md stays concise index, never content dump |
+| **Durable vs Ephemeral** | memory-extractor | Never store code-state facts that can drift |
+| **Three-State Verdict** | verification-gate | verified/unverified/failed, not just pass/fail |
+| **Research-Synthesis-Implementation-Verification** | swarm-coordinator | 4-phase pipeline prevents premature implementation |
+| **9-Part Handoff** | context-compressor | Structured session continuation artifact |
+| **Proactive with Expiry** | kairos-lite | Background tasks expire after 7 days default |
+
+#### Added to Core Philosophy
+- **Index Not Dump**: MEMORY.md is a concise index. Never store code-state facts that can drift.
+
+### Changed
+- Core Skills table: 11 → 14 entries (added verification-gate, memory-pipeline, context-compressor)
+- Total skills count: 33 → 36
+- Standards table: added cc-harness-skills (LearnPrompt)
+- Frontmatter description updated with new capabilities
+- Updated header to V3.19
+
+### Research Sources
+- [cc-harness-skills](https://github.com/LearnPrompt/cc-harness-skills) - LearnPrompt
+- 6 skills: dream-memory, memory-extractor, verification-gate, swarm-coordinator, structured-context-compressor, kairos-lite
+- Key patterns: prompt+script separation, structured output contracts, read-only by default, durable vs ephemeral
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- 3 new sub-skills available immediately
+- Verification gate can be wired as a post-implementation hook
+- Memory pipeline enhances existing memory management
+- Context compressor useful for long sessions
+
 ## [3.18.0] - 2026-04-02
 
 ### Changed - Self-Iteration: Simplicity Criterion Applied to Itself

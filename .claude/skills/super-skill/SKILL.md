@@ -1,9 +1,9 @@
 ---
 name: super-skill
-description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, 33+ skills.
+description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, verification gates, memory pipeline, context compression, 36+ skills.
 ---
 
-# Super-Skill V3.18: Autonomous Development Orchestrator
+# Super-Skill V3.19: Autonomous Development Orchestrator
 
 ## Core Philosophy
 
@@ -11,7 +11,9 @@ description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER o
 
 **Three Interaction Points**: Initial input → Requirement confirmation → Plan approval. After Phase 4: Zero user interaction required.
 
-**Variance Inequality**: When improvement stalls, strengthen the verifier, not the generator. Invest more in validation than generation.
+**Variance Inequality**: When improvement stalls, strengthen the verifier, not the generator.
+
+**Index Not Dump**: MEMORY.md is a concise index. Never store code-state facts that can drift.
 
 ## 2026 AI-Assisted Engineering Standards
 
@@ -20,6 +22,7 @@ Super-Skill integrates best practices from industry leaders:
 | Source | Author | Integration |
 |--------|--------|-------------|
 | [Autoresearch](https://github.com/karpathy/autoresearch) | Andrej Karpathy | Autonomous experiment loop |
+| [cc-harness-skills](https://github.com/LearnPrompt/cc-harness-skills) | LearnPrompt | Verification gates, memory pipeline, context compression |
 | [LLM Coding Workflow 2026](https://medium.com/@addyosmani/my-llm-coding-workflow-going-into-2026-52fe1681325e) | Addy Osmani | AI-assisted engineering patterns |
 | [Skill Authoring Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) | Anthropic | Skill creation guidelines |
 | [LangChain](https://github.com/langchain-ai/langchain) | 122K+ | Chain-based workflows |
@@ -223,6 +226,9 @@ Super-Skill integrates 33+ specialized skills. See [references/skills-matrix.md]
 ### Core Skills (Always Available)
 | Skill | Purpose |
 |-------|---------|
+| `verification-gate` | Read-only challenge pass (cc-harness-skills) |
+| `memory-pipeline` | Extract + consolidate memories (cc-harness-skills) |
+| `context-compressor` | 9-part session handoff (cc-harness-skills) |
 | `autonomous-loop` | Infinite experiment loop (karpathy/autoresearch) |
 | `pre-run-upgrade` | Sub-skill upgrade + best practices search |
 | `post-run-evolution` | Review + self-evolution after completion |
@@ -400,8 +406,11 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 
 ## Sub-Skills
 
-33 specialized skills in `skills/` directory. Key sub-skills:
+36 specialized skills in `skills/` directory. Key sub-skills:
 
+- **[verification-gate](skills/verification-gate/SKILL.md)** - Read-only challenge pass (cc-harness-skills)
+- **[memory-pipeline](skills/memory-pipeline/SKILL.md)** - Extract + consolidate memories (cc-harness-skills)
+- **[context-compressor](skills/context-compressor/SKILL.md)** - 9-part session handoff (cc-harness-skills)
 - **[autonomous-loop](skills/autonomous-loop/SKILL.md)** - Infinite experiment loop (karpathy/autoresearch)
 - **[pre-run-upgrade](skills/pre-run-upgrade/SKILL.md)** - Sub-skill upgrade + best practices search
 - **[post-run-evolution](skills/post-run-evolution/SKILL.md)** - Review + self-evolution after completion
@@ -439,21 +448,18 @@ Phase 12: Evolution → Learn and improve
 
 ## Version
 
-**V3.18.0** - 2026-04-02
-- **Self-Iteration (simplicity criterion applied to itself)**:
-  - Removed 3 stale version references (V3.10, V3.14, V3.15)
-  - Removed redundant JSON config block (lives in settings.json)
-  - Removed redundant Context Hub commands (lives in sub-skill)
-  - Removed redundant auto-update config (lives in settings.json)
-  - Trimmed frontmatter from 355 → 197 chars (44% shorter)
-  - File reduced from 505 → ~460 lines (9% shorter)
-  - Zero functionality lost: equal capability, simpler file
+**V3.19.0** - 2026-04-02
+- **cc-harness-skills Integration** (from LearnPrompt/cc-harness-skills):
+  - `verification-gate`: Read-only challenge pass, three-state verdict (verified/unverified/failed)
+  - `memory-pipeline`: Dual-phase memory (extract 4 types + consolidate nightly)
+  - `context-compressor`: 9-part structured session handoff
+- **Key Patterns Adopted**: Index-not-dump for MEMORY.md, durable-vs-ephemeral distinction, research-synthesis-implementation-verification pipeline, proactive with expiry
+- Core skills: 14 (was 11), Total: 36+ skills
 
-**V3.17.0** - 2026-04-01
-- Hierarchical Orchestration, Context Engineering, Freedom Levels, Variance Inequality
+**V3.18.0** - 2026-04-02 - Self-iteration: removed stale refs, trimmed redundancy
 
 Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V3.18: Autonomous Development Orchestrator — Self-Iterating*
+*Super-Skill V3.19: Autonomous Development Orchestrator — cc-harness-skills Integrated*
