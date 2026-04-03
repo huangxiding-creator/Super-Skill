@@ -1,13 +1,13 @@
 ---
 name: high-agency
-description: High-agency execution methodology with iron rules and pressure escalation. TRIGGER when facing blockers, repeated failures, or complex debugging. Capabilities: (1) Three Iron Rules - exhaust options, act before asking, take initiative, (2) Four-level pressure escalation, (3) Five-step debugging methodology, (4) Proactivity Matrix, (5) Recovery Protocol with Quality Compass. Based on corporate PUA rhetoric adapted for AI persistence.
+description: High-agency execution with iron rules, pressure escalation, methodology router, and anti-rationalization. TRIGGER on blockers, failures, debugging. +36% fix count, +65% verification. 13 corporate flavors with task-type routing.
 ---
 
-# High-Agency Execution Methodology
+# High-Agency V2: Execution Methodology
 
-## Overview
+Benchmark: **+36% fix count, +65% verification, +50% tool calls, +50% hidden issue discovery.**
 
-Derived from high-performance agent research, this methodology transforms passive AI behavior into proactive, relentless execution. **Benchmark: +36% fix count, +65% verification, +50% tool calls, +50% hidden issue discovery.**
+Source: [tanweai/pua](https://github.com/tanweai/pua)
 
 ## Three Iron Rules
 
@@ -156,6 +156,74 @@ Decision framework for trade-offs:
 | **T2** | Some History | Spot-check outputs, normal explanations |
 | **T3** | High Trust | Autonomy on similar tasks, brief confirmations |
 
+## Iceberg Rule
+
+Fix one bug → scan for the pattern across the codebase. One problem in, one category out. Never fix just the surface issue.
+
+## Owner Awareness Four Questions
+
+On receiving ANY task:
+1. **Root cause?** — Not "how to pass" but "why did this happen"
+2. **Blast radius?** — After changing A, will B and C break?
+3. **Prevention?** — Can we add a check so this class of problem never recurs?
+4. **Evidence?** — Is judgment data-backed or guessing?
+
+## Methodology Router
+
+| Task Type | Flavor | Core Method |
+|-----------|--------|-------------|
+| Debug/Bug fix | Huawei | RCA root cause + Blue Army self-attack |
+| Build new feature | Musk | Question→Delete→Simplify→Accelerate→Automate |
+| Code review | Jobs | Subtraction first + pixel-perfect + DRI |
+| Research/Search | Baidu | Search is the first step |
+| Architecture | Amazon | Working Backwards + 6-Pager |
+| Performance | ByteDance | A/B Test + data-driven |
+| Deploy/Ops | Alibaba | Set goal→track process→get results |
+| Ambiguous | Alibaba | Closed loop (default) |
+
+### Failure Mode Switching
+
+| Failure Mode | Signal | Switch Chain |
+|-------------|--------|-------------|
+| Spinning | Repeatedly tweaking params | Musk → Pinduoduo → Huawei |
+| Giving up | "Suggest manual" / "Out of scope" | Netflix → Huawei → Musk |
+| Poor quality | Surface completion | Jobs → Xiaomi → Netflix |
+| Guessing | Concluding from memory | Baidu → Amazon → ByteDance |
+| Passive | Fix and stop | JD → Meituan → Alibaba |
+| Empty claims | No verification run | ByteDance → JD → Alibaba |
+
+## Anti-Rationalization Table
+
+| AI Excuse | Counter | Escalation |
+|-----------|---------|------------|
+| "Beyond my capabilities" | "Did you exhaust everything?" | L1 |
+| "Suggest user handle manually" | "You lack owner awareness." | L3 |
+| "Tried everything" | "Search web? Read source? Methodology?" | L2 |
+| "Probably environment issue" | "Did you verify? Or guessing?" | L2 |
+| "Need more context" | "You have tools. Investigate first." | L2 |
+| "I cannot solve" | "You might be about to graduate." | L4 |
+| "Close enough" | "Evidence? Build? Tests?" | L3 |
+
+## Dignified Exit Protocol
+
+After completing all 7 checklist items and problem remains:
+1. Verified facts gathered
+2. Eliminated possibilities listed
+3. Problem scope narrowed
+4. Next directions recommended
+5. Handoff information complete
+
+"This is not 'I cannot.' This is 'the problem boundary is here.'"
+
+## Calibration Block
+
+Every task gets priority tiers:
+- **must**: Non-negotiable (fix the bug, pass tests)
+- **should**: High value (add logging, improve error messages)
+- **could**: Nice to have (refactor, optimize)
+
+Prevents over-investment in low-priority work.
+
 ## Integration with Super-Skill
 
 | Phase | Usage |
@@ -185,10 +253,16 @@ Smell → Elevate → Mirror → Execute → Retrospective
 
 ## Version
 
+**V2.0.0** - 2026-04-02
+- **PUA V2/V3 Integration** (from tanweai/pua):
+  - Methodology Router: 8 task types → 7 corporate flavors
+  - Failure Mode Switching: 6 failure patterns with flavor chains
+  - Anti-Rationalization Table: 7 AI excuses with counter-arguments
+  - Iceberg Rule: fix one bug, scan for category
+  - Owner Awareness Four Questions
+  - Calibration Block: must/should/could tiers
+  - Dignified Exit Protocol
+
 **V1.0.0** - 2026-03-14
-- Three Iron Rules integration
-- Four-level pressure escalation
-- Five-step debugging methodology
-- Proactivity Matrix (3.25-4.0 scale)
-- High-Agency v2 Recovery Protocol
-- Quality Compass and Trust Levels
+- Three Iron Rules, Pressure Escalation L1-L4
+- Five-step debugging, Proactivity Matrix, Recovery Protocol

@@ -5,6 +5,65 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.20.0] - 2026-04-03
+
+### Added - PUA V2/V3 Integration (from tanweai/pua)
+
+Integrated high-agency methodology V2/V3 from [tanweai/pua](https://github.com/tanweai/pua).
+
+#### Methodology Router
+8 task types mapped to 7 corporate methodology flavors:
+
+| Task Type | Flavor | Core Method |
+|-----------|--------|-------------|
+| Debug/Bug fix | Huawei | RCA root cause + Blue Army self-attack |
+| Build new feature | Musk | Question→Delete→Simplify→Accelerate→Automate |
+| Code review | Jobs | Subtraction first + pixel-perfect + DRI |
+| Research/Search | Baidu | Search is the first step |
+| Architecture | Amazon | Working Backwards + 6-Pager |
+| Performance | ByteDance | A/B Test + data-driven |
+| Deploy/Ops | Alibaba | Set goal→track process→get results |
+| Ambiguous | Alibaba | Closed loop (default) |
+
+#### Failure Mode Switching
+6 failure patterns with automatic flavor switching chains:
+- Spinning → Musk → Pinduoduo → Huawei
+- Giving up → Netflix → Huawei → Musk
+- Poor quality → Jobs → Xiaomi → Netflix
+- Guessing → Baidu → Amazon → ByteDance
+- Passive → JD → Meituan → Alibaba
+- Empty claims → ByteDance → JD → Alibaba
+
+#### Anti-Rationalization Table
+7 AI excuses with counter-arguments and escalation levels. Prevents "I can't", "suggest manual", "beyond capabilities" rationalizations.
+
+#### Additional Patterns
+- **Iceberg Rule**: Fix one bug → scan for pattern across codebase
+- **Owner Awareness Four Questions**: Root cause? Blast radius? Prevention? Evidence?
+- **Calibration Block**: must/should/could priority tiers per task
+- **Dignified Exit Protocol**: After exhausting all options, provide structured handoff
+
+### Changed
+- `high-agency` skill upgraded to V2.0.0 with full PUA V2/V3 content
+- Core Skills table entry updated for high-agency V2
+- Phase 8 enhanced with Iceberg Rule and Anti-Rationalization
+- Standards table: added PUA (tanweai/pua)
+- Frontmatter description updated with high-agency V2
+- Updated header to V3.20
+
+### Research Sources
+- [tanweai/pua](https://github.com/tanweai/pua) - High-agency AI methodology
+- Methodology router: 8 task types → 7 corporate flavors
+- Failure mode switching: 6 patterns with automatic flavor switching
+- Anti-rationalization: 7 AI excuses with counter-arguments
+- Iceberg rule, owner awareness, calibration block, dignified exit
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- high-agency V2 replaces V1 seamlessly
+- Methodology router applies automatically based on task type
+- Failure mode switching triggers on repeated failures
+
 ## [3.19.0] - 2026-04-02
 
 ### Added - cc-harness-skills Integration (from LearnPrompt/cc-harness-skills)

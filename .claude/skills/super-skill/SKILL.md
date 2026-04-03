@@ -1,9 +1,9 @@
 ---
 name: super-skill
-description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, verification gates, memory pipeline, context compression, 36+ skills.
+description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, verification gates, memory pipeline, context compression, high-agency V2, 36+ skills.
 ---
 
-# Super-Skill V3.19: Autonomous Development Orchestrator
+# Super-Skill V3.20: Autonomous Development Orchestrator
 
 ## Core Philosophy
 
@@ -23,6 +23,7 @@ Super-Skill integrates best practices from industry leaders:
 |--------|--------|-------------|
 | [Autoresearch](https://github.com/karpathy/autoresearch) | Andrej Karpathy | Autonomous experiment loop |
 | [cc-harness-skills](https://github.com/LearnPrompt/cc-harness-skills) | LearnPrompt | Verification gates, memory pipeline, context compression |
+| [PUA](https://github.com/tanweai/pua) | tanweai | High-agency V2: methodology router, anti-rationalization, iceberg rule |
 | [LLM Coding Workflow 2026](https://medium.com/@addyosmani/my-llm-coding-workflow-going-into-2026-52fe1681325e) | Addy Osmani | AI-assisted engineering patterns |
 | [Skill Authoring Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) | Anthropic | Skill creation guidelines |
 | [LangChain](https://github.com/langchain-ai/langchain) | 122K+ | Chain-based workflows |
@@ -180,6 +181,8 @@ Judge ← evaluates result ← Worker
 ```
 
 - **Autonomous Loop**: Modify → Test → Evaluate → Keep/Discard × N experiments
+- **Iceberg Rule**: Fix one bug → scan for pattern across codebase. One problem in, one category out
+- **Anti-Rationalization**: Never accept "I can't" without evidence of exhausting all options
 - TDD-first, small commits, continuous integration
 - Git-as-experiment-tracker: branch advances only on improvements
 - Simplicity criterion: prefer deleting code over adding complexity
@@ -238,7 +241,7 @@ Super-Skill integrates 33+ specialized skills. See [references/skills-matrix.md]
 | `brainstorming` | Systematic exploration |
 | `systematic-debugging` | 4-phase debugging |
 | `get-api-docs` | Context Hub curated docs |
-| `high-agency` | Iron rules + pressure escalation |
+| `high-agency` | Iron rules + methodology router + anti-rationalization (PUA V2) |
 | `cognitive-modes` | 6 development perspectives (gstack) |
 
 ### Phase-Specific Skills
@@ -448,18 +451,20 @@ Phase 12: Evolution → Learn and improve
 
 ## Version
 
-**V3.19.0** - 2026-04-02
-- **cc-harness-skills Integration** (from LearnPrompt/cc-harness-skills):
-  - `verification-gate`: Read-only challenge pass, three-state verdict (verified/unverified/failed)
-  - `memory-pipeline`: Dual-phase memory (extract 4 types + consolidate nightly)
-  - `context-compressor`: 9-part structured session handoff
-- **Key Patterns Adopted**: Index-not-dump for MEMORY.md, durable-vs-ephemeral distinction, research-synthesis-implementation-verification pipeline, proactive with expiry
-- Core skills: 14 (was 11), Total: 36+ skills
+**V3.20.0** - 2026-04-03
+- **PUA V2/V3 Integration** (from tanweai/pua):
+  - `high-agency` upgraded to V2 with methodology router (8 task types → 7 corporate flavors)
+  - Failure mode switching chains (6 patterns with automatic flavor switching)
+  - Anti-rationalization table (7 AI excuses with counter-arguments)
+  - Iceberg Rule: fix one bug → scan for pattern across codebase
+  - Owner Awareness Four Questions
+  - Calibration Block: must/should/could priority tiers
+  - Dignified Exit Protocol
 
-**V3.18.0** - 2026-04-02 - Self-iteration: removed stale refs, trimmed redundancy
+**V3.19.0** - 2026-04-02 - cc-harness-skills: verification-gate, memory-pipeline, context-compressor
 
 Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V3.19: Autonomous Development Orchestrator — cc-harness-skills Integrated*
+*Super-Skill V3.20: Autonomous Development Orchestrator — PUA V2/V3 Integrated*
