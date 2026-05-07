@@ -4,9 +4,9 @@
 
 **AI-Native Autonomous Development Orchestrator | AI原生自主开发编排器**
 
-[![Version](https://img.shields.io/badge/version-3.17-blue.svg?style=for-the-badge)](https://github.com/huangxiding-creator/Super-Skill)
+[![Version](https://img.shields.io/badge/version-3.21-blue.svg?style=for-the-badge)](https://github.com/huangxiding-creator/Super-Skill)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-33+-purple.svg?style=for-the-badge)](.claude/skills/super-skill/skills/)
+[![Skills](https://img.shields.io/badge/skills-41+-purple.svg?style=for-the-badge)](.claude/skills/super-skill/skills/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-orange.svg?style=for-the-badge)](https://docs.anthropic.com/claude-code)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
 
@@ -22,9 +22,9 @@
 
 ## Overview
 
-Super-Skill is a **production-grade Claude Code skill** that transforms how AI builds software. Instead of ad-hoc prompting, it provides a structured 14-phase workflow with built-in self-evolution, autonomous experiment loops, and 33+ integrated specialized skills.
+Super-Skill is a **production-grade Claude Code skill** that transforms how AI builds software. Instead of ad-hoc prompting, it provides a structured 14-phase workflow with built-in self-evolution, autonomous experiment loops, and 41+ integrated specialized skills.
 
-**Key innovation**: Applies [karpathy/autoresearch](https://github.com/karpathy/autoresearch)'s experiment loop pattern to software development — automatically run experiments, keep improvements, discard regressions, and never stop until you say so.
+**Key innovation**: Applies [karpathy/autoresearch](https://github.com/karpathy/autoresearch)'s experiment loop pattern to software development — automatically run experiments, keep improvements, discard regressions, and never stop until you say so. Now with [OpenWolf](https://github.com/cytostack/openwolf)-inspired 6-hook lifecycle, project anatomy indexing, cross-session learning (cerebrum), token tracking, bug memory, and visual regression testing.
 
 ### Why Super-Skill?
 
@@ -41,8 +41,13 @@ Super-Skill is a **production-grade Claude Code skill** that transforms how AI b
 - **14-Phase Autonomous Workflow** — Vision → Feasibility → Discovery → Development → QA → Deploy → Evolve
 - **Autonomous Experiment Loop** — Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (58K+ stars)
 - **GEP Self-Evolution** — Darwin Gödel Machine pattern for continuous improvement
-- **33+ Integrated Skills** — Testing, security, API design, databases, monitoring, and more
-- **Hooks-Based Auto-Execution** — Pre-run upgrade + Post-run evolution via Claude Code hooks
+- **41+ Integrated Skills** — Testing, security, API design, databases, monitoring, and more
+- **6-Hook Lifecycle** — [OpenWolf](https://github.com/cytostack/openwolf)-inspired complete lifecycle interception
+- **Project Anatomy** — File indexing with token estimates (~80% token savings)
+- **Cross-Session Learning** — Cerebrum: Do-Not-Repeat patterns + user preferences + learnings
+- **Token Tracking** — Session waste detection with 5 optimization patterns
+- **Bug Memory** — Auto bug detection (15 patterns) + Jaccard similarity matching
+- **Visual Regression** — Sectioned screenshot capture + AI-powered UI evaluation
 - **Hierarchical Orchestration** — Planner-Worker-Judge pattern for multi-agent coordination
 - **Context Engineering** — JIT context loading, progressive disclosure, compaction survival
 - **3 Interaction Points** — User only involved at: input, requirements approval, plan approval

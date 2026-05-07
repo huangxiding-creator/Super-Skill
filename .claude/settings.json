@@ -23,16 +23,39 @@
     "Notification": {
       "handler": {
         "type": "prompt",
-        "prompt": "When a new session starts, execute the Pre-Run Upgrade sequence:\n\n## PRE-RUN UPGRADE SEQUENCE (karpathy/autoresearch inspired)\n\n1. **Version Check**: Check Super-Skill and all sub-skills for available updates\n2. **Sub-Skill Upgrade**: Upgrade any outdated skills via npx skills\n3. **Best Practices Search**: Search GitHub trending for AI agent best practices\n4. **Pattern Integration**: Integrate discovered patterns\n5. **Context Hub Sync**: Update Context Hub registry\n6. **Evolution Sync**: Sync learnings from previous sessions\n7. **Experiment Log Review**: Check previous session's experiments.tsv for keep/discard patterns\n\nReport upgrade status before proceeding.\n\nSee: .claude/skills/super-skill/skills/pre-run-upgrade/SKILL.md"
+        "prompt": "When a new session starts, execute the Session-Start sequence:\n\n## SESSION-START SEQUENCE (6-Hook Lifecycle)\n\n### 1. Pre-Run Upgrade\n- Check Super-Skill and all sub-skills for available updates\n- Upgrade any outdated skills via npx skills\n- Search GitHub trending for AI agent best practices\n- Integrate discovered patterns\n\n### 2. Anatomy Refresh (OpenWolf)\n- Check if anatomy.md exists and is fresh (<24h)\n- If stale or missing, scan project to generate/update anatomy.md\n- Load anatomy index for efficient file exploration\n\n### 3. Cerebrum Freshness (OpenWolf)\n- Check if cerebrum.md was updated in last 7 days\n- Load Do-Not-Repeat patterns into context\n- Display summary of active learnings\n\n### 4. Token Ledger Init (OpenWolf)\n- Initialize new session token ledger\n- Load previous session metrics for comparison\n- Reset session counters\n\n### 5. Buglog Context (OpenWolf)\n- Load recent bug patterns for awareness\n- Surface any unresolved bug entries from previous session\n\n### 6. Evolution Sync\n- Sync learnings from previous sessions\n- Check previous session's experiments.tsv for keep/discard patterns\n\nReport session readiness status before proceeding.\n\nSee: .claude/skills/super-skill/skills/pre-run-upgrade/SKILL.md\nSee: .claude/skills/super-skill/skills/anatomy-scanner/SKILL.md\nSee: .claude/skills/super-skill/skills/cerebrum/SKILL.md\nSee: .claude/skills/super-skill/skills/token-tracker/SKILL.md"
       }
     },
+    "PreToolUse": [
+      {
+        "matcher": { "toolName": "Read" },
+        "hooks": [{
+          "type": "command",
+          "command": "FILE=\"$CLAUDE_TOOL_INPUT_FILE_PATH\"; if [ -f \"$FILE\" ]; then SIZE=$(wc -c < \"$FILE\" 2>/dev/null || echo 0); TOKENS=$((SIZE / 4)); echo \"[token-tracker] Reading $FILE (~${TOKENS} tokens)\" >&2; fi"
+        }]
+      },
+      {
+        "matcher": { "toolName": "Write" },
+        "hooks": [{
+          "type": "command",
+          "command": "FILE=\"$CLAUDE_TOOL_INPUT_FILE_PATH\"; if [ -f \"$FILE\" ]; then echo \"[cerebrum] Pre-write check for $FILE — verify no Do-Not-Repeat patterns\" >&2; echo \"[buglog] Pre-write check for $FILE — search for related past fixes\" >&2; fi"
+        }]
+      }
+    ],
     "Stop": {
       "handler": {
         "type": "prompt",
-        "prompt": "## POST-RUN EVOLUTION (karpathy/autoresearch inspired)\n\nExecute after task completion:\n\n### 1. Project Retrospective\n- What went well?\n- What could be improved?\n- Blockers encountered?\n- Simplicity assessment: Did we delete more code than we added?\n\n### 2. Signal Extraction\n- Defensive: Errors, failures (High priority)\n- Opportunity: New patterns (Medium priority)\n- Stagnation: No improvement (Low priority)\n\n### 3. Quality Scoring\n- Correctness (40%)\n- Reliability (25%)\n- Maintainability (20%)\n- Performance (10%)\n- Elegance (5%)\n\n### 4. Evolution Decision\n- Score >= 12: Immediate evolution\n- 3+ defensive signals: Priority evolution\n- Success + new patterns: Capsule creation\n\n### 5. Experiment Log Update\n- Log all experiments to experiments.tsv\n- Summarize keep/discard ratio\n- Identify most productive experiment strategies\n\n### 6. Learning Sync\n- Update MEMORY.md\n- Log to events.jsonl\n- Update Context Hub\n\nGenerate POST-RUN EVOLUTION REPORT.\n\nSee: .claude/skills/super-skill/skills/post-run-evolution/SKILL.md"
+        "prompt": "## POST-RUN EVOLUTION + OPENWOLF SESSION-END (6-Hook Lifecycle)\n\nExecute after task completion:\n\n### 1. Project Retrospective\n- What went well?\n- What could be improved?\n- Blockers encountered?\n- Simplicity assessment: Did we delete more code than we added?\n\n### 2. Signal Extraction\n- Defensive: Errors, failures (High priority)\n- Opportunity: New patterns (Medium priority)\n- Stagnation: No improvement (Low priority)\n\n### 3. Quality Scoring\n- Correctness (40%)\n- Reliability (25%)\n- Maintainability (20%)\n- Performance (10%)\n- Elegance (5%)\n\n### 4. Evolution Decision\n- Score >= 12: Immediate evolution\n- 3+ defensive signals: Priority evolution\n- Success + new patterns: Capsule creation\n\n### 5. Token Waste Report (OpenWolf)\n- Summarize session token usage\n- Report waste patterns detected (repeated reads, anatomy-suffice, memory bloat)\n- Suggest optimization strategies for next session\n\n### 6. Buglog Summary (OpenWolf)\n- Count bug patterns auto-detected during session\n- Check if 3+ edits were made without buglog capture\n- Warn about missing buglog entries if applicable\n\n### 7. Cerebrum Capture (OpenWolf)\n- Capture any new Do-Not-Repeat patterns discovered\n- Record user preferences from corrections\n- Log key learnings from this session\n- Consolidate: merge similar entries, prune stale ones\n\n### 8. Experiment Log Update\n- Log all experiments to experiments.tsv\n- Summarize keep/discard ratio\n- Identify most productive experiment strategies\n\n### 9. Learning Sync\n- Update MEMORY.md\n- Log to events.jsonl\n- Update Context Hub\n\nGenerate POST-RUN EVOLUTION REPORT.\n\nSee: .claude/skills/super-skill/skills/post-run-evolution/SKILL.md\nSee: .claude/skills/super-skill/skills/token-tracker/SKILL.md\nSee: .claude/skills/super-skill/skills/buglog/SKILL.md\nSee: .claude/skills/super-skill/skills/cerebrum/SKILL.md"
       }
     },
     "PostToolUse": [
+      {
+        "matcher": { "toolName": "Read" },
+        "hooks": [{
+          "type": "command",
+          "command": "mkdir -p ~/.claude/logs && echo \"[$(date -Iseconds)] Read: $CLAUDE_TOOL_INPUT_FILE_PATH\" >> ~/.claude/logs/super-skill-reads.log"
+        }]
+      },
       {
         "matcher": { "toolName": "Bash" },
         "hooks": [{
@@ -42,9 +65,22 @@
       },
       {
         "matcher": { "toolName": "Write" },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p ~/.claude/logs && echo \"[$(date -Iseconds)] Write: $CLAUDE_TOOL_INPUT_FILE_PATH\" >> ~/.claude/logs/super-skill-files.log"
+          },
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_TOOL_INPUT_FILE_PATH\"; if echo \"$FILE\" | grep -qE '\\.(css|scss|tsx|jsx)$'; then echo \"[design-qc] UI file modified: $FILE — consider visual regression check\" >&2; fi"
+          }
+        ]
+      },
+      {
+        "matcher": { "toolName": "Edit" },
         "hooks": [{
           "type": "command",
-          "command": "mkdir -p ~/.claude/logs && echo \"[$(date -Iseconds)] Write: $CLAUDE_TOOL_INPUT_FILE_PATH\" >> ~/.claude/logs/super-skill-files.log"
+          "command": "mkdir -p ~/.claude/logs && echo \"[$(date -Iseconds)] Edit: $CLAUDE_TOOL_INPUT_FILE_PATH\" >> ~/.claude/logs/super-skill-edits.log"
         }]
       }
     ],
@@ -65,6 +101,16 @@
     "AUTONOMOUS_MAX_EXPERIMENTS": "100",
     "AUTONOMOUS_BRANCH_PREFIX": "autoresearch",
     "AUTONOMOUS_SIMPLICITY_WEIGHT": "0.3",
-    "AUTONOMOUS_LOG_FILE": "experiments.tsv"
+    "AUTONOMOUS_LOG_FILE": "experiments.tsv",
+    "ANATOMY_ENABLED": "true",
+    "ANATOMY_MAX_FILES": "500",
+    "ANATOMY_FRESHNESS_HOURS": "24",
+    "CEREBRUM_ENABLED": "true",
+    "CEREBRUM_CONSOLIDATION_DAYS": "7",
+    "TOKEN_TRACKER_ENABLED": "true",
+    "BUGLOG_ENABLED": "true",
+    "BUGLOG_SIMILARITY_THRESHOLD": "0.8",
+    "DESIGN_QC_ENABLED": "true",
+    "DESIGN_QC_MAX_SECTIONS": "8"
   }
 }

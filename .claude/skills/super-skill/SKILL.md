@@ -1,9 +1,9 @@
 ---
 name: super-skill
-description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, verification gates, memory pipeline, context compression, high-agency V2, 36+ skills.
+description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, verification gates, memory pipeline, context compression, high-agency V2, 6-hook lifecycle, anatomy index, cerebrum learning, token tracker, buglog, design QC, 41+ skills.
 ---
 
-# Super-Skill V3.20: Autonomous Development Orchestrator
+# Super-Skill V3.21: Autonomous Development Orchestrator
 
 ## Core Philosophy
 
@@ -33,6 +33,7 @@ Super-Skill integrates best practices from industry leaders:
 | [Context Hub](https://github.com/andrewyng/context-hub) | Andrew Ng | Curated API docs |
 | [MCP Protocol](https://github.com/modelcontextprotocol) | Official | Tool integration standard |
 | [Anthropic Skills](https://github.com/anthropics/skills) | Official | Skill building guidelines |
+| [OpenWolf](https://github.com/cytostack/openwolf) | cytostack | 6-hook lifecycle, anatomy indexing, cerebrum learning, token tracking, buglog, design QC |
 
 **See**: [references/trending-standards.md](references/trending-standards.md) for complete integration patterns.
 
@@ -224,7 +225,7 @@ Capture learnings and evolve Super-Skill.
 
 ## Skill Integration Matrix
 
-Super-Skill integrates 33+ specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
+Super-Skill integrates 41+ specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
 
 ### Core Skills (Always Available)
 | Skill | Purpose |
@@ -243,6 +244,11 @@ Super-Skill integrates 33+ specialized skills. See [references/skills-matrix.md]
 | `get-api-docs` | Context Hub curated docs |
 | `high-agency` | Iron rules + methodology router + anti-rationalization (PUA V2) |
 | `cognitive-modes` | 6 development perspectives (gstack) |
+| `anatomy-scanner` | Project file indexing with token estimates (OpenWolf) |
+| `cerebrum` | Cross-session learning with Do-Not-Repeat (OpenWolf) |
+| `token-tracker` | Session token tracking + waste detection (OpenWolf) |
+| `buglog` | Auto bug detection + Jaccard similarity matching (OpenWolf) |
+| `design-qc` | Visual regression with sectioned screenshots (OpenWolf) |
 
 ### Phase-Specific Skills
 - **Phase 5-8**: `api-patterns`, `data-patterns`, `state-management`, `real-time-websockets`
@@ -250,32 +256,40 @@ Super-Skill integrates 33+ specialized skills. See [references/skills-matrix.md]
 - **Phase 8-9**: `testing-automation`, `security-scanning`, `accessibility-a11y`
 - **Phase 12**: `darwin-evolution`, `capability-evolver`
 
-## Hooks System
+## Hooks System (6-Lifecycle Architecture)
 
-Automatic execution via Claude Code hooks:
+Automatic execution via Claude Code hooks. Inspired by [OpenWolf](https://github.com/cytostack/openwolf) 6-hook lifecycle pattern.
 
 ### Hooks Configuration
 
-| Hook | Trigger | Action |
-|------|---------|--------|
-| **Notification** | Session start | Pre-Run Upgrade sequence |
-| **Stop** | Session end | Post-Run Evolution sequence |
-| **PostToolUse** | After tool execution | Logging and tracking |
-| **SubagentStop** | Subagent completion | Agent activity logging |
+| Hook | Trigger | Action | Source |
+|------|---------|--------|--------|
+| **Notification** | Session start | Pre-Run Upgrade + Anatomy refresh + Cerebrum freshness | Super-Skill |
+| **PreToolUse** | Before Read/Write | Repeated-read blocking, Do-Not-Repeat check, Buglog matching | OpenWolf |
+| **PostToolUse** | After Read/Write | Token estimation, Anatomy update, Bug detection, Edit summaries | OpenWolf |
+| **PostToolUse** | After Bash/Write | Logging and tracking | Super-Skill |
+| **Stop** | Session end | Post-Run Evolution + Token waste report + Buglog summary | Super-Skill + OpenWolf |
+| **SubagentStop** | Subagent completion | Agent activity logging | Super-Skill |
 
 ### Automatic Execution Flow
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  NOTIFICATION HOOK (Session Start)                      │
-│  └→ Pre-Run Upgrade: Version Check → Upgrade → Sync     │
-├─────────────────────────────────────────────────────────┤
-│  MAIN EXECUTION (14-Phase Workflow)                     │
-│  └→ Phase 0-12: Vision → ... → Deployment              │
-├─────────────────────────────────────────────────────────┤
-│  STOP HOOK (Session End)                                │
-│  └→ Post-Run Evolution: Retrospective → Evolution       │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  NOTIFICATION HOOK (Session Start)                           │
+│  └→ Pre-Run Upgrade + Anatomy Refresh + Cerebrum Freshness   │
+├──────────────────────────────────────────────────────────────┤
+│  PRE-TOOL-USE HOOK (Before Read/Write)                       │
+│  └→ Repeated-Read Block → Do-Not-Repeat Check → Buglog Match │
+├──────────────────────────────────────────────────────────────┤
+│  MAIN EXECUTION (14-Phase Workflow)                          │
+│  └→ Phase 0-12: Vision → ... → Deployment                   │
+├──────────────────────────────────────────────────────────────┤
+│  POST-TOOL-USE HOOK (After Read/Write)                       │
+│  └→ Token Estimate → Anatomy Update → Bug Detect → Summary   │
+├──────────────────────────────────────────────────────────────┤
+│  STOP HOOK (Session End)                                     │
+│  └→ Post-Run Evolution + Token Report + Buglog Summary        │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ### Configuration File
@@ -409,7 +423,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 
 ## Sub-Skills
 
-36 specialized skills in `skills/` directory. Key sub-skills:
+41 specialized skills in `skills/` directory. Key sub-skills:
 
 - **[verification-gate](skills/verification-gate/SKILL.md)** - Read-only challenge pass (cc-harness-skills)
 - **[memory-pipeline](skills/memory-pipeline/SKILL.md)** - Extract + consolidate memories (cc-harness-skills)
@@ -427,6 +441,11 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 - **[security-scanning](skills/security-scanning/SKILL.md)** - SAST/SCA/Secrets
 - **[api-patterns](skills/api-patterns/SKILL.md)** - REST/GraphQL
 - **[data-patterns](skills/data-patterns/SKILL.md)** - SQL/NoSQL
+- **[anatomy-scanner](skills/anatomy-scanner/SKILL.md)** - Project file indexing with token estimates (OpenWolf)
+- **[cerebrum](skills/cerebrum/SKILL.md)** - Cross-session learning with Do-Not-Repeat (OpenWolf)
+- **[token-tracker](skills/token-tracker/SKILL.md)** - Session token tracking + waste detection (OpenWolf)
+- **[buglog](skills/buglog/SKILL.md)** - Auto bug detection + similarity matching (OpenWolf)
+- **[design-qc](skills/design-qc/SKILL.md)** - Visual regression with sectioned screenshots (OpenWolf)
 
 ## Quick Start
 
@@ -451,20 +470,19 @@ Phase 12: Evolution → Learn and improve
 
 ## Version
 
-**V3.20.0** - 2026-04-03
-- **PUA V2/V3 Integration** (from tanweai/pua):
-  - `high-agency` upgraded to V2 with methodology router (8 task types → 7 corporate flavors)
-  - Failure mode switching chains (6 patterns with automatic flavor switching)
-  - Anti-rationalization table (7 AI excuses with counter-arguments)
-  - Iceberg Rule: fix one bug → scan for pattern across codebase
-  - Owner Awareness Four Questions
-  - Calibration Block: must/should/could priority tiers
-  - Dignified Exit Protocol
+**V3.21.0** - 2026-05-07
+- **OpenWolf Integration** (from cytostack/openwolf):
+  - `anatomy-scanner` — Project file indexing with token estimates (~80% token savings)
+  - `cerebrum` — Cross-session learning with Do-Not-Repeat patterns
+  - `token-tracker` — Session token tracking + 5 waste detection patterns
+  - `buglog` — Auto bug detection (15 patterns) + Jaccard similarity matching
+  - `design-qc` — Visual regression with sectioned screenshot capture
+  - 6-hook lifecycle architecture (session-start, pre-read, post-read, pre-write, post-write, stop)
 
-**V3.19.0** - 2026-04-02 - cc-harness-skills: verification-gate, memory-pipeline, context-compressor
+**V3.20.0** - 2026-04-03 - PUA V2/V3: methodology router, anti-rationalization, iceberg rule
 
 Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V3.20: Autonomous Development Orchestrator — PUA V2/V3 Integrated*
+*Super-Skill V3.21: Autonomous Development Orchestrator — OpenWolf Integrated*
