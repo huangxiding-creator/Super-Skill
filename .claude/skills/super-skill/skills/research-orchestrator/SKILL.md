@@ -20,13 +20,19 @@ description: IdeaForge Stage 2. Run pluggable multi-source research (GitHub, Sog
 
 **Not reused:** the 17 EPC-specific channels (知网/洞见研报/B站/专利/招投标) — irrelevant to software-product ideas. We use software channels instead.
 
-## Channels (M1 = first 2; M3 adds 7)
+## Channels (9 total; 4 verified live against real APIs)
 
 | Channel | doc_type | Signal | Status |
 |---|---|---|---|
-| `github` | repo | stars/forks/issues/lang/license/topics/updated | ✅ M1 live |
-| `sogou_wechat` | article | Chinese user pain (graceful degrade on anti-bot) | ✅ M1 |
-| `reddit` `hackernews` `producthunt` `appstore` `googletrends` `npm_pypi` `competitor_site` | various | demand/competitor/pricing | M3 |
+| `github` | repo | stars/forks/issues/lang/license/topics/updated | ✅ live |
+| `sogou_wechat` | article | Chinese user pain (degrades on anti-bot) | ✅ (degrades) |
+| `hackernews` | post | dev pain/taste + Show HN (Algolia API) | ✅ live |
+| `npm_pypi` | package | adoption signal (registry search + metadata) | ✅ live |
+| `appstore` | app | competitor apps + price/genre (iTunes API) | ✅ live |
+| `reddit` | post | domain-subreddit pain (degrades on 403) | ✅ (degrades) |
+| `producthunt` | product | launched products/pricing (needs `PRODUCTHUNT_TOKEN`) | ✅ (degrades w/o token) |
+| `googletrends` | trend | demand trajectory (no free API → degrades) | ✅ (degrades) |
+| `competitor_site` | pricing/page | raw page text + price mentions for data-driven pricing | ✅ live |
 
 Uniform interface: `Channel.harvest(seed) -> list[Doc]`. 3-level fallback (primary → degraded → stub). **Never raises** — a blocked channel returns a `degraded` note and the run continues.
 

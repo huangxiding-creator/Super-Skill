@@ -27,9 +27,11 @@ from channels.github import ChannelGitHub  # noqa: E402
 from channels.sogou_wechat import ChannelSogouWechat  # noqa: E402
 import checkpoint as ckpt  # noqa: E402
 from deduper import dedupe  # noqa: E402
+import gap_analyzer as gap  # noqa: E402
+import quality_gate as qg  # noqa: E402
 
-# Channels enabled by default in M1. M3 adds the rest.
-DEFAULT_CHANNELS = ("github", "sogou_wechat")
+# Channels run by default. Free + reliable first; flaky/key-gated ones are opt-in.
+DEFAULT_CHANNELS = ("github", "sogou_wechat", "hackernews", "npm_pypi", "appstore")
 
 
 @dataclass
@@ -49,6 +51,8 @@ class OrchestratorReport:
     unique: int = 0
     duplicates: int = 0
     degraded: List[str] = field(default_factory=list)
+    quality_passed: bool = False
+    gaps: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict:
         return asdict(self)
@@ -82,6 +86,23 @@ def _persist_channel(docket_dir: str, name: str, docs: List[Doc]) -> None:
     # also raw json for downstream scorers
     with open(os.path.join(ch_dir, "_all.json"), "w", encoding="utf-8") as f:
         json.dump([d.to_dict() for d in docs], f, ensure_ascii=False, indent=2)
+
+
+def _write_quality(docket_dir: str, quality) -> None:
+    with open(os.path.join(docket_dir, "_quality.json"), "w", encoding="utf-8") as f:
+        json.dump(quality.to_dict(), f, ensure_ascii=False, indent=2)
+
+
+def _write_gap_report(docket_dir: str, gaps) -> None:
+    with open(os.path.join(docket_dir, "_gaps.json"), "w", encoding="utf-8") as f:
+        json.dump(gaps.to_dict(), f, ensure_ascii=False, indent=2)
+    lines = [f"# GAP REPORT\n", f"- uncovered dimensions: {', '.join(gaps.gaps) or 'none'}\n"]
+    if gaps.re_research:
+        lines.append("\n## Targeted re-research\n")
+        for r in gaps.re_research:
+            lines.append(f"- **{r['dimension']}** → channels: {', '.join(r['channels'])} — {r['note']}")
+    with open(os.path.join(docket_dir, "GAP_REPORT.md"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
 
 def _write_digest(docket_dir: str, report: OrchestratorReport, unique: List[Doc]) -> str:
@@ -153,9 +174,17 @@ def orchestrate(
     report.unique = len(res.unique)
     report.duplicates = res.duplicates
 
+    # quality gate + gap analysis (post-dedup)
+    quality = qg.evaluate(real_docs)
+    gaps = gap.analyze(res.unique)
+    _write_quality(docket_dir, quality)
+    _write_gap_report(docket_dir, gaps)
+
     _write_digest(docket_dir, report, res.unique)
     cp.mark("research", channel_counts={cr.name: cr.count for cr in report.per_channel})
     ckpt.save(docket_dir, cp)
+    report.quality_passed = quality.passed
+    report.gaps = gaps.gaps
     return report
 
 
