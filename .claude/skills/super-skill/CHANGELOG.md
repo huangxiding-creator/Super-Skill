@@ -5,6 +5,112 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.21.0] - 2026-05-07
+
+### Added - OpenWolf Integration (from cytostack/openwolf)
+
+Integrated 5 core systems and 6-hook lifecycle architecture from [OpenWolf](https://github.com/cytostack/openwolf).
+
+#### 6-Hook Lifecycle Architecture
+
+Expanded from 4 hooks to 6 hooks, covering the complete tool lifecycle:
+
+| Hook | Trigger | Action |
+|------|---------|--------|
+| **Notification** | Session start | Pre-Run Upgrade + Anatomy refresh + Cerebrum freshness |
+| **PreToolUse (Read)** | Before file reads | Token estimation, repeated-read detection |
+| **PreToolUse (Write)** | Before file writes | Do-Not-Repeat check, Buglog matching |
+| **PostToolUse** | After tool execution | Token tracking, Anatomy update, Bug detection, Logging |
+| **Stop** | Session end | Post-Run Evolution + Token report + Buglog summary + Cerebrum capture |
+| **SubagentStop** | Subagent completion | Agent activity logging |
+
+#### New Sub-Skills
+
+##### anatomy-scanner
+Project file indexing with auto-generated descriptions and token estimates.
+- Language-aware extractors for 20+ frameworks (TS/JS, Python, Go, Rust, Java, PHP, Ruby, SQL, Docker, etc.)
+- Token estimation: `ceil(text.length / ratio)` with code:3.5, prose:4.0, mixed:3.75
+- Atomic writes (write to `.tmp` then rename) for crash safety
+- ~80% token savings by avoiding unnecessary file reads
+- Auto-refresh on staleness (>24h)
+- Max 500 files cap, skips binary and >1MB files
+
+##### cerebrum
+Cross-session learning system with Do-Not-Repeat patterns.
+- 4 memory categories: Do-Not-Repeat (regex patterns), User Preferences, Key Learnings, Decision Logs
+- Pre-write hook matches regex patterns and emits warnings
+- Jaccard similarity (≥0.8) for deduplication
+- Consolidation cycle every 7 days: merge similar, prune stale, promote frequent
+- Freshness tracking: warns if cerebrum not updated in >7 days
+
+##### token-tracker
+Session token tracking with waste detection.
+- Token estimation per read/write operation
+- 5 waste patterns: repeated reads, anatomy-suffice, memory bloat, stale cerebrum, anatomy miss rate
+- Session ledger with efficiency metrics (useful ratio ≥0.80, savings ratio ≥0.25)
+- Pre/post-read hooks for continuous tracking
+
+##### buglog
+Searchable bug fix database with auto-detection and similarity matching.
+- 15 auto-detected bug patterns (error handling, null safety, guard clause, logic fix, etc.)
+- Jaccard similarity matching (≥0.8 duplicate, ≥0.5 related)
+- Pre-write matching: surface related past fixes before writing
+- Post-write capture: auto-detect and capture novel bug patterns
+- Missing buglog detection: warn if 3+ edits without buglog capture
+
+##### design-qc
+Automated visual regression testing with sectioned screenshot capture.
+- Auto-detect dev servers on common ports (3000, 5173, 8080, 4200, etc.)
+- Route detection from pages/app/src directories
+- Sectioned screenshots (viewport-height sections, max 8 per route, ~2500 tokens each)
+- Multi-viewport capture (desktop 1280×800, tablet 768×1024, mobile 375×812)
+- AI evaluation: layout integrity, visual consistency, responsiveness, content clarity, a11y
+
+#### Key Patterns Adopted from OpenWolf
+
+| Pattern | Application |
+|---------|-------------|
+| **6-Hook Lifecycle** | Every action intercepted via hooks for invisible enforcement |
+| **Project Anatomy** | File index with descriptions + token estimates for efficient exploration |
+| **Do-Not-Repeat** | Regex-based mistake prevention checked on every write |
+| **Token Waste Detection** | 5 patterns for identifying and reducing token waste |
+| **Bug Similarity (Jaccard)** | Prevent duplicate bug entries, surface related fixes |
+| **Atomic File Writes** | Crash-safe writes via `.tmp` + rename pattern |
+| **Invisible Enforcement** | All features work through hooks without changing user workflow |
+| **Sectioned Screenshots** | Token-efficient visual capture within budget |
+
+### Changed
+- Core Skills table: 14 → 19 entries (added anatomy-scanner, cerebrum, token-tracker, buglog, design-qc)
+- Total skills count: 36 → 41
+- Standards table: added OpenWolf (cytostack)
+- Hooks expanded from 4 to 6 lifecycle hooks
+- Settings.json: added 8 new env vars for OpenWolf features
+- Notification hook expanded with anatomy refresh + cerebrum freshness + token ledger init + buglog context
+- Stop hook expanded with token waste report + buglog summary + cerebrum capture
+- PostToolUse: added Read tracking, Edit tracking, design-qc trigger for UI files
+- PreToolUse: added Read and Write interceptors
+- Frontmatter description updated with OpenWolf integration
+- Updated header to V3.21
+
+### Research Sources
+- [OpenWolf](https://github.com/cytostack/openwolf) - cytostack
+- 6-hook lifecycle: session-start, pre-read, post-read, pre-write, post-write, stop
+- Anatomy scanner: language-aware description extraction for 20+ frameworks
+- Cerebrum: Do-Not-Repeat regex patterns, cross-session learning
+- Token tracker: estimation formula, 5 waste patterns, session ledger
+- Buglog: 15 auto-detection patterns, Jaccard similarity matching
+- Design QC: sectioned screenshots, multi-viewport capture, AI evaluation
+
+### Migration Guide
+- **No breaking changes** - fully backward compatible
+- 5 new sub-skills available immediately
+- 6-hook lifecycle works automatically via settings.json
+- Anatomy scanner triggers on session start
+- Cerebrum learning starts accumulating from first session
+- Token tracking runs passively in background
+- Buglog auto-detects bug patterns during development
+- Design QC activates for UI file changes
+
 ## [3.20.0] - 2026-04-03
 
 ### Added - PUA V2/V3 Integration (from tanweai/pua)
