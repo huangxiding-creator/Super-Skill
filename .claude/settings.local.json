@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(npx skills:*)",
-      "Bash(cp \"E:/CPOPC/Super-Skill/.claude/skills/super-skill/references/best-practices-2026.md\" ~/.agents/skills/references/)",
-      "Bash(mkdir -p ~/.agents/skills/references)"
-    ]
-  }
-}

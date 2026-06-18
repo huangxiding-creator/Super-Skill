@@ -60,3 +60,4 @@ experiments.tsv
 # Evolver submodule
 evolver/.git/
 .claude/worktrees/
+.claude/settings.local.json
