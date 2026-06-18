@@ -21,25 +21,33 @@ class ChannelGitHub(Channel):
         kw = self._keywords(seed)
         if not kw:
             return []
-        query = self._build_query(kw, seed)
-        per_page = min(self.max_results, 20)  # API caps at 100; keep payloads small
-        url = (f"{self.SEARCH_URL}?q={urllib.parse.quote(query)}"
-               f"&sort=stars&order=desc&per_page={per_page}")
-        data = fetch_json(url, self.http)
-        if not data or "items" not in data:
-            return []  # rate-limited or blocked — degrade silently
-        docs: List[Doc] = []
-        for item in data.get("items", [])[: self.max_results]:
-            docs.append(self._repo_to_doc(item))
-        return docs
+        # Progressive broadening: try the strict query first; if it returns
+        # nothing, relax (fewer terms, lower star floor) so over-specific seeds
+        # still surface relevant repos instead of an empty harvest.
+        queries = [
+            self._build_query(kw, seed, terms=4, min_stars=5),
+            self._build_query(kw, seed, terms=3, min_stars=1),
+            self._build_query(kw, seed, terms=2, min_stars=0),
+        ]
+        per_page = min(self.max_results, 20)
+        for query in queries:
+            url = (f"{self.SEARCH_URL}?q={urllib.parse.quote(query)}"
+                   f"&sort=stars&order=desc&per_page={per_page}")
+            data = fetch_json(url, self.http)
+            if not data or "items" not in data:
+                continue  # rate-limited/blocked → try next or give up
+            items = data.get("items", [])
+            if items:
+                return [self._repo_to_doc(it) for it in items[: self.max_results]]
+        return []
 
     @staticmethod
-    def _build_query(keywords: List[str], seed: Dict) -> str:
-        # Join strongest keywords; GitHub OR-matches broader space-separated terms.
-        terms = [k for k in keywords if 2 <= len(k) <= 32][:4]
-        q = " ".join(terms) or (seed.get("summary") or "")
-        # bias toward actively maintained
-        return f"{q} pushed:>2024-01-01 stars:>5"
+    def _build_query(keywords: List[str], seed: Dict, terms: int = 4, min_stars: int = 5) -> str:
+        # Join strongest keywords; GitHub AND-matches space-separated terms.
+        picked = [k for k in keywords if 2 <= len(k) <= 32][:terms]
+        q = " ".join(picked) or (seed.get("summary") or "")
+        star_filter = f" stars:>{min_stars}" if min_stars > 0 else ""
+        return f"{q} pushed:>2024-01-01{star_filter}"
 
     def _repo_to_doc(self, item: Dict) -> Doc:
         license_id = (item.get("license") or {}).get("spdx_id") or "NONE"

@@ -2,6 +2,15 @@
 
 ## 28+ Specialized Skills
 
+### Idea Factory (V4.0 front-end — run before Phase 0 on a raw idea)
+
+| Skill | Purpose | Stage Usage |
+|-------|---------|-------------|
+| `idea-intake` | Ambiguity scoring + Hybrid Clarification Gate | Stage 1 |
+| `research-orchestrator` | 9-channel research + gap analysis + dedup + quality gate | Stage 2 |
+| `proposal-forge` | Maturity/ten×/pricing/scorecard + Proposal Approval Gate | Stage 3 |
+| `monetization-scaffold` | Stripe/Docker/CI-CD/deploy template generator | Phase 11 |
+
 ### Core Development Skills
 
 | Skill | Purpose | Phase Usage |

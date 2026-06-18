@@ -1,5 +1,10 @@
 # Super-Skill 14-Phase Workflow Reference
 
+## Idea Factory (V4.0, runs before Phase 0)
+
+When the user provides a raw idea instead of a spec, run the three-stage front-end first:
+**idea-intake** (ambiguity + Hybrid Clarification Gate) → **research-orchestrator** (9 channels + gap analysis) → **proposal-forge** (maturity + ten× delta index + data-driven pricing + scorecard) → **Proposal Approval Gate** → then Phase 0 with `VISION.md`/`REQUIREMENTS.md`/`ARCHITECTURE.md` auto-populated. Full method: [ideaforge.md](ideaforge.md). If the user already gives a clear spec, skip straight to Phase 0.
+
 ## Table of Contents
 1. [Phase 0: Visionary Elevation](#phase-0-visionary-elevation)
 2. [Phase 1: Feasibility Analysis](#phase-1-feasibility-analysis)

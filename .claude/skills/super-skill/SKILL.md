@@ -1,15 +1,15 @@
 ---
 name: super-skill
-description: 14-phase autonomous dev orchestrator with self-evolution. TRIGGER on full-stack dev, complex products, 24h unattended ops. Hooks auto-exec, experiment loop, GEP evolution, Planner-Worker-Judge, verification gates, memory pipeline, context compression, high-agency V2, 6-hook lifecycle, anatomy index, cerebrum learning, token tracker, buglog, design QC, 41+ skills.
+description: V4.0 idea→product factory: raw idea → 9-channel research → falsifiable 10× proposal → approval gate → 14-phase autonomous dev. GEP self-evolution, hooks, 44+ skills.
 ---
 
-# Super-Skill V3.21: Autonomous Development Orchestrator
+# Super-Skill V4.0: Idea→Product Factory
 
 ## Core Philosophy
 
 **"Think First, Code Later"** - Maximize upfront thinking, minimize rework.
 
-**Three Interaction Points**: Initial input → Requirement confirmation → Plan approval. After Phase 4: Zero user interaction required.
+**Four Interaction Points** (V4.0): Idea → Hybrid Clarification (only if ambiguous) → **Proposal Approval Gate** → Plan approval. After the gate: Zero user interaction required.
 
 **Variance Inequality**: When improvement stalls, strengthen the verifier, not the generator.
 
@@ -73,22 +73,13 @@ Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (5
 | **CRASH** | Fix or skip | Timeout/OOM/NaN → log error → next idea |
 
 ### Simplicity Criterion
-- Small improvement + ugly complexity = NOT worth it
-- Small improvement from **deleting code** = definitely keep
-- Equal performance + simpler code = keep
-- ~0 improvement + much simpler code = keep
+Small improvement + ugly complexity = NOT worth it · small gain from **deleting code** = keep · equal perf + simpler = keep · ~0 gain + much simpler = keep.
 
 ### NEVER STOP Protocol
-- Do NOT pause to ask the human between experiments
-- The human might be asleep
-- If out of ideas: re-read code, combine approaches, try radical changes, search best practices
+Do not pause between experiments (the human may be asleep). Out of ideas → re-read code, combine approaches, try radical changes, search best practices.
 
 ### Budget Constraints
-```bash
-TIME_BUDGET_PER_EXPERIMENT=300    # 5 min per experiment
-MAX_EXPERIMENTS_PER_SESSION=100   # ~100 experiments overnight
-AUTONOMOUS_BRANCH_PREFIX="autoresearch"
-```
+`TIME_BUDGET_PER_EXPERIMENT=300` · `MAX_EXPERIMENTS_PER_SESSION=100` · `AUTONOMOUS_BRANCH_PREFIX="autoresearch"`.
 
 **See**: [skills/autonomous-loop/SKILL.md](skills/autonomous-loop/SKILL.md) for full documentation.
 
@@ -106,6 +97,22 @@ Context engineering > prompt engineering. Ensure the agent sees the right inform
 - SKILL.md body: < 500 lines (loaded on trigger)
 - Reference files: loaded on demand only
 - Each paragraph in SKILL.md must earn its tokens: "Does Claude really need this?"
+
+## Idea Factory (V4.0 front-end) — from a raw idea to a 10× proposal
+
+When the user gives an **undeveloped idea** (text/attachment/transcript) instead of a spec, run the Idea Factory *before* Phase 0. Purely additive — clear specs still skip straight to Phase 0.
+
+```
+raw idea → [1] idea-intake → [2] research-orchestrator → [3] proposal-forge → ✋ Approval Gate → Phase 0
+```
+
+1. **[idea-intake](skills/idea-intake/SKILL.md)** — ambiguity-score; **Hybrid Clarification Gate** (autonomous unless score 4–7, then ≤3 Qs once) → `IDEA_SEED.md`
+2. **[research-orchestrator](skills/research-orchestrator/SKILL.md)** — 9 channels (GitHub/Sogou WeChat/HN/npm/PyPI/App Store/Reddit/ProductHunt/competitor-site) + gap analysis + dedup + quality gate + checkpoint. Ports ResearchFactory-Eng architecture. → `RESEARCH_DOCKET/`, `RESEARCH_DIGEST.md`, `GAP_REPORT.md`
+3. **[proposal-forge](skills/proposal-forge/SKILL.md)** — maturity index + **ten× delta index** (falsifiable 10× gate) + blue/red-ocean + data-driven pricing → 4-dim scorecard → `PROPOSAL.md`, `BUSINESS_MODEL.md`, `SCORECARD.json`
+
+**Proposal Approval Gate** ✋: scorecard verdict = `proceed` → present proposal, ask approve/revise/reject **once** → on approve, auto-populate VISION/REQUIREMENTS/ARCHITECTURE and continue to Phase 0. Only new human touchpoint.
+
+> Method + algorithms: [references/ideaforge.md](references/ideaforge.md)
 
 ## 14-Phase Workflow
 
@@ -125,6 +132,7 @@ Find existing open-source solutions before building.
 - Score <60%: Build from scratch
 - Output: `GITHUB_DISCOVERY_REPORT.md`
 - **Skill**: `github-discovery`
+- **Note (V4.0)**: if Idea Factory's research-orchestrator already ran its `github` channel, this phase is **subsumed** — reuse `RESEARCH_DOCKET/github/_all.json` instead of re-searching.
 - **See**: [references/phases.md](references/phases.md) for decision matrix
 
 ### Phase 2b: Skills Discovery
@@ -310,24 +318,11 @@ STEP 5: Inject Context → Session context ready
 
 ### Pre-Run Upgrade (STEP -1)
 
-Executes before each session to ensure maximum capability readiness:
-
-```bash
-# Pre-run upgrade sequence
-1. Version Check → Check all sub-skills for updates
-2. Sub-Skill Upgrade → Upgrade outdated skills via npx skills
-3. Best Practices Search → Search GitHub trending for new patterns
-4. Pattern Integration → Integrate discovered best practices
-5. Context Hub Sync → Update Context Hub registry
-6. Evolution Sync → Sync learnings from previous sessions
-```
-
-**See**: [skills/pre-run-upgrade/SKILL.md](skills/pre-run-upgrade/SKILL.md) for full documentation.
+Before each session (max capability readiness): version check → sub-skill upgrade (`npx skills`) → GitHub-trending best-practices search → pattern integration → Context Hub sync → evolution sync. Full detail: [skills/pre-run-upgrade/SKILL.md](skills/pre-run-upgrade/SKILL.md).
 
 ### Auto-Update Mechanism
 
-Auto-updates before each session: check version → pull → update skills → refresh Context Hub.
-Configure via env vars in `.claude/settings.json`.
+Auto-updates before each session: check version → pull → update skills → refresh Context Hub. Configure via env vars in `.claude/settings.json`.
 
 ## Context Hub Integration
 
@@ -346,6 +341,10 @@ Configure via env vars in `.claude/settings.json`.
 
 | From | To | Gate Condition |
 |------|-----|----------------|
+| idea | intake | ambiguity score ≥ auto OR ≤3 clarification Qs answered |
+| intake | research | `IDEA_SEED.md` emitted |
+| research | proposal | quality gate passed (gap report notes weak dims) |
+| proposal | 0 (Vision) | **Proposal Approval Gate — user approves** ✋ |
 | 0 | 1 | Vision confirmed |
 | 1 | 2 | Feasibility ≥0.7 |
 | 2 | 3 | Build decision made |
@@ -423,7 +422,12 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 
 ## Sub-Skills
 
-41 specialized skills in `skills/` directory. Key sub-skills:
+44 specialized skills in `skills/` directory. Key sub-skills:
+
+**Idea Factory (V4.0 front-end):**
+- **[idea-intake](skills/idea-intake/SKILL.md)** - Ambiguity scoring + Hybrid Clarification Gate
+- **[research-orchestrator](skills/research-orchestrator/SKILL.md)** - 9-channel research + gap analysis + dedup + quality gate
+- **[proposal-forge](skills/proposal-forge/SKILL.md)** - Maturity/ten×/pricing/scorecard + Proposal Approval Gate
 
 - **[verification-gate](skills/verification-gate/SKILL.md)** - Read-only challenge pass (cc-harness-skills)
 - **[memory-pipeline](skills/memory-pipeline/SKILL.md)** - Extract + consolidate memories (cc-harness-skills)
@@ -469,6 +473,8 @@ Phase 12: Evolution → Learn and improve
 ```
 
 ## Version
+
+**V4.0.0** - 2026-06-18 - **IdeaForge front-end**: `idea-intake` (ambiguity + Hybrid Clarification Gate), `research-orchestrator` (9 software channels + gap analysis + dedup + quality gate, ports ResearchFactory-Eng), `proposal-forge` (maturity + ten× delta index + data-driven pricing + scorecard + Proposal Approval Gate). Raw idea → 10× proposal → existing 14-phase pipeline. See [references/ideaforge.md](references/ideaforge.md).
 
 **V3.21.0** - 2026-05-07
 - **OpenWolf Integration** (from cytostack/openwolf):
