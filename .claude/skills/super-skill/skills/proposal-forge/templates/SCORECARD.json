@@ -1,0 +1,26 @@
+{
+  "_template": "SCORECARD.json (IdeaForge / Super-Skill V4.0) — machine-readable gate output",
+  "feasibility": 0.0,
+  "user_value": 0.0,
+  "monetization": 0.0,
+  "tenx": 0.0,
+  "weighted": 0.0,
+  "verdict": "reject|revise|proceed",
+  "weakest_dim": "feasibility|user_value|monetization|tenx",
+  "tenx_detail": {
+    "best_axis": "",
+    "multiplier": 1.0,
+    "verdict": "red_ocean|incremental|tenx_qualified"
+  },
+  "maturity": {
+    "best": null,
+    "median": 0.0,
+    "mature_count": 0
+  },
+  "pricing": {
+    "positioning": "value",
+    "recommended": 0.0,
+    "anchor": 0.0
+  },
+  "rationale": {}
+}
