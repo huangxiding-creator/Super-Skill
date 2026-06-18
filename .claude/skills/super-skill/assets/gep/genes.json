@@ -29,7 +29,7 @@
         "forbidden_paths": [".git", "node_modules"]
       },
       "validation": [
-        "node -e \"require('./skills/super-skill').evolution; console.log('ok')\""
+        "node -e \"require('./skills/super-skill').evolution; console.log('ok')\"",
         "node -e \"require('./skills/super-skill/darwin-evolution'); console.log('ok')\""
       ]
     },
@@ -157,6 +157,39 @@
       },
       "validation": [
         "node -e \"require('./skills/super-skill').evolution; console.log('ok')\""
+      ]
+    },
+    {
+      "type": "Gene",
+      "id": "gene_ideaforge_outcome_learning",
+      "category": "innovate",
+      "signals_match": [
+        "proposal_outcome",
+        "monetization_result",
+        "market_signal",
+        "tenx_confirmed",
+        "tenx_disconfirmed",
+        "idea_rejected_at_gate",
+        "revenue_observed"
+      ],
+      "preconditions": [
+        "an IdeaForge proposal reached an outcome (built, monetized, killed, or rejected)",
+        "real-world signal available to grade the proposal's ten× claim"
+      ],
+      "strategy": [
+        "Record the proposal's ten× axis, scorecard verdict, and the real outcome (revenue/users/kill)",
+        "If the ten× claim held (tenx_confirmed): extract the winning pattern into a Capsule so future proposals reuse it",
+        "If the ten× claim failed (tenx_disconfirmed): record the disconfirmation + which axis was overstated, so the ten× index calibration tightens",
+        "Update the winning-pattern knowledge base: persona×pain×differentiator combos that monetized",
+        "Tighten ambiguity-scorer / scorecard thresholds only when repeated signals justify it (avoid overfitting from one event)",
+        "Solidify: append EvolutionEvent (intent=innovate), create Capsule on confirmed wins"
+      ],
+      "constraints": {
+        "max_files": 6,
+        "forbidden_paths": [".git", "node_modules", "assets/gep/events.jsonl"]
+      },
+      "validation": [
+        "python scripts/health_check.py"
       ]
     }
   ]
