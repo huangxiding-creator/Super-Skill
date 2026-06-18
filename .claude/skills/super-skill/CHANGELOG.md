@@ -5,6 +5,27 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-06-18
+
+### Added — IdeaForge: idea→product factory front-end
+
+Extends Super-Skill backwards so a user can start from a raw idea (text / attachment / voice transcript) instead of a spec. Three new front-end stages run before Phase 0, then hand off to the unchanged 14-phase pipeline.
+
+- **`idea-intake`** — deterministic ambiguity scorer (5 fields × 0/1/2) + **Hybrid Clarification Gate**: autonomous unless the idea scores 4–7, then a single batch of ≤3 questions (each with an AI default). Emits `IDEA_SEED.md`.
+- **`research-orchestrator`** — 9 pluggable software channels (GitHub, Sogou WeChat, Hacker News, npm/PyPI, App Store, Reddit, ProductHunt, Google Trends, competitor-site) with a uniform `harvest()` contract, 3-level graceful degradation (never raises), dedup (title + content-hash), quality gate, **gap analysis** (proposal-dimension × evidence coverage matrix → targeted re-research), and checkpoint resume. Ports the ResearchFactory-Eng orchestration architecture (EPC channels swapped for software ones). 4 channels live-verified.
+- **`proposal-forge`** — four deterministic scorers: **maturity index** (0–100 landscape), **ten× delta index** (`max_axis log10(ours/best)` — the falsifiable 10× gate that kills incremental ideas), data-driven **pricing** (bands from competitor prices), and a 4-dim **scorecard** (feasibility/user-value/monetization/ten×). Emits `PROPOSAL.md` + `BUSINESS_MODEL.md` + `SCORECARD.json`.
+- **Proposal Approval Gate** — new 4th interaction point: when the scorecard verdict is `proceed`, present the proposal once (approve/revise/reject), then auto-populate VISION/REQUIREMENTS/ARCHITECTURE and continue to Phase 0. The only new human touchpoint; after it the pipeline is fully autonomous as before.
+- **`monetization-scaffold`** (Phase 11 enhancement) — renders a deploy-ready, billable scaffold (Dockerfile, docker-compose, Stripe Checkout + webhook + tiers, CI/CD, env template, one-command deploy for Vercel/Railway/Fly) from the BUSINESS_MODEL pricing. Operationalizes "变现就绪前置到设计阶段".
+- **`health_check.py`** — runs every sub-skill's test suite + link integrity on session start (non-fatal); wired into the pre-run Notification hook. The stale-skill early-warning system.
+- **`record_outcome.py` + `gene_ideaforge_outcome_learning`** — GEP feedback loop: proposal outcomes (monetized/killed/rejected) become EvolutionEvents so wins turn into reusable Capsules and disconfirmations tighten ten× calibration.
+
+### Tests
+- 5 sub-skill test files, all green (idea-intake 8, research-orchestrator 20, proposal-forge 15+13, monetization-scaffold 8, acceptance 7/7).
+- End-to-end acceptance: raw idea → intake → live research → scorecard (PROCEED 0.788) → billable scaffold, fully chained.
+
+### Fixed
+- Pre-existing invalid JSON in `assets/gep/genes.json` (missing comma in `gene_gep_repair_from_errors.validation`).
+
 ## [3.21.0] - 2026-05-07
 
 ### Added - OpenWolf Integration (from cytostack/openwolf)
