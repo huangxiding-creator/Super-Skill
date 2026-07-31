@@ -1,9 +1,9 @@
 ---
 name: super-skill
-description: V4.0 idea→product factory: raw idea → 9-channel research → falsifiable 10× proposal → approval gate → 14-phase autonomous dev. GEP self-evolution, hooks, 44+ skills.
+description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea → 10× proposal → approval gate → 14-phase autonomous dev. GEP self-evolution, hooks, 46 skills.
 ---
 
-# Super-Skill V4.0: Idea→Product Factory
+# Super-Skill V4.1: Idea→Product Factory
 
 ## Core Philosophy
 
@@ -34,6 +34,7 @@ Super-Skill integrates best practices from industry leaders:
 | [MCP Protocol](https://github.com/modelcontextprotocol) | Official | Tool integration standard |
 | [Anthropic Skills](https://github.com/anthropics/skills) | Official | Skill building guidelines |
 | [OpenWolf](https://github.com/cytostack/openwolf) | cytostack | 6-hook lifecycle, anatomy indexing, cerebrum learning, token tracking, buglog, design QC |
+| [AI-Mastery 7 Disciplines](skills/ai-mastery-7/SKILL.md) | Boris Cherny | 7 disciplines: plan-first, verifier>generator, KB onboarding, rationale mining, weekly retro, long-term memory |
 
 **See**: [references/trending-standards.md](references/trending-standards.md) for complete integration patterns.
 
@@ -97,6 +98,24 @@ Context engineering > prompt engineering. Ensure the agent sees the right inform
 - SKILL.md body: < 500 lines (loaded on trigger)
 - Reference files: loaded on demand only
 - Each paragraph in SKILL.md must earn its tokens: "Does Claude really need this?"
+
+## AI Mastery Protocol (V4.1) — the 7 disciplines that multiply AI output
+
+Distilled from Boris Cherny (creator of Claude Code). Core thesis: **don't treat AI as a tool — it's an autonomous agent; give it context + tools, then let it run the whole workflow.** Most users extract <1% of their AI's capability. Super-Skill implements these 7 disciplines as named mechanisms so they're discoverable as one curriculum:
+
+| # | Discipline | Mechanism |
+|---|-----------|-----------|
+| 1 | Let AI teach you how to use itself | `ai-mastery-7` onboarding dialog → persist boundary to CLAUDE.md |
+| 2 | Domain onboarding via KB Q&A | Phase 3 `KNOWLEDGE_BASE/` + `continuous-learning-v2` |
+| 3 | Understand history → understand "why" | `ai-mastery-7` **`rationale_mining.py`** (new) |
+| 4 | Weekly retrospective from work logs | `ai-mastery-7` **`weekly_retrospective.py`** (new) |
+| 5 | Plan before code | Phase 4 approval gate + `brainstorming` |
+| 6 | Feedback tools → self-iteration | `verification-gate` + Phase 10 Ralph Loop — **verifier > generator** |
+| 7 | Long-term memory / CLAUDE.md | `memory-pipeline` + `cerebrum` + MEMORY.md (keep CLAUDE.md short!) |
+
+**Invoke** `ai-mastery-7` when the user asks how to use Super-Skill well, wants a weekly retrospective, asks "why does this code exist", or is about to say "just build X" (enforce D5).
+
+> Full mapping + deeper protocols (onboarding dialog, plan-first guardrail, feedback-loop harness, anti-patterns): [references/ai-mastery.md](references/ai-mastery.md)
 
 ## Idea Factory (V4.0 front-end) — from a raw idea to a 10× proposal
 
@@ -251,6 +270,7 @@ Super-Skill integrates 41+ specialized skills. See [references/skills-matrix.md]
 | `systematic-debugging` | 4-phase debugging |
 | `get-api-docs` | Context Hub curated docs |
 | `high-agency` | Iron rules + methodology router + anti-rationalization (PUA V2) |
+| `ai-mastery-7` | 7 AI-mastery disciplines: plan-first, KB onboarding, rationale mining, weekly retrospective, verifier>generator (Boris Cherny) |
 | `cognitive-modes` | 6 development perspectives (gstack) |
 | `anatomy-scanner` | Project file indexing with token estimates (OpenWolf) |
 | `cerebrum` | Cross-session learning with Do-Not-Repeat (OpenWolf) |
@@ -416,18 +436,22 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/phases.md](references/phases.md) | Complete 14-phase workflow details |
 | [references/skills-matrix.md](references/skills-matrix.md) | 27+ skills integration mapping |
 | [references/trending-standards.md](references/trending-standards.md) | 2026 GitHub trending standards (LangChain/AutoGen/CrewAI/MCP) |
+| [references/ai-mastery.md](references/ai-mastery.md) | AI-Mastery Protocol — Boris Cherny's 7 disciplines mapping + protocols |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
 
 ## Sub-Skills
 
-44 specialized skills in `skills/` directory. Key sub-skills:
+46 specialized skills in `skills/` directory. Key sub-skills:
 
 **Idea Factory (V4.0 front-end):**
 - **[idea-intake](skills/idea-intake/SKILL.md)** - Ambiguity scoring + Hybrid Clarification Gate
 - **[research-orchestrator](skills/research-orchestrator/SKILL.md)** - 9-channel research + gap analysis + dedup + quality gate
 - **[proposal-forge](skills/proposal-forge/SKILL.md)** - Maturity/ten×/pricing/scorecard + Proposal Approval Gate
+
+**AI Mastery (V4.1):**
+- **[ai-mastery-7](skills/ai-mastery-7/SKILL.md)** - 7 disciplines (Boris Cherny): plan-first, KB onboarding, rationale mining, weekly retrospective, verifier>generator; ships `weekly_retrospective.py` + `rationale_mining.py`
 
 - **[verification-gate](skills/verification-gate/SKILL.md)** - Read-only challenge pass (cc-harness-skills)
 - **[memory-pipeline](skills/memory-pipeline/SKILL.md)** - Extract + consolidate memories (cc-harness-skills)
@@ -474,6 +498,8 @@ Phase 12: Evolution → Learn and improve
 
 ## Version
 
+**V4.1.0** - 2026-07-31 - **AI-Mastery Protocol** (`ai-mastery-7` sub-skill): operationalizes Boris Cherny's 7 disciplines — plan-first, KB onboarding, **rationale mining** (`rationale_mining.py`), **weekly retrospective** (`weekly_retrospective.py`), verifier>generator, long-term memory. Closes 3 gaps (onboarding dialog, history→why, week-level retro) and names 4 existing mechanisms as one curriculum. 11/11 tests green, Windows UTF-8 safe. See [references/ai-mastery.md](references/ai-mastery.md).
+
 **V4.0.0** - 2026-06-18 - **IdeaForge front-end**: `idea-intake` (ambiguity + Hybrid Clarification Gate), `research-orchestrator` (9 software channels + gap analysis + dedup + quality gate, ports ResearchFactory-Eng), `proposal-forge` (maturity + ten× delta index + data-driven pricing + scorecard + Proposal Approval Gate). Raw idea → 10× proposal → existing 14-phase pipeline. See [references/ideaforge.md](references/ideaforge.md).
 
 **V3.21.0** - 2026-05-07
@@ -491,4 +517,4 @@ Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V3.21: Autonomous Development Orchestrator — OpenWolf Integrated*
+*Super-Skill V4.1: Idea→Product Factory — AI-Mastery Integrated*

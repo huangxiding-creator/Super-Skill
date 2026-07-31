@@ -4,9 +4,9 @@
 
 **AI-Native Autonomous Development Orchestrator | AI原生自主开发编排器**
 
-[![Version](https://img.shields.io/badge/version-3.17-blue.svg?style=for-the-badge)](https://github.com/huangxiding-creator/Super-Skill)
+[![Version](https://img.shields.io/badge/version-4.1-blue.svg?style=for-the-badge)](https://github.com/huangxiding-creator/Super-Skill)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-33+-purple.svg?style=for-the-badge)](.claude/skills/super-skill/skills/)
+[![Skills](https://img.shields.io/badge/skills-46+-purple.svg?style=for-the-badge)](.claude/skills/super-skill/skills/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-orange.svg?style=for-the-badge)](https://docs.anthropic.com/claude-code)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
 
@@ -41,7 +41,8 @@ Super-Skill is a **production-grade Claude Code skill** that transforms how AI b
 - **14-Phase Autonomous Workflow** — Vision → Feasibility → Discovery → Development → QA → Deploy → Evolve
 - **Autonomous Experiment Loop** — Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (58K+ stars)
 - **GEP Self-Evolution** — Darwin Gödel Machine pattern for continuous improvement
-- **33+ Integrated Skills** — Testing, security, API design, databases, monitoring, and more
+- **46+ Integrated Skills** — Testing, security, API design, databases, monitoring, and more
+- **AI-Mastery Protocol (V4.1)** — Boris Cherny's 7 disciplines: plan-first, KB onboarding, rationale mining, weekly retrospective, verifier>generator, long-term memory
 - **Hooks-Based Auto-Execution** — Pre-run upgrade + Post-run evolution via Claude Code hooks
 - **Hierarchical Orchestration** — Planner-Worker-Judge pattern for multi-agent coordination
 - **Context Engineering** — JIT context loading, progressive disclosure, compaction survival
@@ -205,6 +206,7 @@ Super-Skill/
 | [garrytan/gstack](https://github.com/garrytan/gstack) | - | 6 cognitive modes |
 | [tanweai/pua](https://github.com/tanweai/pua) | - | High-agency execution methodology |
 | [anthropics/skills](https://github.com/anthropics/skills) | - | Skill building best practices |
+| Boris Cherny (Claude Code talk) | - | 7 AI-mastery disciplines: plan-first, verifier>generator, KB onboarding, rationale mining, weekly retrospective, long-term memory |
 
 ---
 

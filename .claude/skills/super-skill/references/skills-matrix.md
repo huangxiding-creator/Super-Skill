@@ -1,6 +1,6 @@
 # Super-Skill Integration Matrix
 
-## 28+ Specialized Skills
+## 29+ Specialized Skills
 
 ### Idea Factory (V4.0 front-end — run before Phase 0 on a raw idea)
 
@@ -10,6 +10,12 @@
 | `research-orchestrator` | 9-channel research + gap analysis + dedup + quality gate | Stage 2 |
 | `proposal-forge` | Maturity/ten×/pricing/scorecard + Proposal Approval Gate | Stage 3 |
 | `monetization-scaffold` | Stripe/Docker/CI-CD/deploy template generator | Phase 11 |
+
+### AI Mastery (V4.1 — Boris Cherny's 7 disciplines)
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `ai-mastery-7` | 7 disciplines: plan-first, KB onboarding, rationale mining (`rationale_mining.py`), weekly retrospective (`weekly_retrospective.py`), verifier>generator, long-term memory | Onboarding, "why does this code exist", weekly retro, before "just build X" |
 
 ### Core Development Skills
 

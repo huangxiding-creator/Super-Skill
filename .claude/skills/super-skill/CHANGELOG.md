@@ -5,6 +5,36 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2026-07-31
+
+### Added — AI-Mastery Protocol (`ai-mastery-7`)
+
+Operationalizes the 7 disciplines distilled from Boris Cherny's (creator of Claude Code) methodology. Core thesis: don't treat AI as a tool — it's an autonomous agent; give it **context + tools**, then let it run the whole workflow. Most users extract <1% of their AI's capability; this sub-skill binds existing Super-Skill mechanisms to the 7 human-side disciplines that most multiply output, and fills the 3 genuine gaps.
+
+- **`ai-mastery-7`** sub-skill — the integrative layer. Maps each of the 7 disciplines to the Super-Skill mechanism that implements it, ships an onboarding dialog (D1), a plan-before-code guardrail (D5), and a verifier>generator feedback-loop harness (D6). Includes an AI-mastery maturity checklist.
+- **`weekly_retrospective.py`** (Discipline 4, **new tool**) — turns `git log` for a date range into a clear weekly report: **Delivered** / **In progress** / **Scope signals** (oversized commits) / **Hotspots** (paths touched ≥3×). Markdown or `--json`. Turns the fuzzy "what did I do this week?" into an honest list.
+- **`rationale_mining.py`** (Discipline 3, **new tool**) — surfaces the **why** behind a path's current state: **origin** (first commit), **formative changes** (top-N by churn), **recent drift**, and a per-region **blame segment map** for single files. Markdown or `--json`.
+- **`references/ai-mastery.md`** — full discipline→mechanism mapping table, deeper protocols for D1/D5/D6, and the anti-patterns the 7 disciplines forbid.
+
+### Disciplines → mechanisms
+| Discipline | Mechanism | Status |
+|-----------|-----------|--------|
+| D1 Let AI teach you itself | onboarding dialog | **new protocol** |
+| D2 KB Q&A onboarding | Phase 3 + `continuous-learning-v2` | exists, documented |
+| D3 History → "why" | `rationale_mining.py` | **new tool** |
+| D4 Weekly retrospective | `weekly_retrospective.py` | **new tool** |
+| D5 Plan before code | Phase 4 gate + `brainstorming` | exists, reinforced |
+| D6 Verifier > generator | `verification-gate` + Phase 10 Ralph Loop | exists, reinforced |
+| D7 Long-term memory | `memory-pipeline` + `cerebrum` + CLAUDE.md | exists, documented |
+
+### Tests
+- 11/11 unit tests green (`skills/ai-mastery-7/scripts/test_ai_mastery.py`), discovered automatically by `health_check.py`. Runs on a temp git repo (offline, deterministic).
+- Includes a **Windows UTF-8 regression**: non-ASCII (Chinese + em-dash) commit messages must not crash the GBK-default subprocess decode, and CLI stdout bytes must be valid UTF-8 even when redirected.
+- Live smoke test on this repo verified: weekly retrospective buckets real commits; rationale miner produces origin + formative + blame-segment map for a real file.
+
+### Fixed
+- `weekly_retrospective.py` / `rationale_mining.py`: force `encoding="utf-8"` on both git-subprocess output (was crashing on non-ASCII under GBK Windows locales) and stdout/stderr (was emitting GBK bytes when piped/redirected, breaking downstream UTF-8 readers).
+
 ## [4.0.0] - 2026-06-18
 
 ### Added — IdeaForge: idea→product factory front-end
