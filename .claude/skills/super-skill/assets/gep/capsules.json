@@ -5,12 +5,45 @@
       "type": "Capsule",
       "id": "capsule_gep_integration_20260303",
       "schema_version": "1.5.0",
-      "trigger": ["evolver_integration", "gep_protocol"],
+      "trigger": [
+        "evolver_integration",
+        "gep_protocol"
+      ],
       "gene": "gene_gep_innovate_from_opportunity",
       "summary": "Successfully integrated GEP protocol from evolver into Super-Skill darwin-evolution",
       "confidence": 0.92,
-      "blast_radius": { "files": 3, "lines": 450 },
+      "blast_radius": {
+        "files": 3,
+        "lines": 450
+      },
       "created_at": "2026-03-03T00:00:00Z"
+    },
+    {
+      "type": "Capsule",
+      "id": "capsule_we_aipo_audit_loop_20260805",
+      "schema_version": "1.5.0",
+      "trigger": [
+        "phase_10_ralph_loop",
+        "post_run_underperforms",
+        "optimization_round",
+        "unattended_pipeline"
+      ],
+      "gene": "gene_gep_optimize_prompt_and_assets",
+      "summary": "Run-log-driven audit loop: distill 290-commit We-AIPO build (126 modules, 218 tests, 78 optimizations, 11/11 unattended) into 5 reusable patterns — run-log-driven audit, root-cause-before-fix, numbered scoped fixes, fail-closed multi-judge gates, cumulative-metric tracking. Captured in references/audit-loop-case-study.md with a reusable audit-proposal template.",
+      "confidence": 0.9,
+      "evidence": {
+        "project": "We-AIPO (自媒永动机)",
+        "commits": 290,
+        "modules": 126,
+        "tests": 218,
+        "optimizations": 78,
+        "unattended_stages": "11/11"
+      },
+      "blast_radius": {
+        "files": 1,
+        "lines": 145
+      },
+      "created_at": "2026-08-05T00:00:00Z"
     }
   ]
 }

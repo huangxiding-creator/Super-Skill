@@ -35,6 +35,7 @@ Super-Skill integrates best practices from industry leaders:
 | [Anthropic Skills](https://github.com/anthropics/skills) | Official | Skill building guidelines |
 | [OpenWolf](https://github.com/cytostack/openwolf) | cytostack | 6-hook lifecycle, anatomy indexing, cerebrum learning, token tracking, buglog, design QC |
 | [AI-Mastery 7 Disciplines](skills/ai-mastery-7/SKILL.md) | Boris Cherny | 7 disciplines: plan-first, verifier>generator, KB onboarding, rationale mining, weekly retro, long-term memory |
+| [We-AIPO (自媒永动机)](references/audit-loop-case-study.md) | case study | Run-log-driven audit loop: 5 reusable patterns from a 290-commit / 78-optimization / 11-of-11-unattended build |
 
 **See**: [references/trending-standards.md](references/trending-standards.md) for complete integration patterns.
 
@@ -236,6 +237,7 @@ Comprehensive quality assurance.
 ### Phase 10: Ralph Loop
 10-iteration optimization cycle.
 - Analyze → Improve → Validate → Document → Check convergence
+- **Run-log-driven audit**: each round opens with a reconstructed run timeline + waste calc → root-cause → numbered fixes (S1-SN) → impl table. Exemplar + template: [references/audit-loop-case-study.md](references/audit-loop-case-study.md) (from We-AIPO, GEP Capsule `capsule_we_aipo_audit_loop_20260805`).
 - **See**: [references/phases.md](references/phases.md) for convergence criteria
 
 ### Phase 11: Deployment
@@ -338,11 +340,7 @@ STEP 5: Inject Context → Session context ready
 
 ### Pre-Run Upgrade (STEP -1)
 
-Before each session (max capability readiness): version check → sub-skill upgrade (`npx skills`) → GitHub-trending best-practices search → pattern integration → Context Hub sync → evolution sync. Full detail: [skills/pre-run-upgrade/SKILL.md](skills/pre-run-upgrade/SKILL.md).
-
-### Auto-Update Mechanism
-
-Auto-updates before each session: check version → pull → update skills → refresh Context Hub. Configure via env vars in `.claude/settings.json`.
+Before each session (max capability readiness): version check → sub-skill upgrade (`npx skills`) → GitHub-trending best-practices search → pattern integration → Context Hub sync → evolution sync. Full detail: [skills/pre-run-upgrade/SKILL.md](skills/pre-run-upgrade/SKILL.md). Auto-update is configured via env vars in `.claude/settings.json`.
 
 ## Context Hub Integration
 
@@ -432,6 +430,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/skills-matrix.md](references/skills-matrix.md) | 27+ skills integration mapping |
 | [references/trending-standards.md](references/trending-standards.md) | 2026 GitHub trending standards (LangChain/AutoGen/CrewAI/MCP) |
 | [references/ai-mastery.md](references/ai-mastery.md) | AI-Mastery Protocol — Boris Cherny's 7 disciplines mapping + protocols |
+| [references/audit-loop-case-study.md](references/audit-loop-case-study.md) | Run-log-driven audit loop — 5 reusable patterns + template, from We-AIPO |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
@@ -476,6 +475,8 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
+**V4.1.2** - 2026-08-05 - **We-AIPO experience → GEP Capsule**: distilled the successful We-AIPO build (290 commits, 126 modules, 218 tests, 78 optimizations, 11/11 unattended) into 5 reusable patterns — run-log-driven audit, root-cause-before-fix, numbered scoped fixes, fail-closed multi-judge gates, cumulative-metric tracking. New [references/audit-loop-case-study.md](references/audit-loop-case-study.md) with a reusable audit-proposal template; packaged as GEP Capsule `capsule_we_aipo_audit_loop_20260805`; wired into Phase 10 (Ralph Loop) as the evidenced exemplar.
+
 **V4.1.1** - 2026-08-05 - **Self-consistency hardening**: strengthened `health_check.py` (the verifier) with skill-frontmatter + count-staleness checks so doc drift can't recur; fixed stale skill counts (SKILL.md "41+"→46, skills-matrix "29+"→46); filled a skills-matrix coverage gap (13 Core Skills were absent — added "Core Skills" section); trimmed SKILL.md to 498 lines (back under the 500-line token budget); deduped a double `## Demo` in README. health_check now self-verifies all of this.
 
 **V4.1.0** - 2026-07-31 - **AI-Mastery Protocol** (`ai-mastery-7` sub-skill): operationalizes Boris Cherny's 7 disciplines — plan-first, KB onboarding, **rationale mining** (`rationale_mining.py`), **weekly retrospective** (`weekly_retrospective.py`), verifier>generator, long-term memory. Closes 3 gaps (onboarding dialog, history→why, week-level retro) and names 4 existing mechanisms as one curriculum. 11/11 tests green, Windows UTF-8 safe. See [references/ai-mastery.md](references/ai-mastery.md).
@@ -497,4 +498,4 @@ Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1.1: Idea→Product Factory — AI-Mastery + Self-Consistency Hardened*
+*Super-Skill V4.1.2: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Audit-Loop Capsule*

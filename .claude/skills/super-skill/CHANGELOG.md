@@ -5,6 +5,24 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.2] - 2026-08-05
+
+### Added — We-AIPO development experience → GEP Capsule (Phase 12)
+Distilled the successful We-AIPO (`自媒永动机`) build into a reusable Capsule so future projects inherit the methodology. Source: a WeChat-ecosystem content-autonomy engine — **126 Python modules · 218 tests · 78 deep optimizations · 11/11 unattended stages · 290 commits in ~2 weeks**.
+
+- **`references/audit-loop-case-study.md`** — the 5 reusable patterns extracted from We-AIPO, each with concrete evidence and a "why it works" tied back to a Super-Skill mechanism:
+  1. **Run-log-driven audit** — every optimization round opens with a reconstructed run timeline + waste calculation (Phase 10 *Analyze*).
+  2. **Root-cause-before-fix** — name the exact root cause + rule out the wrong hypothesis with before/after code (Iceberg Rule).
+  3. **Numbered, scoped fixes** — S1-SN / F1-FN, each bound to specific files in an impl table (Autonomous Loop small-commits).
+  4. **Fail-closed multi-judge gates** — thresholds + ≥2 judges + U1–U4/H1–H2 gates + low-score retry (Variance Inequality).
+  5. **Cumulative-metric tracking** — optimization/test/unattended counts drift upward across rounds as the success signal.
+  Includes a **reusable audit-proposal template** (the `PROPOSAL_ROUND*.md` shape) for Phase-10 rounds.
+- **GEP Capsule `capsule_we_aipo_audit_loop_20260805`** appended to `assets/gep/capsules.json` (gene: `gene_gep_optimize_prompt_and_assets`, confidence 0.9, with structured evidence) — reusable by `darwin-evolution`.
+- **Phase 10 (Ralph Loop)** enriched in SKILL.md to name We-AIPO as the evidenced exemplar + pointer to the case study.
+
+### Verified
+- `health_check.py`: healthy=true, 6/6 suites, 0 broken links, 0 consistency warnings. New reference + capsule JSON are link-valid and parseable.
+
 ## [4.1.1] - 2026-08-05
 
 ### Changed — Self-consistency hardening (verifier > generator)
