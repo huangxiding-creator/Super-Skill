@@ -1,6 +1,6 @@
 # Super-Skill Integration Matrix
 
-## 46 Specialized Skills
+## 47 Specialized Skills
 
 ### Core Skills (Always Available)
 
@@ -54,6 +54,7 @@
 | `cicd-automation` | GitHub Actions patterns | Phase 7, 11 |
 | `auto-git-create` | Repository automation | Phase 7, 11 |
 | `security-scanning` | SAST/SCA/Secret scanning | Phase 9 |
+| `clash-proxy` | Clash proxy manager (GFW bypass: start/status/stop/run-through-proxy) | Phase 2, 11 (any GitHub/foreign-network op) |
 
 ### Development Skills
 

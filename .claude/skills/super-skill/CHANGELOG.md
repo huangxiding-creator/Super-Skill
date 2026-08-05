@@ -5,6 +5,28 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.3] - 2026-08-05
+
+### Added — `clash-proxy` sub-skill (Infrastructure)
+Integrated the Clash proxy manager — required to reach GitHub / HuggingFace / PyPI from this machine — as a first-class sub-skill (47 total). The source skill was **doc-only with a missing script**; this release implements the documented contract so it actually works end-to-end.
+
+- **`skills/clash-proxy/scripts/clash_proxy.py`** — pure-stdlib (urllib + subprocess + ctypes), Windows-focused, cross-platform-graceful:
+  - `start()` — launch Clash via `explorer.exe`, poll port 7890 until the proxy reaches the open internet (≤120s), best-effort auto-dismiss the Windows firewall `允许访问` dialog once.
+  - `status()` — ground truth: a real request through `127.0.0.1:7890` to `https://github.com`. A live process whose port is closed still returns False.
+  - `stop()` — focus the Clash window + send `Ctrl+Q` (Electron quit). **Never `taskkill`** (triggers UAC).
+  - `run_with_proxy(cmd, close_after=False)` — inject `HTTP_PROXY`/`HTTPS_PROXY` and run; `close_after=True` realizes the **We-AIPO "用完即关"** pattern (stop the proxy when the command finishes).
+  - CLI: `start | status | stop | run -- <cmd> [--close-after]`. Config via `CLASH_EXE` / `CLASH_PORT` / `CLASH_TEST` env.
+- **`skills/clash-proxy/scripts/test_clash_proxy.py`** — 12 tests (status on dead/live port, env config resolution, `run_with_proxy` env injection, argparse, cross-platform guard). GUI paths intentionally not live-tested. Auto-discovered by `health_check.py`.
+- **`skills/clash-proxy/SKILL.md`** — adapted from the source doc, with the script now real and the We-AIPO "用完即关" cross-link to `references/audit-loop-case-study.md`.
+
+### Wired
+- `references/skills-matrix.md` Infrastructure section + heading count 46→47.
+- `SKILL.md` sub-skills list + counts 46→47 + Version V4.1.3 + footer.
+- Root `README.md` badges + counts 46→47.
+
+### Verified
+- `health_check.py`: healthy=true, clash-proxy auto-discovered (6 suites now), 0 broken links, 0 consistency warnings (count-staleness check confirms 47 everywhere).
+
 ## [4.1.2] - 2026-08-05
 
 ### Added — We-AIPO development experience → GEP Capsule (Phase 12)

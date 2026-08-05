@@ -1,6 +1,6 @@
 ---
 name: super-skill
-description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea → 10× proposal → approval gate → 14-phase autonomous dev. GEP self-evolution, hooks, 46 skills.
+description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea → 10× proposal → approval gate → 14-phase autonomous dev. GEP self-evolution, hooks, 47 skills.
 ---
 
 # Super-Skill V4.1: Idea→Product Factory
@@ -254,7 +254,7 @@ Capture learnings and evolve Super-Skill.
 
 ## Skill Integration Matrix
 
-Super-Skill integrates 46 specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
+Super-Skill integrates 47 specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
 
 ### Core Skills (Always Available)
 | Skill | Purpose |
@@ -414,12 +414,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 ```
 
 ### Strategy Presets
-| Strategy | Repair | Optimize | Innovate |
-|----------|--------|----------|----------|
-| balanced | Medium | Medium | Medium |
-| innovate | Low | Low | High |
-| harden | High | Medium | Low |
-| repair-only | High | Low | None |
+`balanced` (all Medium) · `innovate` (Low/Low/High) · `harden` (High/Med/Low) · `repair-only` (High/Low/None) — Repair/Optimize/Innovate columns; full table in [EVOLUTION.md](EVOLUTION.md).
 
 ## Reference Files
 
@@ -437,7 +432,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 
 ## Sub-Skills
 
-46 specialized skills in `skills/` directory. Key sub-skills:
+47 specialized skills in `skills/` directory. Key sub-skills:
 
 **Idea Factory (V4.0 front-end):**
 - **[idea-intake](skills/idea-intake/SKILL.md)** - Ambiguity scoring + Hybrid Clarification Gate
@@ -468,12 +463,15 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 - **[token-tracker](skills/token-tracker/SKILL.md)** - Session token tracking + waste detection (OpenWolf)
 - **[buglog](skills/buglog/SKILL.md)** - Auto bug detection + similarity matching (OpenWolf)
 - **[design-qc](skills/design-qc/SKILL.md)** - Visual regression with sectioned screenshots (OpenWolf)
+- **[clash-proxy](skills/clash-proxy/SKILL.md)** - Clash proxy manager (GFW bypass: start/status/stop/run-through-proxy) for GitHub/foreign-network ops
 
 ## Quick Start
 
 Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with zero further interaction (worked example in `README.md`; per-phase outputs under "## 14-Phase Workflow" above).
 
 ## Version
+
+**V4.1.3** - 2026-08-05 - **`clash-proxy` sub-skill**: integrated the Clash proxy manager (required to reach GitHub/HuggingFace/PyPI from this machine) as a first-class sub-skill. The source skill was doc-only with a missing script — this release implements `scripts/clash_proxy.py` (start/status/stop/run_with_proxy, pure stdlib, 12 tests) so the documented contract actually works. Realizes the We-AIPO "用完即关" close-after-use pattern as a runnable tool. 47 skills.
 
 **V4.1.2** - 2026-08-05 - **We-AIPO experience → GEP Capsule**: distilled the successful We-AIPO build (290 commits, 126 modules, 218 tests, 78 optimizations, 11/11 unattended) into 5 reusable patterns — run-log-driven audit, root-cause-before-fix, numbered scoped fixes, fail-closed multi-judge gates, cumulative-metric tracking. New [references/audit-loop-case-study.md](references/audit-loop-case-study.md) with a reusable audit-proposal template; packaged as GEP Capsule `capsule_we_aipo_audit_loop_20260805`; wired into Phase 10 (Ralph Loop) as the evidenced exemplar.
 
@@ -498,4 +496,4 @@ Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1.2: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Audit-Loop Capsule*
+*Super-Skill V4.1.3: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy*
