@@ -88,15 +88,9 @@ Super-Skill is a **production-grade Claude Code skill** that transforms how AI b
 
 ## Demo
 
-> **Demo GIF coming soon!** Record your Super-Skill session and submit it via a PR.
+> **Demo GIF coming soon!** Record your Super-Skill session and submit it via a PR. Showing Super-Skill building a full-stack app in one command.
 >
 > **演示GIF即将推出！** 录制你的 Super-Skill 会话并通过PR提交。
-
----
-
-## Demo
-
-> *Demo GIF coming soon — showing Super-Skill building a full-stack app in one command*
 
 ---
 

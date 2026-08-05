@@ -252,7 +252,7 @@ Capture learnings and evolve Super-Skill.
 
 ## Skill Integration Matrix
 
-Super-Skill integrates 41+ specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
+Super-Skill integrates 46 specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
 
 ### Core Skills (Always Available)
 | Skill | Purpose |
@@ -401,12 +401,7 @@ Super-Skill uses GEP Protocol from autogame-17/evolver for self-evolution.
 4. Periodic review (every 5 projects / 7 days)
 
 ### Asset Files
-```
-assets/gep/
-├── genes.json      # 5 default genes
-├── capsules.json   # Success archive
-└── events.jsonl    # Evolution log
-```
+`assets/gep/` → `genes.json` (5 default genes) · `capsules.json` (success archive) · `events.jsonl` (evolution log).
 
 **See**: [skills/darwin-evolution/SKILL.md](skills/darwin-evolution/SKILL.md) for full GEP Protocol documentation.
 
@@ -477,26 +472,11 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 
 ## Quick Start
 
-```
-User: "Build me a task management app"
-
-Phase 0: Vision → AI-native task app with voice-first interface
-Phase 1: Feasibility → Score 0.85, proceed
-Phase 2: GitHub → Found Todoist clone (65%), build from scratch
-Phase 2b: Skills → Install real-time-websockets, search-indexing
-Phase 3: Knowledge → Task domain, calendar integrations
-Phase 4: Requirements → User approves
-Phase 5: Architecture → React + Node + PostgreSQL
-Phase 6: WBS → 3 epics, 12 stories
-Phase 7: Init → Project structure, CI/CD
-Phase 8: Development → Autonomous implementation
-Phase 9: QA → 85% coverage, security clean
-Phase 10: Ralph Loop → 10 iterations optimization
-Phase 11: Deploy → Production deployment
-Phase 12: Evolution → Learn and improve
-```
+Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with zero further interaction (worked example in `README.md`; per-phase outputs under "## 14-Phase Workflow" above).
 
 ## Version
+
+**V4.1.1** - 2026-08-05 - **Self-consistency hardening**: strengthened `health_check.py` (the verifier) with skill-frontmatter + count-staleness checks so doc drift can't recur; fixed stale skill counts (SKILL.md "41+"→46, skills-matrix "29+"→46); filled a skills-matrix coverage gap (13 Core Skills were absent — added "Core Skills" section); trimmed SKILL.md to 498 lines (back under the 500-line token budget); deduped a double `## Demo` in README. health_check now self-verifies all of this.
 
 **V4.1.0** - 2026-07-31 - **AI-Mastery Protocol** (`ai-mastery-7` sub-skill): operationalizes Boris Cherny's 7 disciplines — plan-first, KB onboarding, **rationale mining** (`rationale_mining.py`), **weekly retrospective** (`weekly_retrospective.py`), verifier>generator, long-term memory. Closes 3 gaps (onboarding dialog, history→why, week-level retro) and names 4 existing mechanisms as one curriculum. 11/11 tests green, Windows UTF-8 safe. See [references/ai-mastery.md](references/ai-mastery.md).
 
@@ -517,4 +497,4 @@ Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1: Idea→Product Factory — AI-Mastery Integrated*
+*Super-Skill V4.1.1: Idea→Product Factory — AI-Mastery + Self-Consistency Hardened*

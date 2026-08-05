@@ -126,11 +126,76 @@ def _check_links() -> List[str]:
     return broken
 
 
+def _parse_frontmatter(text: str) -> Dict:
+    """Best-effort YAML frontmatter parse (key: value lines only)."""
+    m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.S)
+    if not m:
+        return {}
+    fm: Dict = {}
+    for line in m.group(1).splitlines():
+        if ":" in line:
+            k, _, v = line.partition(":")
+            fm[k.strip()] = v.strip()
+    return fm
+
+
+def _check_skill_integrity():
+    """Structural + drift checks across skills/ and the top-level docs.
+
+    Returns (frontmatter_errors, count_warnings):
+      - frontmatter_errors: a skill dir missing SKILL.md or missing
+        name/description in frontmatter. Treated as a real defect (affects health).
+      - count_warnings: the "NN+ skills" claim in SKILL.md / skills-matrix.md
+        undersells the actual count by >=3 (stale after adding skills). Non-fatal.
+    """
+    skills_dir = os.path.join(SKILL_ROOT, "skills")
+    if not os.path.isdir(skills_dir):
+        return [], []
+    frontmatter_errors: List[str] = []
+    actual = 0
+    for name in sorted(os.listdir(skills_dir)):
+        d = os.path.join(skills_dir, name)
+        if not os.path.isdir(d):
+            continue
+        actual += 1
+        sm = os.path.join(d, "SKILL.md")
+        if not os.path.isfile(sm):
+            frontmatter_errors.append(f"skills/{name}: missing SKILL.md")
+            continue
+        try:
+            text = open(sm, encoding="utf-8").read()
+        except OSError:
+            frontmatter_errors.append(f"skills/{name}: unreadable SKILL.md")
+            continue
+        fm = _parse_frontmatter(text)
+        if not fm.get("name") or not fm.get("description"):
+            frontmatter_errors.append(f"skills/{name}: SKILL.md frontmatter missing name/description")
+
+    count_warnings: List[str] = []
+    checks = [
+        ("SKILL.md", os.path.join(SKILL_ROOT, "SKILL.md"), r"integrates (\d+)\+ specialized"),
+        ("skills-matrix.md", os.path.join(SKILL_ROOT, "references", "skills-matrix.md"),
+         r"(\d+)\+ Specialized Skills"),
+    ]
+    for label, path, pat in checks:
+        try:
+            text = open(path, encoding="utf-8").read()
+        except OSError:
+            continue
+        m = re.search(pat, text)
+        if m and (actual - int(m.group(1))) >= 3:
+            count_warnings.append(
+                f"{label}: claims {m.group(1)}+ skills, actual is {actual} (stale — bump the count)"
+            )
+    return frontmatter_errors, count_warnings
+
+
 def run() -> HealthReport:
     test_dirs = _find_test_dirs()
     runs = [_run_tests(d) for d in test_dirs]
     total_failed = sum(r["failed"] for r in runs)
     broken = _check_links()
+    fm_errors, count_warnings = _check_skill_integrity()
 
     warnings: List[str] = []
     for r in runs:
@@ -138,9 +203,11 @@ def run() -> HealthReport:
             warnings.append(f"{r['dir']}: {r['failed']} test file(s) failing")
     if broken:
         warnings.append(f"{len(broken)} broken local link(s)")
+    warnings.extend(count_warnings)
+    warnings.extend(fm_errors)
 
     return HealthReport(
-        healthy=(total_failed == 0 and not broken),
+        healthy=(total_failed == 0 and not broken and not fm_errors),
         skills_checked=len(test_dirs),
         test_runs=runs,
         broken_links=broken[:50],  # cap noise

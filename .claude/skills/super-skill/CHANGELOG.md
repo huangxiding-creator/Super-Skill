@@ -5,6 +5,25 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.1] - 2026-08-05
+
+### Changed — Self-consistency hardening (verifier > generator)
+A round of self-optimization targeted at the project's own stated lever — *strengthen the verifier, not the generator*. `health_check.py` now catches the classes of drift this release fixes, so they can't recur silently.
+
+### Added
+- **`health_check.py` skill-integrity checks** — two new functions:
+  - `_check_skill_integrity()` verifies every `skills/<name>/` has a `SKILL.md` with parseable frontmatter (`name` + `description`). Structural defects now affect `healthy` (treated like broken links).
+  - Count-staleness: extracts the "NN+ skills" claim from `SKILL.md` and `references/skills-matrix.md` and **warns** (non-fatal) when the documented count undersells the actual `skills/` count by ≥3. This is exactly the drift that had crept in (41+, 29+ vs actual 46).
+- **`references/skills-matrix.md` — "Core Skills (Always Available)" section**: 13 core skills were listed in `SKILL.md` but absent from the integration matrix (`verification-gate`, `memory-pipeline`, `context-compressor`, `autonomous-loop`, `pre-run-upgrade`, `post-run-evolution`, `high-agency`, `cognitive-modes`, `anatomy-scanner`, `cerebrum`, `token-tracker`, `buglog`, `design-qc`). Added.
+
+### Fixed
+- Stale skill counts: `SKILL.md` "41+ specialized" → 46; `skills-matrix.md` heading "29+ Specialized" → 46. (Verifier confirms: `health_check.py` now emits zero count warnings.)
+- Root `README.md` had **two `## Demo` sections** — merged into one bilingual section.
+- `SKILL.md` was 520 lines — **over the project's own 500-line token budget**. Trimmed the redundant Quick Start worked example (duplicates the 14-Phase section + README) and compacted the GEP Asset Files block → **498 lines**.
+
+### Tests
+- `health_check.py`: healthy=true, 5/5 sub-skill suites green, 0 broken links, **0 consistency warnings** (was: 2 count warnings before the fixes).
+
 ## [4.1.0] - 2026-07-31
 
 ### Added — AI-Mastery Protocol (`ai-mastery-7`)

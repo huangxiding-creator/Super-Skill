@@ -1,6 +1,24 @@
 # Super-Skill Integration Matrix
 
-## 29+ Specialized Skills
+## 46 Specialized Skills
+
+### Core Skills (Always Available)
+
+| Skill | Purpose |
+|-------|---------|
+| `verification-gate` | Read-only challenge pass (cc-harness-skills) |
+| `memory-pipeline` | Extract + consolidate memories (cc-harness-skills) |
+| `context-compressor` | 9-part session handoff (cc-harness-skills) |
+| `autonomous-loop` | Infinite experiment loop (karpathy/autoresearch) |
+| `pre-run-upgrade` | Sub-skill upgrade + best-practices search (session-start) |
+| `post-run-evolution` | Review + self-evolution after completion (session-end) |
+| `high-agency` | Iron rules + methodology router + anti-rationalization (PUA V2) |
+| `cognitive-modes` | 6 development perspectives (gstack) |
+| `anatomy-scanner` | Project file indexing with token estimates (OpenWolf) |
+| `cerebrum` | Cross-session learning with Do-Not-Repeat (OpenWolf) |
+| `token-tracker` | Session token tracking + waste detection (OpenWolf) |
+| `buglog` | Auto bug detection + Jaccard similarity matching (OpenWolf) |
+| `design-qc` | Visual regression with sectioned screenshots (OpenWolf) |
 
 ### Idea Factory (V4.0 front-end — run before Phase 0 on a raw idea)
 
