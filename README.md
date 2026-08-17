@@ -6,7 +6,7 @@
 
 [![Version](https://img.shields.io/badge/version-4.1-blue.svg?style=for-the-badge)](https://github.com/huangxiding-creator/Super-Skill)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-47+-purple.svg?style=for-the-badge)](.claude/skills/super-skill/skills/)
+[![Skills](https://img.shields.io/badge/skills-48+-purple.svg?style=for-the-badge)](.claude/skills/super-skill/skills/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-orange.svg?style=for-the-badge)](https://docs.anthropic.com/claude-code)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-Super-Skill is a **production-grade Claude Code skill** that transforms how AI builds software. Instead of ad-hoc prompting, it provides a structured 14-phase workflow with built-in self-evolution, autonomous experiment loops, and 47+ integrated specialized skills.
+Super-Skill is a **production-grade Claude Code skill** that transforms how AI builds software. Instead of ad-hoc prompting, it provides a structured 14-phase workflow with built-in self-evolution, autonomous experiment loops, and 48+ integrated specialized skills.
 
 **Key innovation**: Applies [karpathy/autoresearch](https://github.com/karpathy/autoresearch)'s experiment loop pattern to software development — automatically run experiments, keep improvements, discard regressions, and never stop until you say so.
 
@@ -41,8 +41,9 @@ Super-Skill is a **production-grade Claude Code skill** that transforms how AI b
 - **14-Phase Autonomous Workflow** — Vision → Feasibility → Discovery → Development → QA → Deploy → Evolve
 - **Autonomous Experiment Loop** — Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (58K+ stars)
 - **GEP Self-Evolution** — Darwin Gödel Machine pattern for continuous improvement
-- **47+ Integrated Skills** — Testing, security, API design, databases, monitoring, and more
+- **48+ Integrated Skills** — Testing, security, API design, databases, monitoring, and more
 - **AI-Mastery Protocol (V4.1)** — Boris Cherny's 7 disciplines: plan-first, KB onboarding, rationale mining, weekly retrospective, verifier>generator, long-term memory
+- **Real Engineering (V4.1.4)** — [mattpocock/skills](https://github.com/mattpocock/skills): grilling interviews, CONTEXT.md glossary + ADRs, tracer-bullet tickets, human-only-step wizards, red-first bug diagnosis
 - **6-Hook Lifecycle** — [OpenWolf](https://github.com/cytostack/openwolf)-inspired complete lifecycle interception
 - **Project Anatomy** — File indexing with token estimates (~80% token savings)
 - **Cross-Session Learning** — Cerebrum: Do-Not-Repeat patterns + user preferences + learnings
@@ -125,11 +126,11 @@ npx skills add https://github.com/huangxiding-creator/Super-Skill --global --yes
 
 ---
 
-## 47+ Integrated Skills
+## 48+ Integrated Skills
 
 | Category | Skills |
 |----------|--------|
-| **Core** | `autonomous-loop`, `pre-run-upgrade`, `post-run-evolution`, `darwin-evolution`, `high-agency`, `cognitive-modes` |
+| **Core** | `autonomous-loop`, `pre-run-upgrade`, `post-run-evolution`, `darwin-evolution`, `high-agency`, `cognitive-modes`, `real-engineering` |
 | **Development** | `api-patterns`, `data-patterns`, `state-management`, `real-time-websockets`, `code-transformation` |
 | **Quality** | `testing-automation`, `security-scanning`, `accessibility-a11y`, `systematic-debugging` |
 | **Infrastructure** | `cicd-automation`, `auto-git-create`, `monitoring-observability`, `mcp-integration` |
@@ -205,6 +206,7 @@ Super-Skill/
 | [garrytan/gstack](https://github.com/garrytan/gstack) | - | 6 cognitive modes |
 | [tanweai/pua](https://github.com/tanweai/pua) | - | High-agency execution methodology |
 | [anthropics/skills](https://github.com/anthropics/skills) | - | Skill building best practices |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | - | Real-engineering flows: grilling, CONTEXT.md+ADR, tracer-bullet tickets, wizards, red-first diagnosis |
 | Boris Cherny (Claude Code talk) | - | 7 AI-mastery disciplines: plan-first, verifier>generator, KB onboarding, rationale mining, weekly retrospective, long-term memory |
 
 ---
@@ -259,7 +261,7 @@ Thanks to all the people who contributed to this project!
 
 ## 概述
 
-Super-Skill 是一个**生产级 Claude Code 技能**，通过结构化的14阶段工作流、内置自进化机制、自主实验循环和47+专业集成技能，彻底改变 AI 构建软件的方式。
+Super-Skill 是一个**生产级 Claude Code 技能**，通过结构化的14阶段工作流、内置自进化机制、自主实验循环和48+专业集成技能，彻底改变 AI 构建软件的方式。
 
 **核心创新**：将 [karpathy/autoresearch](https://github.com/karpathy/autoresearch) 的实验循环模式应用于软件开发 — 自动运行实验、保留改进、丢弃退化，直到你叫停为止。
 
@@ -278,7 +280,7 @@ Super-Skill 是一个**生产级 Claude Code 技能**，通过结构化的14阶�
 - **14阶段自主工作流** — 愿景 → 可行性 → 发现 → 开发 → QA → 部署 → 进化
 - **自主实验循环** — 灵感来自 [karpathy/autoresearch](https://github.com/karpathy/autoresearch)（58K+ Stars）
 - **GEP自进化** — 达尔文哥德尔机模式，持续自我改进
-- **47+集成技能** — 测试、安全、API设计、数据库、监控等
+- **48+集成技能** — 测试、安全、API设计、数据库、监控等
 - **Hooks自动执行** — 通过 Claude Code hooks 实现运行前升级 + 运行后进化
 - **层级编排** — Planner-Worker-Judge 模式实现多智能体协调
 - **上下文工程** — JIT上下文加载、渐进式披露、压缩生存

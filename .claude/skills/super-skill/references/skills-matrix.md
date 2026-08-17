@@ -1,6 +1,6 @@
 # Super-Skill Integration Matrix
 
-## 47 Specialized Skills
+## 48 Specialized Skills
 
 ### Core Skills (Always Available)
 
@@ -34,6 +34,12 @@
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
 | `ai-mastery-7` | 7 disciplines: plan-first, KB onboarding, rationale mining (`rationale_mining.py`), weekly retrospective (`weekly_retrospective.py`), verifier>generator, long-term memory | Onboarding, "why does this code exist", weekly retro, before "just build X" |
+
+### Real Engineering (V4.1.4 — mattpocock/skills)
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `real-engineering` | Grilling design-tree interviews; CONTEXT.md glossary + ADRs (`context_lint.py`); tracer-bullet tickets with blocking edges (+ expand–contract); human-only-step wizards (`wizard_template.sh`); red-first bug diagnosis; two-axis review; smart-zone phase boundaries | Stress-test a plan; fuzzy jargon; split work into tickets; manual-only steps; hard bugs; diff review vs spec |
 
 ### Core Development Skills
 

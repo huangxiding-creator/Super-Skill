@@ -5,6 +5,30 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.4] - 2026-08-17
+
+### Added — `real-engineering` sub-skill (from mattpocock/skills)
+Integrated [mattpocock/skills](https://github.com/mattpocock/skills) ("Skills For Real Engineers", MIT) — 25 stable composable skills — as the `real-engineering` sub-skill (48 total). Philosophy: small, composable disciplines that live at the **interaction points** (alignment, language, human-only steps), complementing Super-Skill's autonomous spine.
+
+- **5 absorbed mechanisms**:
+  1. **Grilling** — design-tree interview in rounds over the *frontier* (settled-prerequisite questions); facts are the agent's job, decisions the user's. The deep path beside the Hybrid Clarification Gate's quick path (Phase 4).
+  2. **Ubiquitous language** — `CONTEXT.md` glossary (terms + `_Avoid_` banned synonyms, nothing but the glossary) + ADRs gated by the 3-part test (hard to reverse + surprising + real trade-off) (Phase 3/5).
+  3. **Tracer-bullet tickets** — vertical slices each declaring blocking edges; wide refactors sequence expand–contract (Phase 6 upgrade).
+  4. **Wizard** — generate an interactive bash script for steps only a human can perform; ships the full wizard library `scripts/wizard_template.sh` verbatim (with provenance header) (Phase 7/11).
+  5. **Red-first bug diagnosis** — build one command that already goes red on *this* bug (10-rung ladder), tighten it, raise flake repro rate; never hypothesise without it (Phase 8/9 upgrade).
+- **3 strengthened mechanisms**: two-axis code review (Standards ∥ Spec, Phase 9 `verification-gate`); smart-zone phase boundaries (Continue/clear/handoff/subagent/compact, `context-compressor`); wait-what re-pitch habit.
+- **`scripts/context_lint.py`** (new verifier) — lints CONTEXT.md glossaries (empty definitions, duplicate terms, stray/empty `_Avoid_`) and `docs/adr/` numbering (NNNN-slug.md format, duplicate numbers, missing H1). Missing paths are deliberately clean (lazy creation).
+- **`scripts/test_context_lint.py`** — 14/14 tests, incl. non-ASCII glossary safety and a bash-probe guard (Python's subprocess may resolve a non-functional WSL bash; probe before `bash -n`).
+- **`references/mattpocock-skills.md`** — full 25-skill → Super-Skill mapping (absorbed / strengthened / covered) with in-depth mechanism details, plus what was deliberately NOT absorbed.
+
+### Wired
+- `SKILL.md`: sources-table row; Phase 3/4/6/9/11 enrichment; counts 47→48; V4.1.4 entry; footer. Collapsed the V3.21/V3.20 version entries to one line (full history in CHANGELOG) to stay under the 500-line body budget.
+- `references/skills-matrix.md`: new "Real Engineering" section + heading 47→48.
+- Root `README.md`: badges/counts 47→48, Influenced By row, feature bullet.
+
+### Verified
+- `health_check.py`: healthy=true, real-engineering auto-discovered (7th suite), 0 broken links, 0 consistency warnings.
+
 ## [4.1.3] - 2026-08-05
 
 ### Added — `clash-proxy` sub-skill (Infrastructure)

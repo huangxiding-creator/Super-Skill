@@ -1,6 +1,6 @@
 ---
 name: super-skill
-description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea → 10× proposal → approval gate → 14-phase autonomous dev. GEP self-evolution, hooks, 47 skills.
+description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea → 10× proposal → approval gate → 14-phase autonomous dev. GEP self-evolution, hooks, 48 skills.
 ---
 
 # Super-Skill V4.1: Idea→Product Factory
@@ -36,6 +36,7 @@ Super-Skill integrates best practices from industry leaders:
 | [OpenWolf](https://github.com/cytostack/openwolf) | cytostack | 6-hook lifecycle, anatomy indexing, cerebrum learning, token tracking, buglog, design QC |
 | [AI-Mastery 7 Disciplines](skills/ai-mastery-7/SKILL.md) | Boris Cherny | 7 disciplines: plan-first, verifier>generator, KB onboarding, rationale mining, weekly retro, long-term memory |
 | [We-AIPO (自媒永动机)](references/audit-loop-case-study.md) | case study | Run-log-driven audit loop: 5 reusable patterns from a 290-commit / 78-optimization / 11-of-11-unattended build |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | Matt Pocock | Real-engineering flows: grilling, CONTEXT.md+ADR ubiquitous language, tracer-bullet tickets, human-only-step wizards, red-first diagnosis |
 
 **See**: [references/trending-standards.md](references/trending-standards.md) for complete integration patterns.
 
@@ -164,14 +165,14 @@ Automatically discover and install skills from ecosystem.
 ### Phase 3: Knowledge Base
 Build comprehensive domain knowledge.
 - Domain, technical, and context knowledge
-- Output: `KNOWLEDGE_BASE/`, `SCHEMAS.md`
+- Output: `KNOWLEDGE_BASE/`, `SCHEMAS.md`, plus a `CONTEXT.md` **ubiquitous-language glossary** (terms + banned synonyms; lint via `context_lint.py`)
 - **Skill**: `continuous-learning-v2`
 
 ### Phase 4: Requirements Engineering
 Define detailed, actionable requirements.
 - Functional + Non-functional + Acceptance Criteria
 - Output: `REQUIREMENTS.md`
-- **Skill**: `brainstorming`
+- **Skill**: `brainstorming`; deep path = **grilling** (design-tree interview; quick path = Hybrid Clarification Gate) — [real-engineering](skills/real-engineering/SKILL.md)
 - **Gate**: User approval required before proceeding
 
 ### Phase 5-5b: Architecture & Design
@@ -184,7 +185,7 @@ Design system architecture and components.
 
 ### Phase 6: WBS
 Break project into executable tasks.
-- Epic → Story → Task hierarchy
+- Epic → Story → Task hierarchy; prefer **tracer-bullet vertical slices with blocking edges**; wide refactors → expand–contract ([real-engineering](skills/real-engineering/SKILL.md))
 - Output: `WBS.md`, `TASK_BACKLOG.md`
 - **See**: [references/phases.md](references/phases.md) for WBS structure
 
@@ -232,6 +233,7 @@ Judge ← evaluates result ← Worker
 Comprehensive quality assurance.
 - Unit (≥80% coverage) + Integration + E2E tests
 - Security scan, performance benchmarks, a11y compliance
+- **Two-axis review** before commit: Standards (conventions + smell baseline) ∥ Spec (faithful to the issue) — [real-engineering](skills/real-engineering/SKILL.md)
 - **Skills**: `testing-automation`, `security-scanning`, `accessibility-a11y`
 
 ### Phase 10: Ralph Loop
@@ -243,6 +245,7 @@ Comprehensive quality assurance.
 ### Phase 11: Deployment
 Deploy to production.
 - Pre-deployment checklist, environment config, migrations, monitoring
+- **Wizard**: for human-only steps (credentials, dashboards, CI secrets) generate an interactive bash script from `wizard_template.sh` — [real-engineering](skills/real-engineering/SKILL.md)
 - **Skills**: `cicd-automation`, `monitoring-observability`
 
 ### Phase 12: Evolution
@@ -254,7 +257,7 @@ Capture learnings and evolve Super-Skill.
 
 ## Skill Integration Matrix
 
-Super-Skill integrates 47 specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
+Super-Skill integrates 48 specialized skills. See [references/skills-matrix.md](references/skills-matrix.md) for complete mapping.
 
 ### Core Skills (Always Available)
 | Skill | Purpose |
@@ -426,13 +429,14 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/trending-standards.md](references/trending-standards.md) | 2026 GitHub trending standards (LangChain/AutoGen/CrewAI/MCP) |
 | [references/ai-mastery.md](references/ai-mastery.md) | AI-Mastery Protocol — Boris Cherny's 7 disciplines mapping + protocols |
 | [references/audit-loop-case-study.md](references/audit-loop-case-study.md) | Run-log-driven audit loop — 5 reusable patterns + template, from We-AIPO |
+| [references/mattpocock-skills.md](references/mattpocock-skills.md) | mattpocock/skills integration map — all 25 source skills → Super-Skill bindings |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
 
 ## Sub-Skills
 
-47 specialized skills in `skills/` directory. Key sub-skills:
+48 specialized skills in `skills/` directory. Key sub-skills:
 
 **Idea Factory (V4.0 front-end):**
 - **[idea-intake](skills/idea-intake/SKILL.md)** - Ambiguity scoring + Hybrid Clarification Gate
@@ -441,6 +445,9 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 
 **AI Mastery (V4.1):**
 - **[ai-mastery-7](skills/ai-mastery-7/SKILL.md)** - 7 disciplines (Boris Cherny): plan-first, KB onboarding, rationale mining, weekly retrospective, verifier>generator; ships `weekly_retrospective.py` + `rationale_mining.py`
+
+**Real Engineering (V4.1.4):**
+- **[real-engineering](skills/real-engineering/SKILL.md)** - Grilling + CONTEXT.md/ADR ubiquitous language + tracer-bullet tickets + wizard + red-first diagnosis (mattpocock/skills); ships `wizard_template.sh` + `context_lint.py`
 
 - **[verification-gate](skills/verification-gate/SKILL.md)** - Read-only challenge pass (cc-harness-skills)
 - **[memory-pipeline](skills/memory-pipeline/SKILL.md)** - Extract + consolidate memories (cc-harness-skills)
@@ -471,6 +478,8 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
+**V4.1.4** - 2026-08-17 - **`real-engineering` sub-skill** (from [mattpocock/skills](https://github.com/mattpocock/skills), MIT): grilling design-tree interviews (deep path beside the Hybrid Clarification Gate), CONTEXT.md glossary + ADR discipline, tracer-bullet tickets with blocking edges (+ expand–contract for wide refactors), human-only-step wizards (ships `wizard_template.sh`), red-first bug diagnosis, two-axis code review, smart-zone phase boundaries. Ships `context_lint.py` verifier (14 tests). 48 skills. Full 25-skill source mapping: [references/mattpocock-skills.md](references/mattpocock-skills.md).
+
 **V4.1.3** - 2026-08-05 - **`clash-proxy` sub-skill**: integrated the Clash proxy manager (required to reach GitHub/HuggingFace/PyPI from this machine) as a first-class sub-skill. The source skill was doc-only with a missing script — this release implements `scripts/clash_proxy.py` (start/status/stop/run_with_proxy, pure stdlib, 12 tests) so the documented contract actually works. Realizes the We-AIPO "用完即关" close-after-use pattern as a runnable tool. 47 skills.
 
 **V4.1.2** - 2026-08-05 - **We-AIPO experience → GEP Capsule**: distilled the successful We-AIPO build (290 commits, 126 modules, 218 tests, 78 optimizations, 11/11 unattended) into 5 reusable patterns — run-log-driven audit, root-cause-before-fix, numbered scoped fixes, fail-closed multi-judge gates, cumulative-metric tracking. New [references/audit-loop-case-study.md](references/audit-loop-case-study.md) with a reusable audit-proposal template; packaged as GEP Capsule `capsule_we_aipo_audit_loop_20260805`; wired into Phase 10 (Ralph Loop) as the evidenced exemplar.
@@ -481,19 +490,10 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 **V4.0.0** - 2026-06-18 - **IdeaForge front-end**: `idea-intake` (ambiguity + Hybrid Clarification Gate), `research-orchestrator` (9 software channels + gap analysis + dedup + quality gate, ports ResearchFactory-Eng), `proposal-forge` (maturity + ten× delta index + data-driven pricing + scorecard + Proposal Approval Gate). Raw idea → 10× proposal → existing 14-phase pipeline. See [references/ideaforge.md](references/ideaforge.md).
 
-**V3.21.0** - 2026-05-07
-- **OpenWolf Integration** (from cytostack/openwolf):
-  - `anatomy-scanner` — Project file indexing with token estimates (~80% token savings)
-  - `cerebrum` — Cross-session learning with Do-Not-Repeat patterns
-  - `token-tracker` — Session token tracking + 5 waste detection patterns
-  - `buglog` — Auto bug detection (15 patterns) + Jaccard similarity matching
-  - `design-qc` — Visual regression with sectioned screenshot capture
-  - 6-hook lifecycle architecture (session-start, pre-read, post-read, pre-write, post-write, stop)
-
-**V3.20.0** - 2026-04-03 - PUA V2/V3: methodology router, anti-rationalization, iceberg rule
+**V3.21.0** - 2026-05-07 - OpenWolf integration: 5 sub-skills (anatomy-scanner, cerebrum, token-tracker, buglog, design-qc) + 6-hook lifecycle.
 
 Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1.3: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy*
+*Super-Skill V4.1.4: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy + real-engineering*
