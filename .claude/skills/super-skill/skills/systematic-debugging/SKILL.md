@@ -33,6 +33,10 @@ Never apply a fix without understanding WHY the bug occurs. Symptom-based fixes 
 
 ## Four-Phase Debugging Process
 
+### Phase 0: Build a Red Feedback Loop (V4.1.5, from mattpocock/skills)
+
+Before any theory: build ONE command that already goes red on *this* bug (failing test, curl script, CLI + snapshot diff, headless browser, replayed trace, throwaway harness, fuzz loop, bisect harness, differential, HITL script - in rough order of preference). Tighten it (2s not 30s; assert the specific symptom; pin time/seed). For flakes, raise the reproduction rate until debuggable. **Never hypothesise without a red loop.** Lock the fix with a regression test. See [real-engineering](../real-engineering/SKILL.md).
+
 ### Phase 1: Root Cause Investigation
 
 **Goal**: Understand WHY the bug occurs, not just WHAT happens.

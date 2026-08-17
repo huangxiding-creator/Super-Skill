@@ -68,3 +68,7 @@ The `Stop` hook triggers context compression before session end, producing a `SE
   "estimated_token_savings": "70-90%"
 }
 ```
+
+## Phase Boundaries (V4.1.5, from mattpocock/skills)
+
+At each phase boundary choose deliberately - Continue (rule out first) / clear / handoff file (only for a new harness, new directory, colleague, or mid-phase fork) / subagent (tightly scoped) / compact (the default). The binding constraint is the **smart zone** (~150k tokens within which reasoning is still sharp) - never push on degraded; compact at the nearest boundary. When writing the handoff: **reference artifacts by path, never duplicate them**, and redact secrets. See [real-engineering](../real-engineering/SKILL.md)

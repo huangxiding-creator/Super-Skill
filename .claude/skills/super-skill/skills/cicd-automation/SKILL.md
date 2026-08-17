@@ -6,7 +6,6 @@ version: 1.0.0
 source: Based on GitHub Actions best practices 2025, enterprise CI/CD patterns
 integrated-with: super-skill v3.7+
 ---
-
 # CI/CD Automation Skill
 
 This skill provides comprehensive CI/CD pipeline automation patterns using GitHub Actions, enabling efficient, secure, and maintainable continuous integration and deployment workflows.
@@ -377,33 +376,6 @@ jobs:
           fi
 ```
 
-## Monitoring & Notifications
-
-### Status Badges
-
-```markdown
-<!-- README.md -->
-[![CI](https://github.com/user/repo/actions/workflows/ci.yml/badge.svg)](https://github.com/user/repo/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/user/repo/branch/main/graph/badge.svg)](https://codecov.io/gh/user/repo)
-```
-
-### Slack Notifications
-
-```yaml
-jobs:
-  notify:
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Notify Slack
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-```
-
 ## Integration with Super-Skill
 
 ### Phase Integration
@@ -506,17 +478,6 @@ def generate_cd_workflow(
 
 ---
 
-## Version History
+## Detail Reference
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0.0 | 2026-03-02 | Initial integration with Super-Skill V3.7 |
-
----
-
-## References
-
-- [GitHub Actions Documentation](https://docs.github.com/actions)
-- [GitHub Actions Marketplace](https://github.com/marketplace/actions)
-- [Security Hardening Guide](https://docs.github.com/en/actions/security-guides)
-- [Reusable Workflows](https://docs.github.com/actions/using-workflows/reusing-workflows)
+Loaded on demand from [references/details.md](references/details.md): `Monitoring & Notifications`, `Version History`, `References`.

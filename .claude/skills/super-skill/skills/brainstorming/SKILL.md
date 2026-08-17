@@ -32,6 +32,10 @@ Cut scope aggressively. If a feature isn't essential for the core use case, defe
 ### 3. Explore Before Committing
 Always understand the full context before proposing solutions.
 
+## Deep Path: Grilling (V4.1.5, from mattpocock/skills)
+
+For big decisions, graduate from brainstorming into a **grilling** interview: map the design tree, ask the whole **frontier** (questions whose prerequisites are settled) in numbered rounds with recommended answers; facts are the agent's job (sub-agents), decisions are the user's. Done when the frontier is empty - nothing silently assumed. See [real-engineering](../real-engineering/SKILL.md).
+
 ## 6-Step Brainstorming Process
 
 ### Step 1: Explore Context

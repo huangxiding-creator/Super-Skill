@@ -9,6 +9,15 @@ description: Pre-execution sub-skill upgrade and best practices discovery. TRIGG
 
 Executes at the start of every Super-Skill session to ensure maximum capability readiness. Searches for upgrades, best practices, and new patterns before beginning any project work.
 
+## Sub-Skill Quality Tooling (V4.1.5)
+
+| Script | Purpose |
+|---|---|
+| `scripts/upgrade_audit.py` | Audit every `skills/*/SKILL.md`: frontmatter parse, `name` == directory, description length (trigger-rich 40-1024), body <= 500 lines (progressive disclosure), relative-link integrity (CommonMark fence-aware). Exit 1 on errors. |
+| `scripts/progressive_split.py` | Bring an oversized SKILL.md under budget: moves `Version History`/`References` then tail topic sections into `references/details.md` (fence-aware, keep-always sections pinned, relative links rebased), leaving a `## Detail Reference` pointer. `--dry-run`, `--keep "Section A,Section B"`. |
+
+Run at session start (or before any release): `python scripts/upgrade_audit.py` - 0 errors, 0 warnings is the definition of an upgraded sub-skill set.
+
 ## Execution Sequence
 
 ```

@@ -5,6 +5,33 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.5] - 2026-08-17
+
+### Added — Full sub-skill upgrade sweep (48 skills)
+A complete upgrade pass over every sub-skill, driven by two new verifier/tool scripts in `skills/pre-run-upgrade/scripts/` — the upgrade is now **measured, not asserted**:
+
+- **`upgrade_audit.py`** (12 tests) — audits every `skills/*/SKILL.md`: frontmatter parses; `name` matches the directory; description is trigger-useful (≥40 chars) and within the Claude Code limit (≤1024); body ≤500 lines (progressive disclosure); relative links resolve. Link checking is **CommonMark fence-aware** (fences close only at same-marker lines of ≥ length), so template placeholders like `{badge_url}` inside code blocks are correctly ignored.
+- **`progressive_split.py`** (9 tests) — brings an oversized SKILL.md under budget by moving `Version History`/`References` first, then tail topic sections, into `references/details.md` with a `## Detail Reference` pointer. Fence-aware (never splits inside a code block), keep-always sections pinned (`Integration with Super-Skill`, `Deliverables`, plus `--keep`), relative links rebased with `../`, `--dry-run`.
+
+### Changed — all 20 over-budget sub-skills brought under the 500-line budget
+`testing-automation` 716→438 (TDD Workflow/Cycle pinned as operational core) · `api-patterns` 685→299 · `automated-documentation` 683→375 · `error-recovery` 676→471 · `performance-optimization` 644→440 · `context-management` 615→448 · `monitoring-observability` 603→399 · `search-indexing` 599→479 · `state-management` 598→455 · `accessibility-a11y` 594→398 · `darwin-evolution` 593→492 (dedups Strategy Presets/Configuration vs EVOLUTION.md) · `real-time-websockets` 577→443 · `data-patterns` 575→395 · `feature-flags` 562→351 · `security-scanning` 557→427 · `code-transformation` 547→483 · `advanced-reasoning` 542→468 · `file-storage` 537→470 · `prompt-engineering` 531→444 · `cicd-automation` 514→475. No content deleted — moved sections live in each skill's `references/details.md`.
+
+### Fixed
+- **prompt-engineering**: pre-existing **unbalanced nested fence** (a ` ```markdown ` example embedding ` ```json ` — illegal same-length nesting) that made every downstream section unparseable. Repaired with a 4-backtick outer fence (CommonMark-correct).
+- `upgrade_audit` false positives: 11 "unresolved links" in `automated-documentation` were template placeholders inside code fences.
+
+### Strengthened — V4.1.4 knowledge propagated into 5 sub-skills
+- `systematic-debugging` ← Phase 0 red-first feedback loop (10-rung ladder + tightening + flake repro-rate)
+- `verification-gate` ← two-axis review (Standards ∥ Spec)
+- `context-compressor` ← phase-boundary options + smart-zone + reference-don't-duplicate + redaction
+- `brainstorming` ← grilling deep path (design tree, frontier rounds)
+- `pre-run-upgrade` ← documents its own tooling; "0 errors, 0 warnings" is the definition of an upgraded sub-skill set
+
+### Verified
+- `upgrade_audit.py`: **48/48 sub-skills, 0 errors, 0 warnings** (frontmatter, descriptions, body budgets, links all clean).
+- All 20 split files fence-balanced; `Integration with Super-Skill` retained in every SKILL.md.
+- `health_check.py`: healthy=true, 9 test suites, 0 broken links, 0 consistency warnings.
+
 ## [4.1.4] - 2026-08-17
 
 ### Added — `real-engineering` sub-skill (from mattpocock/skills)

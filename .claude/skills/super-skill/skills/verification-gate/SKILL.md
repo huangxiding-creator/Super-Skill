@@ -67,3 +67,4 @@ git rev-parse HEAD
 - **Findings before summary** - list evidence first, then conclude
 - **Never imply validation ran if it did not** - honest assessment
 - **Distinguish verified, unverified, and failed** - three states, not two
+- **Two-axis review** (V4.1.5, from mattpocock/skills) - review the diff since a fixed point on two axes, as parallel sub-agents: **Standards** (repo conventions + Fowler smell baseline) and **Spec** (faithful to the originating issue/requirement). See [real-engineering](../real-engineering/SKILL.md)

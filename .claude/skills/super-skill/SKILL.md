@@ -478,6 +478,8 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
+**V4.1.5** - 2026-08-17 - **Full sub-skill upgrade sweep**: new `upgrade_audit.py` (frontmatter / trigger-rich descriptions / 500-line budget / link integrity — CommonMark fence-aware) + `progressive_split.py` (oversized SKILL.md → `references/details.md` with pointer); audited all 48 sub-skills — 0 errors, 0 warnings. All 20 over-budget sub-skills brought under the progressive-disclosure budget (largest: testing-automation 716→438, api-patterns 685→299); fixed a pre-existing unbalanced nested-fence defect in prompt-engineering. Propagated V4.1.4 knowledge into 5 sub-skills (red-first → systematic-debugging, two-axis → verification-gate, phase boundaries → context-compressor, grilling → brainstorming, tooling → pre-run-upgrade). 48 skills.
+
 **V4.1.4** - 2026-08-17 - **`real-engineering` sub-skill** (from [mattpocock/skills](https://github.com/mattpocock/skills), MIT): grilling design-tree interviews (deep path beside the Hybrid Clarification Gate), CONTEXT.md glossary + ADR discipline, tracer-bullet tickets with blocking edges (+ expand–contract for wide refactors), human-only-step wizards (ships `wizard_template.sh`), red-first bug diagnosis, two-axis code review, smart-zone phase boundaries. Ships `context_lint.py` verifier (14 tests). 48 skills. Full 25-skill source mapping: [references/mattpocock-skills.md](references/mattpocock-skills.md).
 
 **V4.1.3** - 2026-08-05 - **`clash-proxy` sub-skill**: integrated the Clash proxy manager (required to reach GitHub/HuggingFace/PyPI from this machine) as a first-class sub-skill. The source skill was doc-only with a missing script — this release implements `scripts/clash_proxy.py` (start/status/stop/run_with_proxy, pure stdlib, 12 tests) so the documented contract actually works. Realizes the We-AIPO "用完即关" close-after-use pattern as a runnable tool. 47 skills.
@@ -496,4 +498,4 @@ Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1.4: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy + real-engineering*
+*Super-Skill V4.1.5: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy + real-engineering + full sub-skill upgrade*
