@@ -470,13 +470,15 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 - **[token-tracker](skills/token-tracker/SKILL.md)** - Session token tracking + waste detection (OpenWolf)
 - **[buglog](skills/buglog/SKILL.md)** - Auto bug detection + similarity matching (OpenWolf)
 - **[design-qc](skills/design-qc/SKILL.md)** - Visual regression with sectioned screenshots (OpenWolf)
-- **[clash-proxy](skills/clash-proxy/SKILL.md)** - Clash proxy manager (GFW bypass: start/status/stop/run-through-proxy) for GitHub/foreign-network ops
+- **[clash-proxy](skills/clash-proxy/SKILL.md)** - Clash proxy manager for GitHub/foreign-network ops: **Clash REST API layer** (mode switch, node pin, DNS-residue cleanup — We-AIPO provenance) + one-command `push` recipe (commit → proxy → push → direct-fallback → 用完即关)
 
 ## Quick Start
 
 Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with zero further interaction (worked example in `README.md`; per-phase outputs under "## 14-Phase Workflow" above).
 
 ## Version
+
+**V4.1.6** - 2026-08-18 - **Clash API push** (from We-AIPO `proxy_mgr`/`sched_guard`/`push_github`): clash-proxy gains a Clash **REST API layer** — port/secret auto-discovery (`~/.config/clash/config.yaml` → probe table 20225/11845/9090; port drift no longer silently kills API calls), `PATCH /configs` mode switching (global default TUN-off; direct also disables TUN+fake-IP DNS), `PUT /proxies/GLOBAL` node pinning (geo stability), fake-IP DNS-hijack detection, `release()` (W18: direct switch, keep running) — and a **one-command `push`** recipe (commit → proxy up → API global → push 120s → direct-fallback → close-after-use). `stop()` reworked: API direct first, then Ctrl+Q/taskkill/service-stop/flushdns (no TUN residue). 34/34 tests + live smoke (`api_base=25148` discovered, `mode=direct` read). 48 skills.
 
 **V4.1.5** - 2026-08-17 - **Full sub-skill upgrade sweep**: new `upgrade_audit.py` (frontmatter / trigger-rich descriptions / 500-line budget / link integrity — CommonMark fence-aware) + `progressive_split.py` (oversized SKILL.md → `references/details.md` with pointer); audited all 48 sub-skills — 0 errors, 0 warnings. All 20 over-budget sub-skills brought under the progressive-disclosure budget (largest: testing-automation 716→438, api-patterns 685→299); fixed a pre-existing unbalanced nested-fence defect in prompt-engineering. Propagated V4.1.4 knowledge into 5 sub-skills (red-first → systematic-debugging, two-axis → verification-gate, phase boundaries → context-compressor, grilling → brainstorming, tooling → pre-run-upgrade). 48 skills.
 
@@ -498,4 +500,4 @@ Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1.5: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy + real-engineering + full sub-skill upgrade*
+*Super-Skill V4.1.6: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering + full sub-skill upgrade*

@@ -60,7 +60,7 @@
 | `cicd-automation` | GitHub Actions patterns | Phase 7, 11 |
 | `auto-git-create` | Repository automation | Phase 7, 11 |
 | `security-scanning` | SAST/SCA/Secret scanning | Phase 9 |
-| `clash-proxy` | Clash proxy manager (GFW bypass: start/status/stop/run-through-proxy) | Phase 2, 11 (any GitHub/foreign-network op) |
+| `clash-proxy` | Clash proxy manager (GFW bypass): Clash REST API layer (mode switch, node pin, DNS-residue cleanup) + one-command `push` recipe | Phase 2, 11 (any GitHub/foreign-network op) |
 
 ### Development Skills
 

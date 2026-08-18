@@ -5,6 +5,28 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.6] - 2026-08-18
+
+### Added — Clash API layer + one-command `push` (from We-AIPO)
+Ported We-AIPO's Clash **REST API** approach (`src/utils/proxy_mgr.py`, `src/utils/sched_guard.py`, `scripts/push_github.py` — battle-tested over 290+ commits) into the `clash-proxy` sub-skill. Mode switching no longer relies on GUI automation: it goes through the Clash external controller, which is silent, fast, and leaves no TUN/DNS residue.
+
+- **API auto-discovery** (`api_base()` / `api_secret()`): `CLASH_API`/`CLASH_SECRET` env → `~/.config/clash/config.yaml` (`external-controller:` port + `secret:`) → probe table (20225 CFW GUI, 11845 headless core, 9090 upstream default), each candidate probed with a real `GET /version`; success cached. **Port drift is the #1 silent killer** — We-AIPO once hardcoded port 18886 and every API call silently failed (W18). Live-verified on this machine: discovers `127.0.0.1:25148` (the port the config drifted to) with zero configuration, and no secret is ever hardcoded in this repo.
+- **Mode switching** (`set_mode()`): `PATCH /configs`. `global` defaults to **TUN off** (traffic opts in via explicit proxy env — domestic DNS never hijacked; `tun=True` opts into whole-system capture). `direct` also disables TUN + fake-IP DNS, so killing/leaving Clash can't poison DNS with `198.18.x.x` residue (We-AIPO 2026-08-07 lesson).
+- **Node pinning** (`pin_node()`): `PUT /proxies/GLOBAL` — exit-country drift across runs is a risk-control trigger for Google-class services (We-AIPO FIX-0818p). Node from arg or `CLASH_NODE`; no-op when unset.
+- **`release()`** (W18 NetworkOrchestrator pattern): switch direct + system proxy off + flushdns but **leave Clash running** — cheaper than a full stop between repeated proxy sessions, avoids TUN/DNS churn.
+- **`push` command** — the We-AIPO `push_github.py` recipe as one CLI: optional commit → show unpushed commits (`git log @{u}..HEAD`, early-exit if none) → proxy up (`start()` if needed) → API global + pin node → `git push` with proxy env (120s) → **one direct-fallback retry** (proxy overridden empty, 60s) → close (`stop()` full exit, or `release()` with `--keep`).
+- **New diagnostics**: `mode` CLI (API base, reachability, current mode, port status, fake-IP DNS check); `dns_hijacked()` detects the `198.18.0.0/16` fake-IP range.
+- **`stop()` reworked** (We-AIPO `exit_clash` recipe): API switch to direct **first** (no TUN/DNS residue even if the kill fails) → system proxy off → graceful Ctrl+Q → `taskkill` WM_CLOSE → `/F` only for residue (Clash runs as the current user at normal integrity — no UAC; the old blanket "never taskkill" rule is refined, not dropped) → best-effort `sc stop "Clash Core Service"` → flushdns → verify no process remains.
+- **`is_running()`** broadened: matches `clash-win64`, `clash-verge`, `mihomo`, `clash-core-service`, `clash for windows`.
+
+### Tests
+- `test_clash_proxy.py` 12 → **34 cases**, all green: config.yaml port+secret parsing (incl. missing-file safety), discovery ordering + caching + all-down fallback, mode-switch payload correctness (direct disables TUN+DNS; global defaults TUN-off; TUN opt-in), node-pin noop/PUT semantics, fake-IP detection, `release()` vs `stop()` semantics, and the full push recipe (nothing-to-push early exit, commit+push+close, direct fallback overrides proxy before the subcommand, `--keep` releases instead of stopping).
+- Live smoke on this machine: `mode --json` → `api_base=http://127.0.0.1:25148`, `api_reachable=true`, `mode=direct`, `dns_hijacked=false`.
+
+### Wired
+- `skills/clash-proxy/SKILL.md`: new contract (push/global/direct/mode commands), API how-it-works table, push recipe, provenance, 34-test inventory.
+- `SKILL.md`: clash-proxy bullet + V4.1.6 version entry + footer. `references/skills-matrix.md`: Infrastructure row.
+
 ## [4.1.5] - 2026-08-17
 
 ### Added — Full sub-skill upgrade sweep (48 skills)
