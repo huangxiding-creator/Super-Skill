@@ -61,3 +61,7 @@ experiments.tsv
 evolver/.git/
 .claude/worktrees/
 .claude/settings.local.json
+
+# Optimization-suggestion raw materials (may contain live credentials - never commit)
+优化改进建议/*.pdf
+优化改进建议/_pdf_extract.txt

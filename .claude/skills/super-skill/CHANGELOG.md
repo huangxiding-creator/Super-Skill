@@ -34,6 +34,31 @@ Cross-linked as companion layers in `dev-constitution.md` and the SKILL.md refer
 - `SKILL.md`: Core Philosophy constitution line; Phase 0 (C2 boldness/C1/C3), Phase 2 (C4), Phase 5 (C5) in-place enrichments; reference-table row; V4.1.7 entry; footer. Collapsed V4.0.0–V4.1.2 version entries to one line (details in CHANGELOG) to stay under the 500-line body budget.
 - `skills/proposal-forge/SKILL.md`: ten× gate named as the C1/C3 enforcement point.
 
+## [4.1.8] - 2026-09-08
+
+### Added — 宪法 V2: full-portfolio mining (438-page plan + ~40 delivered projects)
+Expanded the constitution from its We-AIPO/transcript basis to the author's entire delivered portfolio. Mining inputs: `优化改进建议/总包大脑实战方案.pdf` (438 pages, 29.5万字 — the author's own battle plan for the 总包大脑 system incl. their Claude-Code driving playbook) + the project trees `E:\CPOPC` (31 dirs) and `E:\AIResearch` (~25 sub-projects), surveyed by 8 parallel mining agents with file-level citations.
+
+- **[references/dev-constitution.md](references/dev-constitution.md) → V2** — 5 articles + 6 red lines grow to **16 articles + 12 red lines**, restructured into six 部:
+  - **丁部 人机协作 C6–C9** (new): 指令只提需求与标准不提过程 · 十倍方案批准才动工 (Fund-Fortune: "未批准不写一行业务代码") · 批准后全自主不跳步不打扰 (预检原则) · 完工交账+成功经验固化复用 ("之前成功的方法怎么不用呢").
+  - **戊部 交付验收 C10–C13** (new): 生产级>无人值守 · **ZBBrain 检验** (Write-Max: 全套 14 阶段文档却 total_runs=0 vs Write-Pro 14,840 行在产 → 投产证据>文档完备) · 修复必附 before→after 实测数据 (0/75→75/75, 690.8s→150.9s, 17h→2h) · 金标准验证不假完成 (URL 跳转/服务器回显/剪贴板序列号/草稿箱消失) · 容错优先一次跑完 (核心单径、辅助降级不停播).
+  - **己部 数据内容 C14–C16** (new): 禁止虚构+交叉验证 (≥3 独立源/官方≥70%/nav_audit 双源对账/采集缺口如实披露) · 防未来函数防数据毒化 (D 日只用 ≤D−1 净值; 假跳变截断) · 内容保真+诚实汇报 (158/158 但覆盖 14% 如实写; 诚实权衡声明).
+  - **红线 R7–R12** (new): 账号安全至上 (拟人间隔永不自动调整/单账号串行/直播真人动作) · 只增不删代码级硬化 (零 delete 路径/危险端点黑名单/按钮白名单断言) · 日预算硬顶宁可拒启 (收费模型白名单闸门) · 反爬主动限流 (到 450 次主动暂停 20min) · 密钥外置 (提示词与文档永不出现明文密钥 — PDF 本身即反面教材) · 人工终审边界 (四灯分级, <0.85 转人工).
+  - C1–C5 enriched (Fund-Fortune 提案自驳结构 · 三级借用 · 逆向实测矩阵 · RSS>平台 API · 语义验证); enforcement map extended to all 16 articles; new 壬部 quantified evidence table (~14 projects incl. 反面证据).
+- **[references/cc-command-playbook.md](references/cc-command-playbook.md)** (new operational companion): the author's proven instruction templates as copy-paste assets — 六步元链 (SkillMix) · 批准制指令模板 · ralph-loop 句式与预算 (10-20/50/100 + 六条终止条件) · 无人值守三句式 · 需求文档回放法 · 运行节奏参数表 (轮询/间隔/限流/错峰/止损/分片) · 答前 8 问答后 5 问自查 · 实测 √/× 工具矩阵 · 通知与审计.
+
+### Security
+- The mining materials contain **live credentials** (bigmodel GLM key, 百度/MiniMax/Fish.audio keys, 企微 webhook, 微信 AppSecret, QQ 授权码…). Verified: none were ever committed or pushed (the pushed transcript docx scanned clean). `.gitignore` now pins `优化改进建议/*.pdf` + `_pdf_extract.txt` permanently out of the repo. Rotation recommended for keys that appeared in the PDF.
+- Noted for follow-up (outside this repo): `E:\CPOPC\MD2Nwechat/PROJECT_REPORT.md` historically logged 3 公众号 AppID in plaintext (a 2026 remediation commit 4de9443 cleaned configs; the report file predates it).
+
+### Wired
+- `SKILL.md`: Core Philosophy constitution line → V2 scope; reference rows (constitution V2 + playbook); V4.1.8 entry (V4.1.3/V4.1.4 entries merged to hold the line budget); footer.
+- `skills/proposal-forge/SKILL.md`: ten× gate now named as the C1/**C3/C7** enforcement point.
+
+### Verified
+- `upgrade_audit.py`: 48/48 sub-skills, 0 errors, 0 warnings (incl. the new reference links).
+- Main SKILL.md body held under the 500-line budget.
+
 ## [4.1.6] - 2026-08-18
 
 ### Added — Clash API layer + one-command `push` (from We-AIPO)
