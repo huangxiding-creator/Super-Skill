@@ -7,6 +7,14 @@
 > stop and redo the phase**, not "preferably next time".
 >
 > Source transcript: `优化改进建议/AI开发项目全流程经验提炼与开发宪法更新指南_Transcript_2026-09-08.docx`.
+>
+> **Companion layers** (both 全局适配版, extracted from their projects 2026-09-07/08):
+> [weaipo-constitution.md](weaipo-constitution.md) is the runtime constitution for
+> unattended production systems (12 principles + 12 stop-on-sight violations + a
+> conflict-adjudication order); [pai-station-doctrine.md](pai-station-doctrine.md) is
+> the value/methodology adjudication layer (10+ project comparison, 难度=价值 density
+> formula, opt-in iron law, kill-criteria milestones). This file is the proposal/
+> research/plan core that binds them into the phase workflow.
 
 ## 序 — Why a constitution
 

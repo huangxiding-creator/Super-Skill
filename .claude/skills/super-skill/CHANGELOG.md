@@ -17,6 +17,19 @@ Distilled the author's long-run Claude Code interaction records and delivered-pr
 - **戊部 enforcement map**: every article bound to the phase gate that enforces it (C1/C3 → ten× gate + scorecard; C4 → Phase 2 clone-adapt ≥80%; C5 → Phase 5 ADRs; R1–R6 → Phase 9/10 + hooks).
 - **己部 evidence**: each article traced to where it proved itself (We-AIPO PROPOSAL_100x, research ports, ROUND3-7 route records, the 2026-08 dead-proxy push incidents).
 
+### Added — restored two companion constitutions (post-incident)
+During the global install for this release, `robocopy /MIR` deleted two constitution
+files that earlier sessions (We-AIPO, 2026-09-07; AI-Station, 2026-09) had written
+**directly into the global install** instead of the repo — exactly the drift `/MIR`
+is designed to remove. Both were recovered byte-perfect from those sessions' JSONL
+transcripts (each had exactly one Write, no Edits) and are now committed to the repo
+so they can never be lost to a mirror again:
+
+- **[references/weaipo-constitution.md](references/weaipo-constitution.md)** — We-AIPO 开发宪法（全局适配版）: 12 principles (数据不信报表信产物账 · 改进以真实用户数据为基础 · 吞异常不吞痕迹 · 教训固化成守卫测试 · 探针语义分离 · 单径法无降级 · 一切无界皆事故 · 站在成熟库肩上 · 用户主权红线 · 人工前置集中一次 · 跑中不改码 · 螺旋闭环) + 12 stop-on-sight violations + conflict-adjudication order + companion mechanisms. The runtime constitution for unattended production systems.
+- **[references/pai-station-doctrine.md](references/pai-station-doctrine.md)** — PAI-Station 开发宪法（全局适配版）: 12 principles (站在巨人肩膀 ≥10-project comparison · 最难优先 with 价值密度公式 · 巨人肩上再攻坚 · 100× 升维对照表 · 软承诺硬化 · 借鉴成熟环境配方 · 红队常态化 · opt-in 铁律 · 信任先于能力 · 密钥红线 · 交付即通知 · 排期可证伪) + stop-list + adjudication order. The value/methodology adjudication layer.
+
+Cross-linked as companion layers in `dev-constitution.md` and the SKILL.md reference table. **Lesson recorded**: the global install is a mirror — author in the repo, install from it.
+
 ### Wired
 - `SKILL.md`: Core Philosophy constitution line; Phase 0 (C2 boldness/C1/C3), Phase 2 (C4), Phase 5 (C5) in-place enrichments; reference-table row; V4.1.7 entry; footer. Collapsed V4.0.0–V4.1.2 version entries to one line (details in CHANGELOG) to stay under the 500-line body budget.
 - `skills/proposal-forge/SKILL.md`: ten× gate named as the C1/C3 enforcement point.

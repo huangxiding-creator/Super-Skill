@@ -432,7 +432,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/ai-mastery.md](references/ai-mastery.md) | AI-Mastery Protocol — Boris Cherny's 7 disciplines mapping + protocols |
 | [references/audit-loop-case-study.md](references/audit-loop-case-study.md) | Run-log-driven audit loop — 5 reusable patterns + template, from We-AIPO |
 | [references/mattpocock-skills.md](references/mattpocock-skills.md) | mattpocock/skills integration map — all 25 source skills → Super-Skill bindings |
-| [references/dev-constitution.md](references/dev-constitution.md) | 开发宪法 — articles C1–C5 + red lines R1–R6, enforcement map & We-AIPO evidence |
+| [references/dev-constitution.md](references/dev-constitution.md) | 开发宪法 — articles C1–C5 + red lines R1–R6, enforcement map & We-AIPO evidence; companions: [weaipo-constitution](references/weaipo-constitution.md) (unattended-runtime 12+12) · [pai-station-doctrine](references/pai-station-doctrine.md) (value/methodology adjudication) |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
