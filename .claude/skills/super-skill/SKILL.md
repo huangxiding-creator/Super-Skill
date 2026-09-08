@@ -15,6 +15,8 @@ description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea
 
 **Index Not Dump**: MEMORY.md is a concise index. Never store code-state facts that can drift.
 
+**开发宪法** (Development Constitution): proposal targets the **hardest problem** with a **world-best** plan; research **stands on giants' shoulders** (never rebuild wheels); red lines (proxy 用完即关, no silent failure, root-cause-first…) are never crossed. Non-negotiable — [references/dev-constitution.md](references/dev-constitution.md).
+
 ## 2026 AI-Assisted Engineering Standards
 
 Super-Skill integrates best practices from industry leaders:
@@ -138,7 +140,7 @@ raw idea → [1] idea-intake → [2] research-orchestrator → [3] proposal-forg
 ## 14-Phase Workflow
 
 ### Phase 0: Visionary Elevation
-Transform requirements into AI-native vision. Output: `VISION.md`, `AI_NATIVE_OPTIONS.md`
+Transform requirements into AI-native vision — constitution **C2**: boldness is legal, the proposal must not be pre-shrunk (C1 hardest problem · C3 world-best-and-landable). Output: `VISION.md`, `AI_NATIVE_OPTIONS.md`
 - **See**: [darwin-evolution/SKILL.md](skills/darwin-evolution/SKILL.md) for GEP Protocol
 
 ### Phase 1: Feasibility Analysis
@@ -149,7 +151,7 @@ Evaluate technical, economic, operational, and scheduling feasibility.
 
 ### Phase 2: GitHub Discovery
 Find existing open-source solutions before building.
-- Score ≥80%: Clone and adapt
+- Score ≥80%: Clone and adapt — constitution **C4** 站在巨人肩膀上 (from-scratch requires a documented miss)
 - Score <60%: Build from scratch
 - Output: `GITHUB_DISCOVERY_REPORT.md`
 - **Skill**: `github-discovery`
@@ -177,7 +179,7 @@ Define detailed, actionable requirements.
 
 ### Phase 5-5b: Architecture & Design
 Design system architecture and components.
-- Phase 5: System architecture, tech stack, service boundaries
+- Phase 5: System architecture, tech stack, service boundaries — constitution **C5**: the optimal solution under actual constraints, recorded as ADRs
 - Phase 5b: Component design, API contracts, database schemas
 - Output: `ARCHITECTURE.md`, `API_DESIGN.md`
 - **Skills**: `api-patterns`, `data-patterns`, `security-scanning`
@@ -430,6 +432,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/ai-mastery.md](references/ai-mastery.md) | AI-Mastery Protocol — Boris Cherny's 7 disciplines mapping + protocols |
 | [references/audit-loop-case-study.md](references/audit-loop-case-study.md) | Run-log-driven audit loop — 5 reusable patterns + template, from We-AIPO |
 | [references/mattpocock-skills.md](references/mattpocock-skills.md) | mattpocock/skills integration map — all 25 source skills → Super-Skill bindings |
+| [references/dev-constitution.md](references/dev-constitution.md) | 开发宪法 — articles C1–C5 + red lines R1–R6, enforcement map & We-AIPO evidence |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
@@ -478,6 +481,8 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
+**V4.1.7** - 2026-09-08 - **开发宪法 (Development Constitution)**: distilled from the author's CC interaction records + delivered-project evidence (We-AIPO, `PROPOSAL_100x.md`) into [references/dev-constitution.md](references/dev-constitution.md) — non-negotiable articles **C1** hardest problem · **C2** boldness legal · **C3** world-best & landable · **C4** giants' shoulders · **C5** optimal solution under constraints, plus red lines **R1–R6** (proxy 用完即关, no silent failure, root-cause-first, no "can't" without exhaustion, verifier>generator, security-before-commit) with an article→phase-gate enforcement map and evidence. Wired into Core Philosophy + Phase 0/2/5. 48 skills.
+
 **V4.1.6** - 2026-08-18 - **Clash API push** (from We-AIPO `proxy_mgr`/`sched_guard`/`push_github`): clash-proxy gains a Clash **REST API layer** — port/secret auto-discovery (`~/.config/clash/config.yaml` → probe table 20225/11845/9090; port drift no longer silently kills API calls), `PATCH /configs` mode switching (global default TUN-off; direct also disables TUN+fake-IP DNS), `PUT /proxies/GLOBAL` node pinning (geo stability), fake-IP DNS-hijack detection, `release()` (W18: direct switch, keep running) — and a **one-command `push`** recipe (commit → proxy up → API global → push 120s → direct-fallback → close-after-use). `stop()` reworked: API direct first, then Ctrl+Q/taskkill/service-stop/flushdns (no TUN residue). 34/34 tests + live smoke (`api_base=25148` discovered, `mode=direct` read). 48 skills.
 
 **V4.1.5** - 2026-08-17 - **Full sub-skill upgrade sweep**: new `upgrade_audit.py` (frontmatter / trigger-rich descriptions / 500-line budget / link integrity — CommonMark fence-aware) + `progressive_split.py` (oversized SKILL.md → `references/details.md` with pointer); audited all 48 sub-skills — 0 errors, 0 warnings. All 20 over-budget sub-skills brought under the progressive-disclosure budget (largest: testing-automation 716→438, api-patterns 685→299); fixed a pre-existing unbalanced nested-fence defect in prompt-engineering. Propagated V4.1.4 knowledge into 5 sub-skills (red-first → systematic-debugging, two-axis → verification-gate, phase boundaries → context-compressor, grilling → brainstorming, tooling → pre-run-upgrade). 48 skills.
@@ -486,13 +491,7 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 **V4.1.3** - 2026-08-05 - **`clash-proxy` sub-skill**: integrated the Clash proxy manager (required to reach GitHub/HuggingFace/PyPI from this machine) as a first-class sub-skill. The source skill was doc-only with a missing script — this release implements `scripts/clash_proxy.py` (start/status/stop/run_with_proxy, pure stdlib, 12 tests) so the documented contract actually works. Realizes the We-AIPO "用完即关" close-after-use pattern as a runnable tool. 47 skills.
 
-**V4.1.2** - 2026-08-05 - **We-AIPO experience → GEP Capsule**: distilled the successful We-AIPO build (290 commits, 126 modules, 218 tests, 78 optimizations, 11/11 unattended) into 5 reusable patterns — run-log-driven audit, root-cause-before-fix, numbered scoped fixes, fail-closed multi-judge gates, cumulative-metric tracking. New [references/audit-loop-case-study.md](references/audit-loop-case-study.md) with a reusable audit-proposal template; packaged as GEP Capsule `capsule_we_aipo_audit_loop_20260805`; wired into Phase 10 (Ralph Loop) as the evidenced exemplar.
-
-**V4.1.1** - 2026-08-05 - **Self-consistency hardening**: strengthened `health_check.py` (the verifier) with skill-frontmatter + count-staleness checks so doc drift can't recur; fixed stale skill counts (SKILL.md "41+"→46, skills-matrix "29+"→46); filled a skills-matrix coverage gap (13 Core Skills were absent — added "Core Skills" section); trimmed SKILL.md to 498 lines (back under the 500-line token budget); deduped a double `## Demo` in README. health_check now self-verifies all of this.
-
-**V4.1.0** - 2026-07-31 - **AI-Mastery Protocol** (`ai-mastery-7` sub-skill): operationalizes Boris Cherny's 7 disciplines — plan-first, KB onboarding, **rationale mining** (`rationale_mining.py`), **weekly retrospective** (`weekly_retrospective.py`), verifier>generator, long-term memory. Closes 3 gaps (onboarding dialog, history→why, week-level retro) and names 4 existing mechanisms as one curriculum. 11/11 tests green, Windows UTF-8 safe. See [references/ai-mastery.md](references/ai-mastery.md).
-
-**V4.0.0** - 2026-06-18 - **IdeaForge front-end**: `idea-intake` (ambiguity + Hybrid Clarification Gate), `research-orchestrator` (9 software channels + gap analysis + dedup + quality gate, ports ResearchFactory-Eng), `proposal-forge` (maturity + ten× delta index + data-driven pricing + scorecard + Proposal Approval Gate). Raw idea → 10× proposal → existing 14-phase pipeline. See [references/ideaforge.md](references/ideaforge.md).
+**V4.0.0–V4.1.2** - 2026-06/08 - IdeaForge front-end (intake/research/proposal + Approval Gate, ten× delta index) → AI-Mastery-7 (Boris Cherny's disciplines + `rationale_mining`/`weekly_retrospective`) → self-consistency hardening (health_check verifier, count-staleness checks) → We-AIPO GEP Capsule (5 reusable audit-loop patterns). Details: [CHANGELOG.md](CHANGELOG.md).
 
 **V3.21.0** - 2026-05-07 - OpenWolf integration: 5 sub-skills (anatomy-scanner, cerebrum, token-tracker, buglog, design-qc) + 6-hook lifecycle.
 
@@ -500,4 +499,4 @@ Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1.6: Idea→Product Factory — AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering + full sub-skill upgrade*
+*Super-Skill V4.1.7: Idea→Product Factory — 开发宪法 + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*

@@ -5,6 +5,22 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.7] - 2026-09-08
+
+### Added — 开发宪法 (Development Constitution)
+Distilled the author's long-run Claude Code interaction records and delivered-project evidence (source transcript: `优化改进建议/AI开发项目全流程经验提炼与开发宪法更新指南_Transcript_2026-09-08.docx`; grounded in We-AIPO's `PROPOSAL_100x.md` methodology) into **[references/dev-constitution.md](references/dev-constitution.md)** — the non-negotiable layer above the workflow. Violation = redo the phase, not "preferably".
+
+- **甲部 提案宪法**: **C1** target the hardest real problem (a "good-enough" plan is unconstitutional at proposal time) · **C2** boldness is legal — previously unthinkable ideas belong in the proposal; the ambiguity gate must never become a boldness gate · **C3** world-best AND landable after researching GitHub/the open network — hard-to-implement is acceptable, suboptimal is not.
+- **乙部 调研宪法**: **C4** stand on the shoulders of giants — never build from scratch what the world built well; clone/adapt/stitch (license permitting) is the correct high-efficiency path; 从零造轮子 is a violation.
+- **丙部 技术方案宪法**: **C5** the optimal solution under actual constraints, for this project's goal, recorded as ADRs — "都能实现" is an abdication, not a selection.
+- **丁部 红线 R1–R6**: R1 代理用完即关 (enforced by V4.1.6 `push`) · R2 no silent failure (We-AIPO's 163 `except:pass` cleanup) · R3 root-cause-before-fix · R4 no "can't" without exhausted escalation · R5 verifier > generator · R6 security checks before commit.
+- **戊部 enforcement map**: every article bound to the phase gate that enforces it (C1/C3 → ten× gate + scorecard; C4 → Phase 2 clone-adapt ≥80%; C5 → Phase 5 ADRs; R1–R6 → Phase 9/10 + hooks).
+- **己部 evidence**: each article traced to where it proved itself (We-AIPO PROPOSAL_100x, research ports, ROUND3-7 route records, the 2026-08 dead-proxy push incidents).
+
+### Wired
+- `SKILL.md`: Core Philosophy constitution line; Phase 0 (C2 boldness/C1/C3), Phase 2 (C4), Phase 5 (C5) in-place enrichments; reference-table row; V4.1.7 entry; footer. Collapsed V4.0.0–V4.1.2 version entries to one line (details in CHANGELOG) to stay under the 500-line body budget.
+- `skills/proposal-forge/SKILL.md`: ten× gate named as the C1/C3 enforcement point.
+
 ## [4.1.6] - 2026-08-18
 
 ### Added — Clash API layer + one-command `push` (from We-AIPO)

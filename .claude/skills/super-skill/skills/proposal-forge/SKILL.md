@@ -44,7 +44,7 @@ The user must articulate, for at least one axis, a concrete `{ours, baseline}` p
 - The index computes `log10(16)=1.2` → ≥1.0 → **tenx-qualified**.
 - No axis ≥10× → **incremental** → must find a new angle or the proposal doesn't proceed.
 
-This is the falsifiable gate that kills incremental ideas before CC burns dev cycles.
+This is the falsifiable gate that kills incremental ideas before CC burns dev cycles — and the enforcement point for constitution articles **C1** (hardest problem) and **C3** (world-best & landable): a proposal that survives the ten× gate is bold by construction. See [../../references/dev-constitution.md](../../references/dev-constitution.md).
 
 ## Approval Gate contract
 
