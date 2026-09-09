@@ -1,6 +1,7 @@
 # 开发宪法 — Development Constitution
 
-> **Status**: non-negotiable. **V2 (2026-09-08)** — V1 distilled the author's CC
+> **Status**: non-negotiable. **V2.1 (2026-09-09)** adds the **C0 复利元则** (序, below).
+> **V2 (2026-09-08)** — V1 distilled the author's CC
 > interaction records and We-AIPO. V2 is a full-portfolio expansion: the 438-page
 > 《总包大脑实战方案》 plus ~40 delivered projects mined across `E:\CPOPC` and
 > `E:\AIResearch` (RSS-Auto 105 commits/303 tests · Fund-Fortune 83 tests ·
@@ -39,6 +40,25 @@ The constitution's own origin story is a diagnosis: the PDF self-identifies Supe
 three chronic diseases — **运行时不先自更新、不严格执行全部步骤、结束不复盘**. Pre-run
 upgrade, phase gates, and post-run evolution are the three cures; this document makes
 them obligations instead of features.
+
+### C0 — 复利元则 · The Compounding Meta-article (2026-09-09, author's stated philosophy)
+
+**真正拉开差距的不是它今天能做多少，而是今天发生的纠正、判断和失败，能否让明天的
+工作更好。** 模型提供一次性的能力；组织真正拥有的资产，是把一次成功变成**可重复的
+方法**，把一次失败变成**不会再犯的约束**，把专家的一次纠正变成**所有人下一次都能
+使用的判断**。最顶级的模式是：**通过迭代循环实现螺旋上升**。
+
+每一份经历都必须落入一种持久形态，否则视为流失：
+
+| 今天的经历 | 明天的资产 | 机制 |
+|-----------|-----------|------|
+| 一次成功 | 可重复的方法 | GEP Capsule · [cc-command-playbook](cc-command-playbook.md) 模板 · PROPOSAL 范式 |
+| 一次失败 | 不会再犯的约束 | 红线 R1–R12 · 守卫测试 (buglog / 教训固化) · Do-Not-Repeat |
+| 一次纠正 | 可复用的判断 | 宪法条款 C1–C16 · CLAUDE.md 规则 · cerebrum 偏好 |
+
+**违宪的不是犯错，而是犯了错却什么都没留下。** 每轮迭代（ralph-loop R1–R5）结束必须
+能回答：这一轮沉淀了哪条可复用的资产？答不上来，这一轮白跑。C0 是元则：它不与
+C1–C16 并列竞争，而是生成并要求它们持续增值 — 本宪法本身就是 C0 的产物与展品。
 
 ## 甲部 — 提案宪法 (Proposal Articles)
 
@@ -189,6 +209,7 @@ AI 回答**原封不动入正文，只排版不删减不扩写**；课程库 Exc
 
 | Article | Gate that enforces it |
 |---------|----------------------|
+| **C0 compounding** | 每轮迭代/每个项目必须沉淀 ≥1 条可复用资产（方法/约束/判断）— Phase 10 per-round 复利检查 + Phase 12 evolution 交付物 (capsule / red line / article / playbook entry) |
 | C1 hardest problem | Idea Factory `proposal-forge` **ten× delta index** — falsifiable 10× gate kills incremental ideas; scorecard verdict gate |
 | C2 boldness | Phase 0 Visionary Elevation (anti-consensus design) + idea-intake must not pre-shrink |
 | C3 world-best & landable | Phase 2 GitHub Discovery + research-orchestrator gap analysis before the Proposal Approval Gate |
@@ -230,4 +251,5 @@ The constitution is re-examined whenever a delivered project completes (Phase 12
 post-run evolution): new red lines earned the hard way get proposed as amendments with
 evidence, then versioned here. **V2 (2026-09-08)** added 丁/戊/己部 (C6–C16) and
 R7–R12 from the full-portfolio mining; V1 articles C1–C5/R1–R6 unchanged in substance,
-enriched in evidence.
+enriched in evidence. **V2.1 (2026-09-09)** added the **C0 复利元则** from the author's
+stated philosophy — the meta-rule that the constitution itself must keep compounding.

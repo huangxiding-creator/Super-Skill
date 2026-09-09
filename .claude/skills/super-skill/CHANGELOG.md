@@ -5,6 +5,22 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.9] - 2026-09-09
+
+### Added — C0 复利元则 · The Compounding Meta-article
+Integrated the author's stated development philosophy into the constitution core as its **meta-article** — the rule that generates and demands the other articles keep compounding:
+
+> 真正拉开差距的不是它今天能做多少，而是今天发生的纠正、判断和失败，能否让明天的工作更好。模型提供一次性的能力，组织真正拥有的资产，是把一次成功变成可重复的方法，把一次失败变成不会再犯的约束，把专家的一次纠正变成所有人下一次都能使用的判断。最顶级的模式是：通过迭代循环实现螺旋上升。
+
+- **[references/dev-constitution.md](references/dev-constitution.md) → V2.1**: new 序 subsection **C0 — 复利元则** with the three-asset mapping table (一次成功→可重复的方法: GEP Capsule / playbook 模板 / PROPOSAL 范式 · 一次失败→不会再犯的约束: 红线 R1–R12 / 守卫测试 / Do-Not-Repeat · 一次纠正→可复用的判断: 宪法条款 / CLAUDE.md / cerebrum) and the enforcement hook — **违宪的不是犯错，而是犯了错却什么都没留下**. Enforcement map gains the C0 row (every iteration/project must deposit ≥1 reusable asset — Phase 10 per-round 复利检查 + Phase 12 evolution deliverable).
+- **[references/cc-command-playbook.md](references/cc-command-playbook.md)** §3: new **每轮复利检查 (C0)** — each ralph-loop round must name the reusable asset it sedimented; 迭代循环的意义是螺旋上升，不是原地转圈.
+
+### Wired
+- `SKILL.md`: Core Philosophy gains **复利原则 (Compounding, constitution C0)**; constitution line → V2.1; Phase 12 evolution bullet names the three transformations; reference-table row; V4.1.9 entry (V4.1.5/V4.1.6 and V4.0.0–V4.1.2/V3.21.0 entries merged pairwise to hold the 500-line body budget); footer.
+
+### Verified
+- `upgrade_audit.py`: 48/48, 0 errors, 0 warnings. Main SKILL.md body under the 500-line budget.
+
 ## [4.1.7] - 2026-09-08
 
 ### Added — 开发宪法 (Development Constitution)

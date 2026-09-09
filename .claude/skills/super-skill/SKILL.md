@@ -13,9 +13,11 @@ description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea
 
 **Variance Inequality**: When improvement stalls, strengthen the verifier, not the generator.
 
+**复利原则 (Compounding, constitution C0)**: what separates teams is not how much AI does today, but whether today's corrections, judgments, and failures make tomorrow better — 把一次成功变成可重复的方法，把一次失败变成不会再犯的约束，把一次纠正变成所有人可复用的判断；最顶级模式 = 通过迭代循环实现螺旋上升.
+
 **Index Not Dump**: MEMORY.md is a concise index. Never store code-state facts that can drift.
 
-**开发宪法** (Development Constitution, V2): C1–C16 — proposal targets the **hardest problem** with a **world-best** plan; research **stands on giants' shoulders**; ten× plan **approved before code** (C7); after approval **full autonomy, no skipped steps** (C8); **run-ledger beats documents** (C10); fixes ship **before→after deltas** (C11); **golden-standard verification** (C12); **no fabricated data** (C14); red lines **R1–R12** (proxy 用完即关, no silent failure, 账号安全, 只增不删, 日预算硬顶, 密钥外置…) are never crossed. Non-negotiable — [references/dev-constitution.md](references/dev-constitution.md); copy-paste templates: [references/cc-command-playbook.md](references/cc-command-playbook.md).
+**开发宪法** (Development Constitution, V2.1): **C0 复利元则** (above) + C1–C16 — proposal targets the **hardest problem** with a **world-best** plan; research **stands on giants' shoulders**; ten× plan **approved before code** (C7); after approval **full autonomy, no skipped steps** (C8); **run-ledger beats documents** (C10); fixes ship **before→after deltas** (C11); **golden-standard verification** (C12); **no fabricated data** (C14); red lines **R1–R12** (proxy 用完即关, no silent failure, 账号安全, 只增不删, 日预算硬顶, 密钥外置…) are never crossed. Non-negotiable — [references/dev-constitution.md](references/dev-constitution.md); copy-paste templates: [references/cc-command-playbook.md](references/cc-command-playbook.md).
 
 ## 2026 AI-Assisted Engineering Standards
 
@@ -252,7 +254,7 @@ Deploy to production.
 
 ### Phase 12: Evolution
 Capture learnings and evolve Super-Skill.
-- Post-Run Review → Signal Extraction → Evolution Decision → Mutation → Capsule Packaging
+- Post-Run Review → Signal Extraction → Evolution Decision → Mutation → Capsule Packaging — **C0**: 一次成功→可重复方法 · 一次失败→不会再犯的约束 · 一次纠正→可复用判断 (spiral ascent)
 - **Skills**: `post-run-evolution`, `darwin-evolution`, `capability-evolver`
 - **See**: [skills/post-run-evolution/SKILL.md](skills/post-run-evolution/SKILL.md) for post-run evolution
 - **See**: [EVOLUTION.md](EVOLUTION.md) for GEP Protocol details
@@ -432,7 +434,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/ai-mastery.md](references/ai-mastery.md) | AI-Mastery Protocol — Boris Cherny's 7 disciplines mapping + protocols |
 | [references/audit-loop-case-study.md](references/audit-loop-case-study.md) | Run-log-driven audit loop — 5 reusable patterns + template, from We-AIPO |
 | [references/mattpocock-skills.md](references/mattpocock-skills.md) | mattpocock/skills integration map — all 25 source skills → Super-Skill bindings |
-| [references/dev-constitution.md](references/dev-constitution.md) | 开发宪法 V2 — articles C1–C16 + red lines R1–R12 + enforcement map + ~40-project evidence; companions: [weaipo-constitution](references/weaipo-constitution.md) (unattended-runtime 12+12) · [pai-station-doctrine](references/pai-station-doctrine.md) (value/methodology) |
+| [references/dev-constitution.md](references/dev-constitution.md) | 开发宪法 V2.1 — **C0 复利元则** + articles C1–C16 + red lines R1–R12 + enforcement map + ~40-project evidence; companions: [weaipo-constitution](references/weaipo-constitution.md) (unattended-runtime 12+12) · [pai-station-doctrine](references/pai-station-doctrine.md) (value/methodology) |
 | [references/cc-command-playbook.md](references/cc-command-playbook.md) | CC 指挥手册 — 六步元链 · 批准制模板 · ralph-loop 预算 · 无人值守三句式 · 节奏参数表 · 实测工具矩阵 |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
@@ -486,18 +488,16 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 **V4.1.8** - 2026-09-08 - **宪法 V2 全组合挖掘**: mined 《总包大脑实战方案》 (438 pp.) + ~40 delivered projects (`E:\CPOPC` + `E:\AIResearch`) via 8 parallel agents → [dev-constitution V2](references/dev-constitution.md) adds **丁部 人机协作 C6–C9** (指令只提需求与标准 · 十倍方案批准才动工 · 批准后全自主不跳步 · 完工交账+成功经验固化复用) · **戊部 交付验收 C10–C13** (生产级>无人值守 · ZBBrain 检验: 投产证据>文档完备 · 修复必附 before→after 实测 · 金标准验证不假完成 · 容错优先一次跑完) · **己部 数据内容 C14–C16** (禁虚构交叉验证 · 防未来函数防数据毒化 · 内容保真+诚实汇报) · red lines **R7–R12** (账号安全 · 只增不删代码级硬化 · 日预算硬顶宁可拒启 · 反爬主动限流 · 密钥外置 · 人工终审边界) + a quantified ~40-project evidence table. New operational companion [references/cc-command-playbook.md](references/cc-command-playbook.md) (六步元链 · 批准制模板 · ralph-loop 预算 · 无人值守三句式 · 需求回放法 · 节奏参数表 · 实测工具矩阵). 48 skills.
 
-**V4.1.6** - 2026-08-18 - **Clash API push** (from We-AIPO `proxy_mgr`/`sched_guard`/`push_github`): clash-proxy gains a Clash **REST API layer** — port/secret auto-discovery (`~/.config/clash/config.yaml` → probe table 20225/11845/9090; port drift no longer silently kills API calls), `PATCH /configs` mode switching (global default TUN-off; direct also disables TUN+fake-IP DNS), `PUT /proxies/GLOBAL` node pinning (geo stability), fake-IP DNS-hijack detection, `release()` (W18: direct switch, keep running) — and a **one-command `push`** recipe (commit → proxy up → API global → push 120s → direct-fallback → close-after-use). `stop()` reworked: API direct first, then Ctrl+Q/taskkill/service-stop/flushdns (no TUN residue). 34/34 tests + live smoke (`api_base=25148` discovered, `mode=direct` read). 48 skills.
+**V4.1.9** - 2026-09-09 - **复利元则 (C0)**: the author's compounding philosophy becomes the constitution's meta-article — 真正拉开差距的不是今天能做多少，而是今天的纠正、判断和失败能否让明天更好；模型提供一次性能力，组织的资产 = 一次成功→**可重复的方法** (Capsule/playbook/PROPOSAL 范式) · 一次失败→**不会再犯的约束** (红线 R1–R12/守卫测试/Do-Not-Repeat) · 一次纠正→**可复用的判断** (宪法条款/CLAUDE.md/cerebrum)；最顶级模式 = **通过迭代循环实现螺旋上升**。违宪的不是犯错，而是犯了错却什么都没留下 — 每轮 ralph-loop 必须答出沉淀了哪条资产。Wired: Core Philosophy + Phase 12 + constitution V2.1 序/enforcement map + playbook 每轮复利检查. 48 skills.
 
-**V4.1.5** - 2026-08-17 - **Full sub-skill upgrade sweep**: new `upgrade_audit.py` (frontmatter / trigger-rich descriptions / 500-line budget / link integrity — CommonMark fence-aware) + `progressive_split.py` (oversized SKILL.md → `references/details.md` with pointer); audited all 48 sub-skills — 0 errors, 0 warnings. All 20 over-budget sub-skills brought under the progressive-disclosure budget (largest: testing-automation 716→438, api-patterns 685→299); fixed a pre-existing unbalanced nested-fence defect in prompt-engineering. Propagated V4.1.4 knowledge into 5 sub-skills (red-first → systematic-debugging, two-axis → verification-gate, phase boundaries → context-compressor, grilling → brainstorming, tooling → pre-run-upgrade). 48 skills.
+**V4.1.5–V4.1.6** - 2026-08 - **Sub-skill upgrade sweep** (new `upgrade_audit.py` + `progressive_split.py`; all 48 under the 500-line budget, audit 0 errors/0 warnings; largest splits testing-automation 716→438, api-patterns 685→299) · **Clash API push** (REST API layer: port/secret auto-discovery → probe table 20225/11845/9090; `PATCH /configs` mode switching; `PUT /proxies/GLOBAL` node pin; `release()` keep-running direct; one-command `push` = commit → proxy → push → direct-fallback → 用完即关; 34/34 tests + live smoke). 48 skills.
 
 **V4.1.3–V4.1.4** - 2026-08 - **`clash-proxy` sub-skill** (V4.1.3: pure-stdlib implementation of start/status/stop/run_with_proxy, 12 tests — realizes the We-AIPO 用完即关 pattern) · **`real-engineering` sub-skill** (V4.1.4, from [mattpocock/skills](https://github.com/mattpocock/skills): grilling, CONTEXT.md/ADR ubiquitous language, tracer-bullet tickets, wizards, red-first diagnosis; ships `context_lint.py`). 47→48 skills. Full mapping: [references/mattpocock-skills.md](references/mattpocock-skills.md).
 
-**V4.0.0–V4.1.2** - 2026-06/08 - IdeaForge front-end (intake/research/proposal + Approval Gate, ten× delta index) → AI-Mastery-7 (Boris Cherny's disciplines + `rationale_mining`/`weekly_retrospective`) → self-consistency hardening (health_check verifier, count-staleness checks) → We-AIPO GEP Capsule (5 reusable audit-loop patterns). Details: [CHANGELOG.md](CHANGELOG.md).
-
-**V3.21.0** - 2026-05-07 - OpenWolf integration: 5 sub-skills (anatomy-scanner, cerebrum, token-tracker, buglog, design-qc) + 6-hook lifecycle.
+**V3.21.0–V4.1.2** - 2026-05/08 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (intake/research/proposal + Approval Gate, ten× delta index) → AI-Mastery-7 (Boris Cherny) → self-consistency hardening (health_check verifier) → We-AIPO GEP Capsule (5 reusable audit-loop patterns). Details: [CHANGELOG.md](CHANGELOG.md).
 
 Full version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-*Super-Skill V4.1.8: Idea→Product Factory — 开发宪法 V2 (C1–C16 / R1–R12 + CC 指挥手册) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
+*Super-Skill V4.1.9: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
