@@ -5,6 +5,24 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.10] - 2026-09-10
+
+### Added — 任鑫 AI 产品方法论 (external-wisdom integration, first self-learning run)
+First product of the PAI-Station 智库→Super-Skill self-learning pipeline (任鑫 = 前京东 O2O 副总裁、混沌创新领教、「AI 炼金术」主理人): his 混沌学园 14 主讲课 + 1 专场 (~100 万字 transcripts, 6 parallel agents) distilled into **[references/renxin-ai-product-methodology.md](references/renxin-ai-product-methodology.md)** — the **applied-layer product doctrine** complementing the engineering constitution (宪法管怎么建，本文管在哪打、怎么赢钱). Full source: PAI-Station `data/hundun/任鑫AI产品经验汇总.md` (paid-corpus distillate, internal use).
+
+- **选品五法**: 三圈交集 (用户任务×AI 新能力×自身优势，圈每月重画) · **三筛 离钱近·有套路·不严谨** (AI 应用选战场；无套路=掷骰子，极严谨=留给巨头) · 新能力×新场景×新人群盘点 (勿用新科技复现老模式) · 小切口垂直人群 (门槛越低市场越大) · 新市场三开关 (门槛↓90%/价格↓90%/被忽略的隐性市场).
+- **产品设计五原则**: JTBD 用户任务三步法 (功能/情感/场景——"授人以鱼，不如授人以一个听话的机器人") · 三种产品机会 (补能力/优界面/打通窄场景) · 交互三性 (勿做成聊天框) · 精准分发→精准生成 · 静态内容→定制化服务.
+- **商业纪律**: 第一天就变现 · 按价值定价不按成本 · 壁垒在模型之外 (独占数据/工作流/复杂度——王博龙:"复杂度决定别人追赶你的周期"; 数据飞轮从第一天设计进交互).
+- **人机协作心法**: 任务拆解到工序颗粒度是元能力 · 提示词四法+母提示词 · **老板模式** (AI 发散量产，人只挑选+挑刺) · "但凡做成了什么，就沉淀为 skill" (与 C0 复利元则同构).
+- **避坑红线 + 金句裁决库**: 20 条反共识避坑 (复现老模式/万能产品/聊天框化/先冲量后变现/自研 agent 平台…) + 15 句裁决引语.
+- **Conflict adjudication**: 三筛 vs **C1 最难优先** → 互补不冲突——三筛管**应用层选品** (在哪打)，最难优先管**护城河工程** (建什么守得住)；"复杂度决定追赶周期"即最难优先的商业表述。产品项目先过三筛选战场，选中后按 C1 把最难处做深。第一天变现 vs C7 十倍批准 → 顺序执行 (批准前算清三筛与变现闭环，批准后按 C8 全自主).
+
+### Wired
+- `SKILL.md`: proposal-forge bullet gains **任鑫选品五法**; Phase 1 gains **任鑫三筛** gate; Phase 4 gains **JTBD 用户任务三步法**; reference-table row; V4.1.10 entry (V4.1.7/V4.1.8 and V4.1.3–V4.1.6/V3.21.0–V4.1.2 merged pairwise to hold the 500-line body budget); footer.
+
+### Verified
+- `upgrade_audit.py`: 48/48, 0 errors, 0 warnings. Main SKILL.md body under the 500-line budget.
+
 ## [4.1.9] - 2026-09-09
 
 ### Added — C0 复利元则 · The Compounding Meta-article
