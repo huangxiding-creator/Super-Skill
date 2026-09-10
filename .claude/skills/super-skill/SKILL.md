@@ -135,7 +135,7 @@ raw idea → [1] idea-intake → [2] research-orchestrator → [3] proposal-forg
 
 1. **[idea-intake](skills/idea-intake/SKILL.md)** — ambiguity-score; **Hybrid Clarification Gate** (autonomous unless score 4–7, then ≤3 Qs once) → `IDEA_SEED.md`
 2. **[research-orchestrator](skills/research-orchestrator/SKILL.md)** — 9 channels (GitHub/Sogou WeChat/HN/npm/PyPI/App Store/Reddit/ProductHunt/competitor-site) + gap analysis + dedup + quality gate + checkpoint. Ports ResearchFactory-Eng architecture. → `RESEARCH_DOCKET/`, `RESEARCH_DIGEST.md`, `GAP_REPORT.md`
-3. **[proposal-forge](skills/proposal-forge/SKILL.md)** — maturity index + **ten× delta index** (falsifiable 10× gate) + **任鑫选品五法** (三圈交集 + 离钱近·有套路·不严谨三筛 + 第一天变现 — [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md)) + blue/red-ocean + data-driven pricing → 4-dim scorecard → `PROPOSAL.md`, `BUSINESS_MODEL.md`, `SCORECARD.json`
+3. **[proposal-forge](skills/proposal-forge/SKILL.md)** — maturity index + **ten× delta index** (falsifiable 10× gate) + **任鑫选品五法** (三圈交集 + 离钱近·有套路·不严谨三筛 + 第一天变现 — [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md)) + blue/red-ocean + data-driven pricing → 4-dim scorecard → `PROPOSAL.md`, `BUSINESS_MODEL.md`, `SCORECARD.json`; 全生命周期武器组合见 [hundun-arsenal](references/hundun-arsenal.md) 六场景地图 (场景一/二在此阶段)
 
 **Proposal Approval Gate** ✋: scorecard verdict = `proceed` → present proposal, ask approve/revise/reject **once** → on approve, auto-populate VISION/REQUIREMENTS/ARCHITECTURE and continue to Phase 0. Only new human touchpoint.
 
@@ -444,6 +444,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/cc-command-playbook.md](references/cc-command-playbook.md) | CC 指挥手册 — 六步元链 · 批准制模板 · ralph-loop 预算 · 无人值守三句式 · 节奏参数表 · 实测工具矩阵 |
 | [references/renxin-ai-product-methodology.md](references/renxin-ai-product-methodology.md) | 任鑫 AI 产品方法论 — 三圈交集+三筛选品 · JTBD 三步法 · 第一天变现/按价值定价 · 老板模式人机分工（混沌 14 课蒸馏，应用层选品裁决） |
 | [references/stitching-monster.md](references/stitching-monster.md) | 缝合怪工程教义 — 三缝合律（世界最好零件 × 显式交接契约 × 整机生产级跑通）· 阿姆达尔瓶颈优先 · 推进四件事 · 缝合处=数据回流点（任鑫《AI原生组织转型》） |
+| [references/hundun-arsenal.md](references/hundun-arsenal.md) | 混沌武器库 — 六场景作战地图（机会洞察/战略定位/MVP/技术底座/增长变现/组织协作，647 门课 3031 万字频次验证）· 使用心法三句话 · 13 技能卡（业务留档五步/GEO 四卡/组织五卡）· 外部语料挖掘流水线 |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
@@ -492,12 +493,12 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
+**V4.1.12** - 2026-09-11 - **混沌武器库 · AI 产品研发应用地图 (智库→Super-Skill 自学习第三跑)**: [hundun-arsenal](references/hundun-arsenal.md) — 超级AI工作站 (`E:\AI-Station`) 混沌学园全站 647 门课/3031 万字 → 2,799 条目频次验证，收录 **六场景作战地图** (机会洞察: 第一性原理+窄场景 · 战略定位: 一思维+**单点破局 70% 力气压一个尖点** · MVP: **用户中心原则 83 次=全库第一高频「从用户任务倒推，不从模型能力正推」** · 技术底座: 数据质量>数量>结构 + 评测/监控/降级三层工程 · 增长: 自证式营销+按人力成本定价 · 组织: 先改流程再上工具) + **使用心法三句话** (入口第一性原理/聚焦单点破局 · 过程数据驱动兜底 · 长期一思维校准) + **13 技能卡** (业务留档五步: 存档→本体→CLI 化→MCP · GEO 四卡 · 组织五卡) + **挖掘流水线** (四类资产与 C0 资产表同构；广基蒸馏→任鑫深钻的复用法)。48 skills.
+
 **V4.1.10–V4.1.11** - 2026-09-10 - **任鑫 AI 产品方法论 × 缝合怪工程教义 (智库→Super-Skill 自学习第一、二跑)**: V4.1.10 distills 任鑫 混沌学园 14 课 + 1 专场 (~100 万字) → [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md) applied-layer doctrine — **三圈交集 + 三筛选战场** (离钱近·有套路·不严谨) · JTBD 三步法 · 第一天变现/按价值定价 · 老板模式人机分工 (wired: proposal-forge + Phase 1/4; 三筛 vs C1 互补不冲突)。V4.1.11 deep-mines 《AI原生组织转型》 → [stitching-monster](references/stitching-monster.md): **三缝合律** (世界最好零件 C4 × **显式交接契约** 上游 DoD→下游准入闸门 × 整机生产级跑通 C10/C12——火星气候轨道器死于隐式单位制) · **阿姆达尔瓶颈优先** (优化非瓶颈=零贡献) · 推进四件事 (发现/分配/传导/检查工作) · 缝合处=数据回流点 ("理想的交接是没有交接"；福特传送带) (wired: Core Philosophy + Phase 2 + 缝合契约 + Phase 10)。48 skills.
 
-**V4.1.7–V4.1.9** - 2026-09-08/09 - **开发宪法 V1→V2.1**: V4.1.7 distilled from CC interaction records + We-AIPO evidence → [dev-constitution](references/dev-constitution.md) C1 hardest problem · C2 boldness legal · C3 world-best & landable · C4 giants' shoulders · C5 optimal-under-constraints + red lines R1–R6 + enforcement map (companions: weaipo-constitution · pai-station-doctrine). V4.1.8 mined 《总包大脑实战方案》 (438 pp.) + ~40 delivered projects via 8 parallel agents → V2 adds 人机协作 **C6–C9** (指令只提需求与标准 · 十倍方案批准才动工 · 批准后全自主不跳步 · 完工交账+经验固化) · 交付验收 **C10–C13** (投产证据>文档完备 · 修复附 before→after · 金标准验证不假完成 · 容错优先) · 数据内容 **C14–C16** + **R7–R12** + ~40-project evidence table; new [cc-command-playbook](references/cc-command-playbook.md). V4.1.9 adds **C0 复利元则** (meta-article): 一次成功→可重复方法 · 一次失败→不会再犯的约束 · 一次纠正→可复用判断；最顶级模式 = 通过迭代循环实现螺旋上升——违宪的不是犯错，而是犯了错却什么都没留下。48 skills.
-
-**V3.21.0–V4.1.6** - 2026-05/08 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (intake/research/proposal + Approval Gate, ten× delta index) → AI-Mastery-7 (Boris Cherny) → self-consistency hardening (health_check verifier) → We-AIPO GEP Capsule (5 reusable audit-loop patterns) · `clash-proxy` + `real-engineering` sub-skills (mattpocock/skills: grilling, CONTEXT.md/ADR, tracer-bullet tickets, wizards, red-first diagnosis; 47→48 skills — [references/mattpocock-skills.md](references/mattpocock-skills.md)) · sub-skill upgrade sweep (`upgrade_audit.py` + `progressive_split.py`, all 48 under the 500-line budget) · Clash API push (one-command `push` = commit → proxy → push → 用完即关; 34/34 tests + live smoke). Details: [CHANGELOG.md](CHANGELOG.md).
+**V3.21.0–V4.1.9** - 2026-05/09 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (Approval Gate, ten× delta index) → AI-Mastery-7 → self-consistency hardening → We-AIPO GEP Capsule → `clash-proxy` + `real-engineering` sub-skills (47→48) → sub-skill upgrade sweep (all 48 under budget) → Clash API push (one-command `push`, 用完即关) → **开发宪法 V1→V2.1** ([dev-constitution](references/dev-constitution.md): **C0 复利元则** + C1–C16 + R1–R12 + enforcement map + ~40-project evidence, from CC records + 《总包大脑实战方案》 438 pp. + 8 parallel mining agents; companions weaipo/pai + [cc-command-playbook](references/cc-command-playbook.md)). Details: [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-*Super-Skill V4.1.11: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + 缝合怪工程教义 (三缝合律/瓶颈优先) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
+*Super-Skill V4.1.12: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + 缝合怪工程教义 (三缝合律/瓶颈优先) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现) + 混沌武器库 (六场景作战地图/13 技能卡) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*

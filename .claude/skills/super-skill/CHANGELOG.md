@@ -5,6 +5,24 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.12] - 2026-09-11
+
+### Added — 混沌武器库 · AI 产品研发应用地图 (external-wisdom run #3)
+Third run of the PAI-Station 智库→Super-Skill self-learning pipeline. Source: 超级AI工作站 (`E:\AI-Station`) `data/hundun/AI产品研发思维武器库.md` — 混沌学园**全站 647 门课、3031 万字**授课文稿 → 逐课提炼 13,137 条原始资产 → 跨课聚类去重 **2,799 个规范条目**（思维模型 800 / 原则 657 / 方法论 650 / 经验与教训 692）→ **[references/hundun-arsenal.md](references/hundun-arsenal.md)**:
+
+- **六场景作战地图** (卷五全文精收, 频次 × 跨课程验证度): 机会洞察 (第一性原理重推需求·窄场景先行·访谈×行为数据交叉验证·反共识输入防信息茧房) · 战略定位 (一思维 What/Why/How·**单点破局 70% 力气压一个尖点**·S 曲线定位·数据飞轮+工作流嵌入差异化) · MVP (**用户中心原则 83 次=全库第一高频「从用户任务倒推，不从模型能力正推」**·人机分工默认·游戏化对抗尝鲜即流失·验证「AI 真的比人工好」而非「能跑通」) · 技术底座 (**数据质量>数量>结构**·RAG=知识工程·演示可用→生产可用隔着评测/监控/降级三层工程·Agent=规划-工具-校验循环) · 增长变现 (自证式营销·按人力成本定价·A/B 后放大·用例/数据网络效应定烧钱节奏) · 组织协作 (模型-产品-场景三角色·评测周会+失败复盘·**先改流程再上工具**·AI 使用原则写成华为基本法式成文约定).
+- **使用心法三句话**: 入口用第一性原理，聚焦用单点破局（顺序反了=用战术勤奋掩盖战略懒惰）· 过程用数据驱动兜底（假设-度量-修正的反馈环永远有效）· 长期用一思维校准（产品的「一」变没变？变则破界，不变则长期主义）.
+- **13 张技能卡** (三门课蒸馏): **业务留档五步** (存档留痕→实体/关系/动作→本体论/知识图谱→系统 CLI 化→MCP 说明书; super-skill 落地形态 = ANATOMY.md + CONTEXT.md + CLAUDE.md + scripts/ CLI) · 区分事实与趋势 · 分圈作战 · 对齐事实 (=缝合怪律二同源) · 推进工作 (=缝合怪推进四件事同源) · 人才大于岗位 · 团队大于组织 · 形态大于结构 · 超级个体 · GEO 四卡 (品牌实体构建/多渠道发布/智能内容生成/用户问题导向).
+- **挖掘流水线** (方法本身入 C0 资产): 647 门课 → 四类资产提炼 → 跨课聚类去重 → 频次排序 → 场景地图; 四类资产与 super-skill 资产同构 (思维模型≈判断 · 原则≈红线 · 方法论≈Capsule · 经验≈buglog); 复用法 = 大批量外部语料先广基蒸馏、再对最高价值单源任鑫式深挖.
+- **三层互补与裁决**: 宪法 (工程) > 任鑫 (单讲师深钻) > 本库 (全站广基); 语料本体永不入库 (280KB+, 就地查阅).
+
+### Wired
+- `SKILL.md`: proposal-forge bullet gains the 六场景地图 pointer; reference-table row; V4.1.12 entry (V4.1.7–V4.1.9 and V3.21.0–V4.1.6 merged into one V3.21.0–V4.1.9 line to hold the 500-line body budget); footer.
+- `references/renxin-ai-product-methodology.md`: header cross-links to the arsenal (广基 vs 深钻).
+
+### Verified
+- `upgrade_audit.py`: 48/48, 0 errors, 0 warnings. Main SKILL.md body under the 500-line budget.
+
 ## [4.1.11] - 2026-09-10
 
 ### Added — 缝合怪工程教义 (Stitching-Monster Engineering Doctrine)
