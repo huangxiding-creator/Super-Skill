@@ -5,6 +5,24 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.11] - 2026-09-10
+
+### Added — 缝合怪工程教义 (Stitching-Monster Engineering Doctrine)
+Second targeted mining run of the PAI-Station 智库→Super-Skill self-learning pipeline, this time deep-reading 任鑫《AI原生组织转型：不是转型组织来用好AI，而是用AI来替代组织》(159 min) for the author's central question: **AI 产品各环节自身做得好不稀奇——环节之间的缝合、交接、调度、协同没做好，产品就无法生产级运行** → **[references/stitching-monster.md](references/stitching-monster.md)**:
+
+- **核心论断（课程原文实证）**: 阿姆达尔定律 ("所有的贡献都会被瓶颈吃掉"——门到门 340min / 洗菜10倍vs只有4个灶台 / Meta 10×写码被审核卡死) · 协调是通用瓶颈 (白领 60%+ 时间在交接对齐；"不是在做事情，是在传递这件事情上面") · **火星气候轨道器** (双方各自完美、公制/英制未显式 → 3 亿美元坠毁——零件全对、缝合契约未显式 = 整机报废) · "AI 不是组织的工具，AI 是组织的竞品".
+- **缝合怪三律**: 律一 **零件层**用世界最好不自己造 (=C4; 缝合怪≠拼凑怪) · 律二 **接口层**显式交接契约 (上游 DoD 产出+验收+实测 → 下游准入闸门; 更高形态 "理想的交接是没有交接"——同一中央对象自动传导, 福特传送带) · 律三 **整机层**生产级跑通 (=C10/C12; 检查四件套: 自动门禁+对抗式检查+兜底回滚+检查检查机制——Zoo Work 400 项全勾仍有 bug).
+- **推进四件事** (环节间调度/管理/协同的工程化, "PMO 就是专职补缝儿的"): 发现工作 (自己举手) · 分配工作 (工作找人) · 传导工作 (自动传导, 打回即暴露隐性知识) · 检查工作 (门禁+对抗+回滚).
+- **瓶颈定位法**: 人肉传导掩盖瓶颈 (人人看起来都忙), 流水线化后堆积如山者现形; 每轮优化第一步 = 定位最慢环节/最长等待, 火力只压瓶颈.
+- **自学习闭环**: 缝合接口 = 天然遥测点 (交接成功率/等待时长/打回率) · 打回即资产 (隐性知识写回流程, "能力一次一次累积") · 人机交互本身也复盘 (任鑫 AI 发现 "80 次等待>15min" → 产出 "后台运行" 指令) · 与 C0 复利元则同构.
+
+### Wired
+- `SKILL.md`: Core Philosophy gains **缝合怪原则**; Phase 2 C4 line gains 律一 (零件必须各自世界级); Phase Transition Rules gain **缝合契约** (每个闸门 = 上游 DoD + 下游准入, 隐式假设=缝合缺陷); Phase 10 Analyze gains **瓶颈优先**; reference-table row; V4.1.11 footer entry (V4.1.9 merged into V4.1.7–V4.1.9 pairwise; redundant "Full version history" line removed — V3.21.0–V4.1.6 entry already points to CHANGELOG — to hold the 500-line body budget).
+- `references/renxin-ai-product-methodology.md`: header cross-links to stitching-monster (same course, deeper cut).
+
+### Verified
+- `upgrade_audit.py`: 48/48, 0 errors, 0 warnings. Main SKILL.md body under the 500-line budget.
+
 ## [4.1.10] - 2026-09-10
 
 ### Added — 任鑫 AI 产品方法论 (external-wisdom integration, first self-learning run)

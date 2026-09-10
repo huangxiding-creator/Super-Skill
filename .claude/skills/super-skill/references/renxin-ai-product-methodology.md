@@ -2,7 +2,7 @@
 
 > 来源：任鑫（前京东 O2O 副总裁、混沌创新领教、云九资本合伙人、「AI 炼金术」主理人）混沌学园 14 门主讲课 + 1 专场约 100 万字逐字稿蒸馏（完整版：PAI-Station `data/hundun/任鑫AI产品经验汇总.md`，2026-09-10 六路并行精读汇总）。核心案例：Character.AI / MidJourney / Lensa / Notion AI / Jasper / DoNotPay / 安克 / 会读 ReadFlow。
 > 加载时机：**Idea Factory（idea-intake/proposal-forge 选品）· Phase 1 可行性 · Phase 4 需求 · Phase 8/11 构建与变现 · 任何"做 AI 产品"类项目的裁决**。与 `dev-constitution.md`（工程宪法）互补：宪法管**怎么建**，本文管**在哪打、怎么赢钱**。
-> 定位：**应用层选品与商业裁决层**——当项目是"面向市场的 AI 产品"时，本文条款与宪法冲突按"宪法裁决序 + 本文适用域（应用层选品）"解读。
+> 定位：**应用层选品与商业裁决层**——当项目是"面向市场的 AI 产品"时，本文条款与宪法冲突按"宪法裁决序 + 本文适用域（应用层选品）"解读。深度展开：环节间缝合/调度/协同 → [stitching-monster.md](stitching-monster.md)（缝合怪工程教义，源自本课《AI原生组织转型》定向深挖）。
 
 ## 一句话总纲
 

@@ -15,6 +15,8 @@ description: V4.1 idea→product factory + AI-mastery-7 (Boris Cherny): raw idea
 
 **复利原则 (Compounding, constitution C0)**: what separates teams is not how much AI does today, but whether today's corrections, judgments, and failures make tomorrow better — 把一次成功变成可重复的方法，把一次失败变成不会再犯的约束，把一次纠正变成所有人可复用的判断；最顶级模式 = 通过迭代循环实现螺旋上升.
 
+**缝合怪原则 (Stitching-Monster, 任鑫《AI原生组织转型》)**: 单环节世界最优 ≠ 生产级产品——成败在**缝合处**：用世界最好零件 (C4) × **显式交接契约** (上游 DoD 产出+验收+实测 → 下游准入闸门；单位/格式/语义显式——火星气候轨道器死于隐式单位制) × **整机生产级跑通** (C10/C12)。瓶颈在协调不在任务：优化非瓶颈 = 零贡献 (阿姆达尔定律——"所有的贡献都会被瓶颈吃掉")；"理想的交接是没有交接"——同一中央对象自动传导 — [references/stitching-monster.md](references/stitching-monster.md)
+
 **Index Not Dump**: MEMORY.md is a concise index. Never store code-state facts that can drift.
 
 **开发宪法** (Development Constitution, V2.1): **C0 复利元则** (above) + C1–C16 — proposal targets the **hardest problem** with a **world-best** plan; research **stands on giants' shoulders**; ten× plan **approved before code** (C7); after approval **full autonomy, no skipped steps** (C8); **run-ledger beats documents** (C10); fixes ship **before→after deltas** (C11); **golden-standard verification** (C12); **no fabricated data** (C14); red lines **R1–R12** (proxy 用完即关, no silent failure, 账号安全, 只增不删, 日预算硬顶, 密钥外置…) are never crossed. Non-negotiable — [references/dev-constitution.md](references/dev-constitution.md); copy-paste templates: [references/cc-command-playbook.md](references/cc-command-playbook.md).
@@ -154,7 +156,7 @@ Evaluate technical, economic, operational, and scheduling feasibility.
 
 ### Phase 2: GitHub Discovery
 Find existing open-source solutions before building.
-- Score ≥80%: Clone and adapt — constitution **C4** 站在巨人肩膀上 (from-scratch requires a documented miss)
+- Score ≥80%: Clone and adapt — constitution **C4** 站在巨人肩膀上 (from-scratch requires a documented miss) — **缝合怪律一**: 零件必须各自世界级，缝合怪≠拼凑怪
 - Score <60%: Build from scratch
 - Output: `GITHUB_DISCOVERY_REPORT.md`
 - **Skill**: `github-discovery`
@@ -244,7 +246,7 @@ Comprehensive quality assurance.
 
 ### Phase 10: Ralph Loop
 10-iteration optimization cycle.
-- Analyze → Improve → Validate → Document → Check convergence
+- Analyze (**瓶颈优先** — 阿姆达尔定律: 每轮先定位最慢环节/最长等待，非瓶颈优化零贡献 — [stitching-monster](references/stitching-monster.md)) → Improve → Validate → Document → Check convergence
 - **Run-log-driven audit**: each round opens with a reconstructed run timeline + waste calc → root-cause → numbered fixes (S1-SN) → impl table. Exemplar + template: [references/audit-loop-case-study.md](references/audit-loop-case-study.md) (from We-AIPO, GEP Capsule `capsule_we_aipo_audit_loop_20260805`).
 - **See**: [references/phases.md](references/phases.md) for convergence criteria
 
@@ -385,6 +387,8 @@ Before each session (max capability readiness): version check → sub-skill upgr
 | 10 | 11 | Convergence achieved |
 | 11 | 12 | Deployment successful |
 
+**缝合契约 (Stitching Contract, 律二)**: 每个闸门必须显式写两半——上游 **DoD**（产出物+验收标准+实测数据）与下游**准入条件**；隐式假设 = 缝合缺陷（火星气候轨道器：双方各自完美，公制/英制未显式 → 坠毁）。更高形态："理想的交接是没有交接"——环节操作同一中央对象自动传导（福特传送带）。推进四件事（发现/分配/传导/检查工作）= 环节间调度/协同的工程化 — [references/stitching-monster.md](references/stitching-monster.md)
+
 **Rollback**:
 - Critical test failure → Phase 8
 - Security vulnerability → Phase 5
@@ -439,6 +443,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/dev-constitution.md](references/dev-constitution.md) | 开发宪法 V2.1 — **C0 复利元则** + articles C1–C16 + red lines R1–R12 + enforcement map + ~40-project evidence; companions: [weaipo-constitution](references/weaipo-constitution.md) (unattended-runtime 12+12) · [pai-station-doctrine](references/pai-station-doctrine.md) (value/methodology) |
 | [references/cc-command-playbook.md](references/cc-command-playbook.md) | CC 指挥手册 — 六步元链 · 批准制模板 · ralph-loop 预算 · 无人值守三句式 · 节奏参数表 · 实测工具矩阵 |
 | [references/renxin-ai-product-methodology.md](references/renxin-ai-product-methodology.md) | 任鑫 AI 产品方法论 — 三圈交集+三筛选品 · JTBD 三步法 · 第一天变现/按价值定价 · 老板模式人机分工（混沌 14 课蒸馏，应用层选品裁决） |
+| [references/stitching-monster.md](references/stitching-monster.md) | 缝合怪工程教义 — 三缝合律（世界最好零件 × 显式交接契约 × 整机生产级跑通）· 阿姆达尔瓶颈优先 · 推进四件事 · 缝合处=数据回流点（任鑫《AI原生组织转型》） |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
@@ -487,16 +492,12 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
-**V4.1.7–V4.1.8** - 2026-09-08 - **开发宪法 V1→V2**: V4.1.7 distilled from CC interaction records + We-AIPO evidence → [dev-constitution](references/dev-constitution.md) C1 hardest problem · C2 boldness legal · C3 world-best & landable · C4 giants' shoulders · C5 optimal-under-constraints + red lines R1–R6 + article→phase-gate enforcement map (companions restored: weaipo-constitution · pai-station-doctrine). V4.1.8 mined 《总包大脑实战方案》 (438 pp.) + ~40 delivered projects via 8 parallel agents → V2 adds 人机协作 **C6–C9** (指令只提需求与标准 · 十倍方案批准才动工 · 批准后全自主不跳步 · 完工交账+经验固化) · 交付验收 **C10–C13** (投产证据>文档完备 · 修复必附 before→after 实测 · 金标准验证不假完成 · 容错优先) · 数据内容 **C14–C16** (禁虚构交叉验证 · 防未来函数防数据毒化 · 内容保真) + **R7–R12** (账号安全 · 只增不删 · 日预算硬顶 · 反爬限流 · 密钥外置 · 人工终审) + ~40-project evidence table; new [cc-command-playbook](references/cc-command-playbook.md) (六步元链 · 批准制模板 · ralph-loop 预算 · 无人值守三句式). 48 skills.
+**V4.1.10–V4.1.11** - 2026-09-10 - **任鑫 AI 产品方法论 × 缝合怪工程教义 (智库→Super-Skill 自学习第一、二跑)**: V4.1.10 distills 任鑫 混沌学园 14 课 + 1 专场 (~100 万字) → [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md) applied-layer doctrine — **三圈交集 + 三筛选战场** (离钱近·有套路·不严谨) · JTBD 三步法 · 第一天变现/按价值定价 · 老板模式人机分工 (wired: proposal-forge + Phase 1/4; 三筛 vs C1 互补不冲突)。V4.1.11 deep-mines 《AI原生组织转型》 → [stitching-monster](references/stitching-monster.md): **三缝合律** (世界最好零件 C4 × **显式交接契约** 上游 DoD→下游准入闸门 × 整机生产级跑通 C10/C12——火星气候轨道器死于隐式单位制) · **阿姆达尔瓶颈优先** (优化非瓶颈=零贡献) · 推进四件事 (发现/分配/传导/检查工作) · 缝合处=数据回流点 ("理想的交接是没有交接"；福特传送带) (wired: Core Philosophy + Phase 2 + 缝合契约 + Phase 10)。48 skills.
 
-**V4.1.10** - 2026-09-10 - **任鑫 AI 产品方法论 (external-wisdom integration)**: first run of the PAI-Station 智库→Super-Skill self-learning pipeline — [references/renxin-ai-product-methodology.md](references/renxin-ai-product-methodology.md) distills 任鑫 混沌学园 14 课 + 1 专场 (~100 万字) into an applied-layer doctrine: **三圈交集** (用户任务×AI 新能力×自身优势，圈每月重画) + **三筛** (离钱近·有套路·不严谨) 选战场 · **新能力×新场景×新人群** 盘点（勿用新科技复现老模式）· **JTBD 三步法** (功能/情感/场景——交付执行方法论的机器人而非方法论) · **第一天变现 + 按价值定价** · **壁垒在模型之外** (数据飞轮/复杂度, 王博龙) · **老板模式** (AI 发散量产，人挑选挑刺) 人机分工 · 避坑红线 + 金句裁决库。Conflict adjudication vs constitution: 三筛管**应用层选品** (在哪打)，C1 最难优先管**护城河工程** (建什么守得住) — 互补不冲突。Wired: proposal-forge 选品五法 + Phase 1 三筛 + Phase 4 JTBD. 48 skills.
-
-**V4.1.9** - 2026-09-09 - **复利元则 (C0)**: the author's compounding philosophy becomes the constitution's meta-article — 真正拉开差距的不是今天能做多少，而是今天的纠正、判断和失败能否让明天更好；模型提供一次性能力，组织的资产 = 一次成功→**可重复的方法** (Capsule/playbook/PROPOSAL 范式) · 一次失败→**不会再犯的约束** (红线 R1–R12/守卫测试/Do-Not-Repeat) · 一次纠正→**可复用的判断** (宪法条款/CLAUDE.md/cerebrum)；最顶级模式 = **通过迭代循环实现螺旋上升**。违宪的不是犯错，而是犯了错却什么都没留下 — 每轮 ralph-loop 必须答出沉淀了哪条资产。Wired: Core Philosophy + Phase 12 + constitution V2.1 序/enforcement map + playbook 每轮复利检查. 48 skills.
+**V4.1.7–V4.1.9** - 2026-09-08/09 - **开发宪法 V1→V2.1**: V4.1.7 distilled from CC interaction records + We-AIPO evidence → [dev-constitution](references/dev-constitution.md) C1 hardest problem · C2 boldness legal · C3 world-best & landable · C4 giants' shoulders · C5 optimal-under-constraints + red lines R1–R6 + enforcement map (companions: weaipo-constitution · pai-station-doctrine). V4.1.8 mined 《总包大脑实战方案》 (438 pp.) + ~40 delivered projects via 8 parallel agents → V2 adds 人机协作 **C6–C9** (指令只提需求与标准 · 十倍方案批准才动工 · 批准后全自主不跳步 · 完工交账+经验固化) · 交付验收 **C10–C13** (投产证据>文档完备 · 修复附 before→after · 金标准验证不假完成 · 容错优先) · 数据内容 **C14–C16** + **R7–R12** + ~40-project evidence table; new [cc-command-playbook](references/cc-command-playbook.md). V4.1.9 adds **C0 复利元则** (meta-article): 一次成功→可重复方法 · 一次失败→不会再犯的约束 · 一次纠正→可复用判断；最顶级模式 = 通过迭代循环实现螺旋上升——违宪的不是犯错，而是犯了错却什么都没留下。48 skills.
 
 **V3.21.0–V4.1.6** - 2026-05/08 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (intake/research/proposal + Approval Gate, ten× delta index) → AI-Mastery-7 (Boris Cherny) → self-consistency hardening (health_check verifier) → We-AIPO GEP Capsule (5 reusable audit-loop patterns) · `clash-proxy` + `real-engineering` sub-skills (mattpocock/skills: grilling, CONTEXT.md/ADR, tracer-bullet tickets, wizards, red-first diagnosis; 47→48 skills — [references/mattpocock-skills.md](references/mattpocock-skills.md)) · sub-skill upgrade sweep (`upgrade_audit.py` + `progressive_split.py`, all 48 under the 500-line budget) · Clash API push (one-command `push` = commit → proxy → push → 用完即关; 34/34 tests + live smoke). Details: [CHANGELOG.md](CHANGELOG.md).
 
-Full version history: [CHANGELOG.md](CHANGELOG.md)
-
 ---
 
-*Super-Skill V4.1.10: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
+*Super-Skill V4.1.11: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + 缝合怪工程教义 (三缝合律/瓶颈优先) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
