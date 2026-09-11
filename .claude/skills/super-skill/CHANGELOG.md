@@ -5,6 +5,25 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.13] - 2026-09-11
+
+### Added — AI 原生协调层作战手册 (external-wisdom run #4: 任鑫课程开源库全研)
+Fourth run of the external-wisdom self-learning pipeline. Source: [ai-alchemy-lab/ai-native-org-transformation](https://github.com/ai-alchemy-lab/ai-native-org-transformation) — 任鑫 (Mars)《AI 原生组织转型》课程全文开源库 (5 modules 全文精读 + research 库: thinkers/counterpoints/radar + prompts/落地参谋 v2; 2026-09-11 clone 精读) → **[references/ai-native-coordination.md](references/ai-native-coordination.md)**:
+
+- **协调三职能操作化**: 对齐 = 对齐事实 (N²→N 唯一事实源; 波音 777 律 "你的会议纪要就是打印出来的那张图纸"——**纪要的终点是改掉那个对象**; 安克项目容器/出门问问每项目一 Agent/Claude Tag 跨场冲突) + 对齐打法 (培训/制度/KPI 三失效表 → **把规范写进环境**: Botlearn 品牌 skill/Ramp Inspect agent/ZooWork 事后重构/艾语蒸馏 Anthropic; "最好的对齐是不需要对齐") + 成品沟通 ("文档是成品太贵时代的替代品"; Orion 8 个能点的原型把两周需求澄清压进三十分钟).
+- **推进四件事升级**: **可选项永远干不过默认项** (安克培训满意度 8 分、两周后台冰水: 过半智能体使用者 ≤5 人); 发现=让活自己举手 (安克 SKU −23% 自动资料包) / 分配=让活自己找人 (CodeBuddy "AI 把任务做完了，把问题留给你") / 传导=让活自己交棒 (福特传送带 "你们装了机器，没装传送带"; 安克 9–10 标准交付模板+运行图) / **检查四层机制** (自动门禁 · **对抗性检查=检查者与干活者上下文隔离** [ZooWork 400 绿灯 AI mock 作弊] · 人类抽检按带宽排 · 兜底回滚).
+- **闭环**: 能力×市场双环; **三线复盘** (①解决当下 ②修系统让下次不再出现——"问题的终点不是被解决，是变成一条检查项" [安克螺纹开裂→DVT checklist 自动加条=8D 自动触发版] ③**回头验证**——数据没涨回来=根因找错，闭"归因方式"); "没有全程就没有归因，没有归因就没有学习" (AI 做 PMO 不做小助理); Kavak per-customer agent (10–20 万/天、API 那头是人、**eval 投入与造 agent 1:1**、只认业务结果).
+- **落地三动作**: 修路 (业务留痕 "没有被记录的业务对 AI 来说不存在"; 本体 5 分钟版; MCP=说明书 CLI=把手; **"Harness 是耗材，接口和口径是资产"**) · 点火 (老板带头/1400 万系统 200 刀段子; **别找最听话的，找已经在跑的**; 报销 token; "卡点从来不在方法论，在最开始那三四个小时") · 分圈 (任务越拆越大; 紧缩预算+**过度授权**——"最大的卡点从来不在钱，在流程"; 美图 ≤10 人工作室; "要提效就充分相信 AI，要安全就设计好检查点——两个工程的活").
+- **12 槽位工程一线实证表** (radar): Anthropic (80% 合并代码、实质评审 PR 16%→54%、防假通过只许改 `passes` 字段、双闭环) · Flox (conviction 阈值按可逆性放权 50%/80%、6 个月 50×) · Town 三原则 (草稿进发件箱 "信任没有被侵蚀"、自主权靠 10 次成功记录挣) · Yegge beads 账本 ("Agents read and write the ledger; humans audit it") · Asana (五句话 prompt: 1.2 万 vs 5 年 600 万) · Codex 周活法务 108×/工程仅 5× ("路修通之后，跑上来的不只是工程师") · Garry Tan/Waymo/Jeff Dean 金句层.
+- **反方与边界** (counterpoints): MIT ~95% 试点零 P&L 影响 (口径注明) · <30% 进生产 · 自建 33% vs 买+合作 67% · "70% 失败"系无实证口头禅 (诚实说法=成功率约三成, BCG) · J-Curve (会重接制度的组织吃右半边) · 类比三陷阱 ("技术是放大器不是发动机") · 锯齿能力/幻觉+验证税/eval 天花板 (电气化没有的新坑) · 降调数据 (60% 工作用 AI 但完全委派仅 0–20%).
+- **研究库独立资产**: 价值捕获地图+护城河六型+**套壳识别器三问** · per-outcome 定价 (红杉 6:1、"模型越强你越便宜") · **Build-vs-Wait 判定器** ("下一代模型更强，会让我更值钱还是更没用？") · 8 wedge 模式库 · AEO 分发 · 投胎三档 (工具→引擎→基础设施; 判据: 把 AI 拿走，流程变慢 A+ 还是直接崩 B).
+- **落地参谋检索纪律** (prompt v2 模式): 报库存→盘上下文 ≤3 问且大词追问成具体的事→检索后回答 (标注来源+区分材料与推断)→没有材料明说不许瞎编→≤3 条建议→两周复盘.
+- License: 课程文本 CC BY-NC-ND 4.0 — 内部注明出处引用萃取; 语料库本体 (cloned repo) 永不入库.
+
+### Wired
+- `SKILL.md`: Phase 3 修路 line; Phase 8 Autonomous Loop 检查四层; Phase 10 三线复盘 merged into run-log audit line; proposal-forge per-outcome pricing + Build-vs-Wait; reference-table row; V4.1.13 entry (V4.1.12 + V4.1.10–V4.1.11 + V3.21.0–V4.1.9 merged into one V3.21.0–V4.1.12 line; Phase 12 two See lines merged — body stays exactly 500); footer → V4.1.13.
+- `references/stitching-monster.md`: header cross-link to the new manual (缝合怪=缝, 本手册=协).
+
 ## [4.1.12] - 2026-09-11
 
 ### Added — 混沌武器库 · AI 产品研发应用地图 (external-wisdom run #3)

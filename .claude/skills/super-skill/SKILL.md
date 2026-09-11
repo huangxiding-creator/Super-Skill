@@ -135,7 +135,7 @@ raw idea → [1] idea-intake → [2] research-orchestrator → [3] proposal-forg
 
 1. **[idea-intake](skills/idea-intake/SKILL.md)** — ambiguity-score; **Hybrid Clarification Gate** (autonomous unless score 4–7, then ≤3 Qs once) → `IDEA_SEED.md`
 2. **[research-orchestrator](skills/research-orchestrator/SKILL.md)** — 9 channels (GitHub/Sogou WeChat/HN/npm/PyPI/App Store/Reddit/ProductHunt/competitor-site) + gap analysis + dedup + quality gate + checkpoint. Ports ResearchFactory-Eng architecture. → `RESEARCH_DOCKET/`, `RESEARCH_DIGEST.md`, `GAP_REPORT.md`
-3. **[proposal-forge](skills/proposal-forge/SKILL.md)** — maturity index + **ten× delta index** (falsifiable 10× gate) + **任鑫选品五法** (三圈交集 + 离钱近·有套路·不严谨三筛 + 第一天变现 — [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md)) + blue/red-ocean + data-driven pricing → 4-dim scorecard → `PROPOSAL.md`, `BUSINESS_MODEL.md`, `SCORECARD.json`; 全生命周期武器组合见 [hundun-arsenal](references/hundun-arsenal.md) 六场景地图 (场景一/二在此阶段)
+3. **[proposal-forge](skills/proposal-forge/SKILL.md)** — maturity index + **ten× delta index** (falsifiable 10× gate) + **任鑫选品五法** (三圈交集 + 离钱近·有套路·不严谨三筛 + 第一天变现 — [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md)) + blue/red-ocean + data-driven pricing (per-seat / per-value / **per-outcome** — 服务预算 6× 软件预算、"模型越强你越便宜") → 4-dim scorecard → `PROPOSAL.md`, `BUSINESS_MODEL.md`, `SCORECARD.json`; 全生命周期武器组合见 [hundun-arsenal](references/hundun-arsenal.md) 六场景地图 (场景一/二在此阶段)；Build-vs-Wait 判据 "下一代模型更强，会让我更值钱还是更没用？" — [ai-native-coordination](references/ai-native-coordination.md)
 
 **Proposal Approval Gate** ✋: scorecard verdict = `proceed` → present proposal, ask approve/revise/reject **once** → on approve, auto-populate VISION/REQUIREMENTS/ARCHITECTURE and continue to Phase 0. Only new human touchpoint.
 
@@ -171,7 +171,7 @@ Automatically discover and install skills from ecosystem.
 
 ### Phase 3: Knowledge Base
 Build comprehensive domain knowledge.
-- Domain, technical, and context knowledge
+- Domain, technical, and context knowledge; **修路** (coordination doctrine): 业务过程留痕 ("没有被记录的业务对 AI 来说不存在") + 本体 **5 分钟版** (MD 口喷、缺什么补什么) — [ai-native-coordination](references/ai-native-coordination.md)
 - Output: `KNOWLEDGE_BASE/`, `SCHEMAS.md`, plus a `CONTEXT.md` **ubiquitous-language glossary** (terms + banned synonyms; lint via `context_lint.py`)
 - **Skill**: `continuous-learning-v2`
 
@@ -218,7 +218,7 @@ Judge ← evaluates result ← Worker
   ↓ discard: git reset, next task
 ```
 
-- **Autonomous Loop**: Modify → Test → Evaluate → Keep/Discard × N experiments
+- **Autonomous Loop**: Modify → Test → Evaluate → Keep/Discard × N experiments; **检查四层**: 自动门禁 · 对抗性检查 (检查者与干活者上下文隔离——防 AI mock 数据骗过绿灯) · 人类抽检按带宽排 · 兜底回滚 — [ai-native-coordination](references/ai-native-coordination.md)
 - **Iceberg Rule**: Fix one bug → scan for pattern across codebase. One problem in, one category out
 - **Anti-Rationalization**: Never accept "I can't" without evidence of exhausting all options
 - TDD-first, small commits, continuous integration
@@ -247,7 +247,7 @@ Comprehensive quality assurance.
 ### Phase 10: Ralph Loop
 10-iteration optimization cycle.
 - Analyze (**瓶颈优先** — 阿姆达尔定律: 每轮先定位最慢环节/最长等待，非瓶颈优化零贡献 — [stitching-monster](references/stitching-monster.md)) → Improve → Validate → Document → Check convergence
-- **Run-log-driven audit**: each round opens with a reconstructed run timeline + waste calc → root-cause → numbered fixes (S1-SN) → impl table. Exemplar + template: [references/audit-loop-case-study.md](references/audit-loop-case-study.md) (from We-AIPO, GEP Capsule `capsule_we_aipo_audit_loop_20260805`).
+- **Run-log-driven audit + 三线复盘** (coordination doctrine): each round opens with a reconstructed run timeline + waste calc → root-cause → numbered fixes (S1-SN) → impl table; 每个问题跑三条线——解决当下 · 修系统让下次不再出现 · **回头验证** (改完指标回来没有？没涨=根因找错，闭"归因方式") — [references/audit-loop-case-study.md](references/audit-loop-case-study.md) · [ai-native-coordination](references/ai-native-coordination.md)
 - **See**: [references/phases.md](references/phases.md) for convergence criteria
 
 ### Phase 11: Deployment
@@ -260,8 +260,7 @@ Deploy to production.
 Capture learnings and evolve Super-Skill.
 - Post-Run Review → Signal Extraction → Evolution Decision → Mutation → Capsule Packaging — **C0**: 一次成功→可重复方法 · 一次失败→不会再犯的约束 · 一次纠正→可复用判断 (spiral ascent)
 - **Skills**: `post-run-evolution`, `darwin-evolution`, `capability-evolver`
-- **See**: [skills/post-run-evolution/SKILL.md](skills/post-run-evolution/SKILL.md) for post-run evolution
-- **See**: [EVOLUTION.md](EVOLUTION.md) for GEP Protocol details
+- **See**: [skills/post-run-evolution/SKILL.md](skills/post-run-evolution/SKILL.md) for post-run evolution · [EVOLUTION.md](EVOLUTION.md) for GEP Protocol details
 
 ## Skill Integration Matrix
 
@@ -445,6 +444,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/renxin-ai-product-methodology.md](references/renxin-ai-product-methodology.md) | 任鑫 AI 产品方法论 — 三圈交集+三筛选品 · JTBD 三步法 · 第一天变现/按价值定价 · 老板模式人机分工（混沌 14 课蒸馏，应用层选品裁决） |
 | [references/stitching-monster.md](references/stitching-monster.md) | 缝合怪工程教义 — 三缝合律（世界最好零件 × 显式交接契约 × 整机生产级跑通）· 阿姆达尔瓶颈优先 · 推进四件事 · 缝合处=数据回流点（任鑫《AI原生组织转型》） |
 | [references/hundun-arsenal.md](references/hundun-arsenal.md) | 混沌武器库 — 六场景作战地图（机会洞察/战略定位/MVP/技术底座/增长变现/组织协作，647 门课 3031 万字频次验证）· 使用心法三句话 · 13 技能卡（业务留档五步/GEO 四卡/组织五卡）· 外部语料挖掘流水线 |
+| [references/ai-native-coordination.md](references/ai-native-coordination.md) | AI 原生协调层作战手册 — 对齐（N²→N 唯一事实源/纪要的终点是改掉那个对象/规范写进环境）· 推进四件事+检查四层 · 闭环三线复盘（"问题的终点是变成一条检查项"）· 落地三动作（修路/点火/分圈）· 12 槽位工程实证（Anthropic 80% 合并代码/Flox 50×/Town 三原则/beads 账本）· 反方边界（95% 试点零 P&L/J-Curve）· 投资人创业者视角（per-outcome 定价/套壳三问/8 wedge）· 落地参谋检索纪律 |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
@@ -493,12 +493,10 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
-**V4.1.12** - 2026-09-11 - **混沌武器库 · AI 产品研发应用地图 (智库→Super-Skill 自学习第三跑)**: [hundun-arsenal](references/hundun-arsenal.md) — 超级AI工作站 (`E:\AI-Station`) 混沌学园全站 647 门课/3031 万字 → 2,799 条目频次验证，收录 **六场景作战地图** (机会洞察: 第一性原理+窄场景 · 战略定位: 一思维+**单点破局 70% 力气压一个尖点** · MVP: **用户中心原则 83 次=全库第一高频「从用户任务倒推，不从模型能力正推」** · 技术底座: 数据质量>数量>结构 + 评测/监控/降级三层工程 · 增长: 自证式营销+按人力成本定价 · 组织: 先改流程再上工具) + **使用心法三句话** (入口第一性原理/聚焦单点破局 · 过程数据驱动兜底 · 长期一思维校准) + **13 技能卡** (业务留档五步: 存档→本体→CLI 化→MCP · GEO 四卡 · 组织五卡) + **挖掘流水线** (四类资产与 C0 资产表同构；广基蒸馏→任鑫深钻的复用法)。48 skills.
+**V4.1.13** - 2026-09-11 - **AI 原生协调层作战手册 (外部智慧自学习第四跑：任鑫课程开源库全研)**: deep-study [ai-alchemy-lab/ai-native-org-transformation](https://github.com/ai-alchemy-lab/ai-native-org-transformation) (课程 5 模块全研 + research 库 thinkers/counterpoints/radar + 落地参谋 v2) → [ai-native-coordination](references/ai-native-coordination.md): 协调三职能操作化——**对齐** (N²→N 唯一事实源 · 波音 777 律"你的会议纪要就是打印出来的那张图纸"，纪要的终点是改掉那个对象 · 培训/制度/KPI 三失效 → 把规范写进环境"最好的对齐是不需要对齐") · **推进** (**可选项永远干不过默认项**——安克培训满意度 8 分但两周后台冰水 · 检查四层: 门禁/**对抗隔离**/抽检/回滚 · "人对人抱怨会消散，人对系统抱怨会沉淀") · **闭环** (能力×市场双环 · **三线复盘**: 解决当下+修系统+**回头验证** · "问题的终点不是被解决，是变成一条检查项" · 无全程就无归因 · Kavak per-customer agent + eval 1:1) · **落地三动作** (修路: "Harness 是耗材，接口和口径是资产" · 点火: 找已经在跑的人 · 分圈: 紧缩预算+过度授权) · **12 槽位工程实证** (Anthropic 80% 合并代码+防假通过 · Flox 50× · Town 三原则 · beads 账本) · **反方边界** (95% 试点零 P&L · J-Curve · 类比三陷阱) · per-outcome 定价/套壳三问/8 wedge/落地参谋检索纪律。wired: Phase 3 修路 · Phase 8 检查四层 · Phase 10 三线复盘 · proposal-forge per-outcome+Build-vs-Wait。48 skills.
 
-**V4.1.10–V4.1.11** - 2026-09-10 - **任鑫 AI 产品方法论 × 缝合怪工程教义 (智库→Super-Skill 自学习第一、二跑)**: V4.1.10 distills 任鑫 混沌学园 14 课 + 1 专场 (~100 万字) → [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md) applied-layer doctrine — **三圈交集 + 三筛选战场** (离钱近·有套路·不严谨) · JTBD 三步法 · 第一天变现/按价值定价 · 老板模式人机分工 (wired: proposal-forge + Phase 1/4; 三筛 vs C1 互补不冲突)。V4.1.11 deep-mines 《AI原生组织转型》 → [stitching-monster](references/stitching-monster.md): **三缝合律** (世界最好零件 C4 × **显式交接契约** 上游 DoD→下游准入闸门 × 整机生产级跑通 C10/C12——火星气候轨道器死于隐式单位制) · **阿姆达尔瓶颈优先** (优化非瓶颈=零贡献) · 推进四件事 (发现/分配/传导/检查工作) · 缝合处=数据回流点 ("理想的交接是没有交接"；福特传送带) (wired: Core Philosophy + Phase 2 + 缝合契约 + Phase 10)。48 skills.
-
-**V3.21.0–V4.1.9** - 2026-05/09 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (Approval Gate, ten× delta index) → AI-Mastery-7 → self-consistency hardening → We-AIPO GEP Capsule → `clash-proxy` + `real-engineering` sub-skills (47→48) → sub-skill upgrade sweep (all 48 under budget) → Clash API push (one-command `push`, 用完即关) → **开发宪法 V1→V2.1** ([dev-constitution](references/dev-constitution.md): **C0 复利元则** + C1–C16 + R1–R12 + enforcement map + ~40-project evidence, from CC records + 《总包大脑实战方案》 438 pp. + 8 parallel mining agents; companions weaipo/pai + [cc-command-playbook](references/cc-command-playbook.md)). Details: [CHANGELOG.md](CHANGELOG.md).
+**V3.21.0–V4.1.12** - 2026-05/09 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (Approval Gate, ten× delta index) → AI-Mastery-7 → We-AIPO GEP Capsule → `clash-proxy` + `real-engineering` (47→48) → **开发宪法 V1→V2.1** ([dev-constitution](references/dev-constitution.md): **C0 复利元则** + C1–C16 + R1–R12 + enforcement map + ~40-project evidence; companions weaipo/pai + [cc-command-playbook](references/cc-command-playbook.md)) → **智库→Super-Skill 自学习一~三跑**: V4.1.10 任鑫产品方法论 ([renxin-ai-product-methodology](references/renxin-ai-product-methodology.md): 三圈交集+三筛/JTBD/第一天变现) · V4.1.11 缝合怪 ([stitching-monster](references/stitching-monster.md): 三缝合律/阿姆达尔瓶颈/推进四件事) · V4.1.12 混沌武器库 ([hundun-arsenal](references/hundun-arsenal.md): 六场景作战地图/13 技能卡, 647 课 3031 万字频次验证)。Details: [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-*Super-Skill V4.1.12: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + 缝合怪工程教义 (三缝合律/瓶颈优先) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现) + 混沌武器库 (六场景作战地图/13 技能卡) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
+*Super-Skill V4.1.13: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + AI 原生协调层手册 (对齐/推进/闭环 + 三落地动作 + 检查四层 + 三线复盘) + 缝合怪工程教义 (三缝合律/瓶颈优先) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现) + 混沌武器库 (六场景作战地图/13 技能卡) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
