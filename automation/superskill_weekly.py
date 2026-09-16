@@ -519,6 +519,31 @@ def stage_s4(log, state):
 
 
 # ---------------------------------------------------------------- S5 提交推送
+def _reconcile_remote(log):
+    """gh-api 通道推送会造成"同树异 SHA"分叉（远端内容等价但历史平行）。
+
+    fetch 窗口可用时自动 re-anchor：把本地分支指到远端 SHA（soft reset，
+    不动工作树防 CRLF 幻影）。fetch 失败（代理窗口关闭）→ 静默跳过，
+    分叉无害，gh-api 下周照常快进。fetch 成功后 origin/master 才可信
+    （失败时的过期引用绝不能拿来 reset——红线）。
+    """
+    rc, _ = git("fetch", "origin", "master", timeout=90)
+    if rc != 0:
+        return
+    rc, out = git("rev-parse", "HEAD")
+    local = (out or "").strip()
+    rc, out = git("rev-parse", "origin/master")
+    remote = (out or "").strip()
+    if not remote or remote == local:
+        return
+    rc, out = git("diff", "--stat", "HEAD", "origin/master")
+    if (out or "").strip():
+        log("[S5] 本地/远端树不同（真分叉），不自动合并，走 gh-api 快进路线")
+        return
+    git("reset", "--soft", remote)
+    log(f"[S5] 同树异 SHA 已 re-anchor：{local[:8]} -> {remote[:8]}")
+
+
 def stage_s5(log, state):
     distill = (state.get("s3") or {}).get("distill") or {}
     summary = distill.get("summary") or "周度自升级（子技能审计 + 混沌语料巡检）"
@@ -541,6 +566,8 @@ def stage_s5(log, state):
             return False
     else:
         log("[S5] 无待提交改动")
+
+    _reconcile_remote(log)  # fetch 窗口自愈"同树异 SHA"分叉
 
     # 三层推送回退：直连 git → 剥代理 git → gh api 数据通道
     layers = [

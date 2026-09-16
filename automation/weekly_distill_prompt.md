@@ -86,7 +86,7 @@
 最后单独输出一个 json 代码块，不要有其他尾随内容：
 
 ```json
-{"changed": true, "version_old": "{{VER_OLD}}", "version_new": "{{VER_NEW}}", "new_references": ["文件名"], "updated_references": ["文件名"], "skipped_materials": [{"title": "材料名", "reason": "一句话"}], "summary": "一句话中文摘要（≤120字，用于 git commit）", "plain_summary": "给微信通知用的大白话（≤100字）：说清这次 Super-Skill 新学会了什么能力、举例一条，禁用术语（蒸馏/融合/接线/资产/落库这类词都不许出现）"}
+{"changed": true, "version_old": "{{VER_OLD}}", "version_new": "{{VER_NEW}}", "new_references": ["文件名"], "updated_references": ["文件名"], "skipped_materials": [{"title": "材料名", "reason": "一句话"}], "summary": "一句话中文摘要（≤120字，用于 git commit）", "plain_summary": "给微信通知用的大白话（≤100字）：说清这次 Super-Skill 新学会了什么能力、举例一条，禁用术语（蒸馏/融合/接线/资产/落库这类词都不许出现），不要提版本号（报告尾部自动附加）"}
 ```
 
 若全部材料被 skip 或无增量价值：**不写 distill_out 任何文件**，输出 `{"changed": false, ..., "summary": "本周材料无增量价值（理由）"}`。如实报告优于虚假繁荣。
