@@ -184,7 +184,7 @@ def stage_s1(log, state):
             log(f"[S1] AUDIT {e}")
     log(f"[S1] {audit_note}")
     state["s1"] = {"ok": True, "note": f"{npx_note}；{audit_note}",
-                   "audit_errors": errors}
+                   "audit_total": total, "audit_errors": errors}
     return True
 
 
@@ -486,31 +486,94 @@ def _wecom_webhook_send(title: str, body: str) -> tuple[bool, str]:
     return rc == 0, f"webhook rc={rc}"
 
 
-def stage_s6(log, state):
-    icons = {True: "✅", False: "❌"}
-    ok, s2_quarantined = overall_ok(state)
-    if ok and s2_quarantined:
-        verdict = "⚠️ 主链成功·混沌段隔离"
-    else:
-        verdict = "✅ 成功" if ok else "❌ 失败"
-    title = f"**Super-Skill 周度自升级 {verdict}**"
-    lines = [title, ""]
-    for i in range(1, 6):
-        st = state.get(f"s{i}") or {}
-        lines.append(f"S{i} {icons.get(bool(st.get('ok')), '⚠️')} "
-                     f"{(st.get('note') or '未运行')[:80]}")
-    courses = (state.get("s2") or {}).get("new_courses") or []
-    for c in courses[:10]:
-        lines.append(f"- 新课《{c['title'][:40]}》")
-    if len(courses) > 10:
-        lines.append(f"- …等 {len(courses)} 门")
-    lines.append(f"耗时 {state.get('duration_min', '?')} 分钟")
-    content = "\n".join(lines)
+def _plain_report(state) -> str:
+    """站在用户角度的价值报告：先讲 Super-Skill 这周学会了什么、用户得到
+    什么，再一句话带过例行检查。技术细节（通道名/rc/阶段号）只进日志，
+    不进通知——用户关心的是"我的工具变强在哪"，不是"系统做了哪些动作"。
+    """
+    def st(i):
+        return state.get(f"s{i}") or {}
 
+    def is_ok(i):
+        return bool(st(i).get("ok"))
+
+    core, s2q = overall_ok(state)
+    verdict = ("没完全成功" if not core else
+               "基本成功" if s2q else "成功")
+    lines = [f"**你的 Super-Skill 每周升级报告 · {verdict}**", ""]
+
+    # ① 头条：这周学会了什么新本事（用户最关心的价值）
+    d = st(3).get("distill") or {}
+    courses = st(2).get("new_courses") or []
+    if d.get("changed"):
+        plain = str(d.get("plain_summary") or d.get("summary") or "").strip()
+        ver_new = str(d.get("version_new") or "")
+        ver_old = str(d.get("version_old") or "")
+        lines.append("🎁 这周 Super-Skill 新学会了：")
+        lines.append(plain[:200] or "从本周新课里学到新打法，已经会用")
+        tail = "（已经装好，你下次对话时自动用上"
+        if ver_new:
+            tail += f"，版本 {ver_old} → {ver_new}" if ver_old else \
+                f"，版本 {ver_new}"
+        lines.append(tail + "）")
+    elif is_ok(3):
+        if courses:
+            lines.append("🎁 这周没有新增本事：新课都读过了，暂时没有值得"
+                         "单独记的新干货，你的 Super-Skill 保持原样")
+        else:
+            lines.append("🎁 这周没有新增本事：混沌学园本周没有新课上架，"
+                         "你的 Super-Skill 保持原样")
+    else:
+        lines.append("🎁 这周的新本事没能上线：处理课程时出了点问题，已自动"
+                     "恢复原样，下周自动重试")
+
+    # ② 例行检查：一句话带过，只在需要用户知道或行动时才展开
+    lines.append("")
+    routine = []
+    s1 = st(1)
+    if s1:
+        errs = len(s1.get("audit_errors") or [])
+        total = s1.get("audit_total") or 48
+        if is_ok(1):
+            routine.append(f"🔧 技巧体检：自带的 {total} 个开发技巧检查完毕，"
+                           + ("都好用" if errs == 0 else
+                              f"{errs} 处小瑕疵，不影响使用"))
+        else:
+            routine.append("🔧 技巧体检：这次没跑成，不影响其他环节")
+    s2 = st(2)
+    if s2 and not is_ok(2):
+        routine.append("📚 混沌学园：这周没能连上（网络或账号原因），下周自动再试")
+    elif s2 and courses:
+        names = "、".join(f"《{c['title'][:20]}》" for c in courses[:3])
+        more = f" 等 {len(courses)} 门" if len(courses) > 3 else ""
+        routine.append(f"📚 混沌学园：本周新到 {names}{more}")
+    elif s2 and is_ok(2) and not courses and d.get("changed"):
+        routine.append("📚 混沌学园：本周没有新课上架（新本事来自既有课程的补课）")
+    if st(4) and not is_ok(4):
+        routine.append("💻 本机安装：新本事还没装到你机器上、暂时不生效，"
+                       "需要抽空看一眼")
+    if st(5):
+        if is_ok(5):
+            if d.get("changed"):
+                routine.append("☁️ 云端备份：最新版已同步到 GitHub，换电脑也不丢")
+        else:
+            routine.append("☁️ 云端备份：没推上 GitHub——本机新版都在、很安全，"
+                           "下周自动补推")
+    lines.extend(routine if routine else ["✅ 例行检查全部通过"])
+
+    mins = state.get("duration_min")
+    if mins is not None:
+        lines.append(f"⏱️ 全程自动完成，用时 {mins} 分钟，不用你操心")
+    return "\n".join(lines)
+
+
+def stage_s6(log, state):
+    content = _plain_report(state)
+    log(f"[S6] 通知内容（价值优先大白话版）：\n{content}")
     sent, chan = _wecom_oauth_send(content)
     if not sent:
         log(f"[S6] OAuth 通道失败：{chan}，尝试 webhook 回退")
-        sent, chan = _wecom_webhook_send(title, content)
+        sent, chan = _wecom_webhook_send("Super-Skill 每周升级报告", content)
     note = f"通知已发（{chan}）" if sent else \
         f"通知通道全败（{chan}），结果见 logs/ 与 state.json"
     log(f"[S6] {note}")

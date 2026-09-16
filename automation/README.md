@@ -22,7 +22,7 @@ schtasks /Query /TN "SuperSkillWeekly" /V /FO LIST
 | S3 | 无头 claude 蒸馏新课 → 四类资产归档 → 对账去重 → **暂存协议**（成品全文写 `automation/distill_out/` + manifest.json，编排器校验白名单后代落 `.claude/skills/super-skill/`——`.claude/**` 是权限敏感路径，LLM 直写必被拒，由确定性层执行写入）+ SKILL.md 接线 + CHANGELOG + 版本 bump；**干净工作树闸门**防混入人工改动 | 失败/无增量/声明与暂存不符 → `git checkout` 回滚 |
 | S4 | robocopy 镜像 `.claude/skills/super-skill` → `%USERPROFILE%\.claude\skills\super-skill` | 失败即整体 ❌ |
 | S5 | 提交 → 三层推送回退：`git push` → 剥代理重推 → `api_push.py`（gh api 数据通道，仅快进） | 全败保留本地提交，企微告警 |
-| S6 | `tools/notify_wecom.py` 摘要（成功/失败均发） | best-effort |
+| S6 | 企微通知：**站在用户角度的价值报告**（先讲这周 Super-Skill 学会了什么新本事、用户得到什么，例行检查一句话带过，技术细节只进日志）；通道回退 OAuth 机器人直达 → webhook → 日志降级 | best-effort |
 
 ## 运维操作
 

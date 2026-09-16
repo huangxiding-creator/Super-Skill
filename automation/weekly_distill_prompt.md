@@ -72,7 +72,7 @@
 最后单独输出一个 json 代码块，不要有其他尾随内容：
 
 ```json
-{"changed": true, "version_old": "V4.1.13", "version_new": "V4.1.14", "new_references": ["文件名"], "updated_references": ["文件名"], "skipped_courses": [{"title": "课程名", "reason": "一句话"}], "summary": "一句话中文摘要（≤120字，用于 git commit 与企微通知）"}
+{"changed": true, "version_old": "V4.1.13", "version_new": "V4.1.14", "new_references": ["文件名"], "updated_references": ["文件名"], "skipped_courses": [{"title": "课程名", "reason": "一句话"}], "summary": "一句话中文摘要（≤120字，用于 git commit）", "plain_summary": "给微信通知用的大白话（≤100字）：说清这次 Super-Skill 新学会了什么能力、举例一条，禁用术语（蒸馏/融合/接线/资产/落库这类词都不许出现）"}
 ```
 
 若全部课程被 skip 或无增量价值：**不写 distill_out 任何文件**，输出 `{"changed": false, ..., "summary": "本周新课无增量价值（理由）"}`。如实报告优于虚假繁荣。
