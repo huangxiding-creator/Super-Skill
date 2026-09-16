@@ -244,6 +244,15 @@ def stage_s2(log, state):
 
 
 # ---------------------------------------------------------------- S3 蒸馏融合
+# 暂存协议：.claude/** 是权限系统敏感路径，蒸馏 claude 无法直写——它把成品
+# 全文写到 automation/distill_out/<skill相对路径> + manifest.json，本编排器
+# 校验白名单后代为落位（LLM 决定内容，确定性层执行写入）。
+DISTILL_OUT = AUTO / "distill_out"
+_ALLOW_PREFIXES = ("references/", "skills/", "assets/")
+_ALLOW_FILES = {"SKILL.md", "CHANGELOG.md", "README.md", "EVOLUTION.md",
+                "MEMORY.md"}
+
+
 def _revert_skill_tree(log):
     log("[S3] 回滚蒸馏产生的部分改动")
     git("checkout", "--", ".")
@@ -258,6 +267,32 @@ def _parse_result_json(text: str):
         return json.loads(blocks[-1])
     except json.JSONDecodeError:
         return None
+
+
+def _apply_staged(log) -> int:
+    """校验 manifest 并把暂存内容落位到 skill 目录。返回落位文件数。"""
+    import shutil
+    manifest_f = DISTILL_OUT / "manifest.json"
+    if not manifest_f.is_file():
+        return 0
+    entries = json.loads(manifest_f.read_text(encoding="utf-8"))
+    applied = 0
+    for e in entries if isinstance(entries, list) else []:
+        rel = str(e.get("path", "")).replace("\\", "/").lstrip("/")
+        src = DISTILL_OUT / rel
+        parts = rel.split("/")
+        allowed = (rel in _ALLOW_FILES or rel.startswith(_ALLOW_PREFIXES)) \
+            and ".." not in parts and src.is_file()
+        if not allowed:
+            log(f"[S3] MANIFEST 拒绝可疑路径: {rel}")
+            continue
+        dst = SKILL_SRC / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        applied += 1
+        log(f"[S3] APPLY {e.get('action', '?')} {rel} "
+            f"({str(e.get('summary', ''))[:60]})")
+    return applied
 
 
 def stage_s3(log, state):
@@ -277,6 +312,11 @@ def stage_s3(log, state):
         log(f"[S3] {note}: {dirty[:3]}")
         state["s3"] = {"ok": False, "note": note}
         return False
+
+    import shutil
+    if DISTILL_OUT.is_dir():  # 清掉上一轮遗留
+        shutil.rmtree(DISTILL_OUT)
+    DISTILL_OUT.mkdir(parents=True, exist_ok=True)
 
     template = PROMPT_TEMPLATE.read_text(encoding="utf-8")
     listing = "\n".join(f"- 《{c['title']}》→ {c['path']}" for c in courses)
@@ -305,21 +345,30 @@ def stage_s3(log, state):
         state["s3"] = {"ok": False, "note": note}
         return False
 
-    changed = bool(result.get("changed"))
     summary = str(result.get("summary", ""))[:200]
-    if not changed:
-        rc2, out2 = git("status", "--porcelain")
-        still = [l for l in (out2 or "").strip().splitlines() if l]
-        if still:
-            _revert_skill_tree(log)
-        log(f"[S3] 无增量价值（{summary}），工作树已还原")
-    else:
-        log(f"[S3] 融合完成：{summary}")
-        for ref in (result.get("new_references") or []) + \
-                   (result.get("updated_references") or []):
-            log(f"[S3] REF {ref}")
-    state["s3"] = {"ok": True,
-                   "note": summary or ("融合 " + str(len(courses)) + " 门"),
+    applied = _apply_staged(log)  # manifest 为地面真值
+    if applied == 0:
+        _revert_skill_tree(log)
+        if result.get("changed"):
+            log(f"[S3] 声称 changed 但无有效 manifest，已回滚（{summary}）")
+            state["s3"] = {"ok": False,
+                           "note": "蒸馏声明与暂存不符，已回滚"}
+        else:
+            log(f"[S3] 无增量价值（{summary}），工作树已还原")
+            state["s3"] = {"ok": True, "note": summary or "无增量价值",
+                           "distill": result}
+        return state["s3"]["ok"]
+
+    rc2, out2 = git("status", "--porcelain")
+    really_dirty = bool((out2 or "").strip())
+    if not really_dirty:
+        log("[S3] 落位后工作树无变化（暂存内容与现状等同）")
+    log(f"[S3] 融合完成：{summary}（落位 {applied} 文件）")
+    for ref in (result.get("new_references") or []) + \
+               (result.get("updated_references") or []):
+        log(f"[S3] REF {ref}")
+    result["changed"] = True
+    state["s3"] = {"ok": True, "note": summary or f"融合 {applied} 文件",
                    "distill": result}
     return True
 
