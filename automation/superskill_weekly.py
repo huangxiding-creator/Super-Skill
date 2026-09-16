@@ -64,7 +64,36 @@ PROMPT_TEMPLATE = AUTO / "weekly_distill_prompt.md"
 NO_WINDOW = 0x08000000  # CREATE_NO_WINDOW（不弹窗铁律）
 _HEX32 = re.compile(r"^[0-9a-f]{32}$")
 MAX_MISSING_CIRCUIT = 40   # 混沌缺口熔断阈值（正常周增量 0~5 门）
-CLAUDE_TIMEOUT = 2700      # 蒸馏 45 分钟
+CLAUDE_TIMEOUT = 3600      # 蒸馏 60 分钟（多源材料后放宽）
+
+# ------------------------------------------------ 智库（04 智库）多源增量
+# 蒸馏知识来源 = 混沌新课（data/hundun，S2 上半段）+ 智库五渠道（下半段）。
+# 排除：混沌学园/（与 data/hundun/AI课程 394 文件完全同源，避免重复蒸馏）；
+#       混沌/ 调研框架库/ internal/（空）；微信读书 EPC/工程总承包（与 AI 产品无关）；
+#       洞见研报/智慧水利（垂直行业，同上）。.doc/.docx 读不了（待转格式）。
+ZHIKU_ROOT = STATION / "04 智库"
+CHANNEL_STATE_FILE = AUTO / "channel_state.json"
+MD_MAX_BYTES = 1_500_000     # 超长 md 由提示词引导择要深读，再大直接不收
+PDF_MAX_BYTES = 15_000_000   # 更大的多是扫描件（一堂最佳实践 33-61MB），token 不划算
+
+ZHIKU_CHANNELS = [
+    # (渠道名, 子目录, 收录扩展名, 周上限, 相对路径排除关键词)
+    ("一堂", "一堂", {".md", ".pdf"}, 4, []),
+    ("万维钢调研方法论", "万维钢调研方法论", {".md"}, 4, []),
+    ("微信读书", "微信读书", {".md"}, 2, ["EPC", "工程总承包"]),
+    ("洞见研报", "洞见研报", {".md", ".pdf"}, 4, ["智慧水利"]),
+    ("通往AGI之路", "通往AGI之路", {".md"}, 6, []),
+]
+
+# 首跑精选：水位播种前补课一批最有价值的库存（此后纯增量，不再翻旧账）
+ZHIKU_STARTER = {
+    "一堂": ["一堂龙虾实践2-深度笔记.md"],
+    "万维钢调研方法论": ["万维钢调研方法论总论.md"],
+    "洞见研报": ["FDE/djyanbao_研报索引_FDE.md",
+                 "FDE/【国盛证券】FDE：软件服务的范式革命【洞见研报DJyanbao.com】.pdf"],
+    "微信读书": ["怎么做调研_如何写报告/怎么做调研_如何写报告.md"],
+    "通往AGI之路": ["2.4 精选：AI 研究报告/2026 Agentic Coding Trends Report.pdf.md"],
+}
 
 
 def now() -> str:
@@ -203,13 +232,83 @@ def _existing_cids() -> set:
     return done
 
 
+def _scan_zhiku(log):
+    """04 智库多源水位扫描：新文件/改动文件 → 周上限截断 → 余量记账下周。
+
+    首跑（渠道无水位）只消化 ZHIKU_STARTER 精选，其余全部播种进水位——
+    避免 3396 个 md 一次性涌入蒸馏。返回 (materials, skipped_doc 总数)。
+    """
+    doc = {"channels": {}, "pending": {}}
+    if CHANNEL_STATE_FILE.is_file():
+        try:
+            doc = json.loads(CHANNEL_STATE_FILE.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            log("[S2] channel_state.json 损坏，重建水位（首跑精选模式）")
+    materials, skipped_docs = [], 0
+    for name, sub, exts, cap, excludes in ZHIKU_CHANNELS:
+        root = ZHIKU_ROOT / sub
+        known = dict(doc["channels"].get(name) or {})
+        pending = list(doc["pending"].get(name) or [])
+        eligible, oversized, docs = {}, 0, 0
+        if root.is_dir():
+            for p in root.rglob("*"):
+                if not p.is_file():
+                    continue
+                rel = p.relative_to(root).as_posix()
+                ext = p.suffix.lower()
+                if ext == ".doc":
+                    docs += 1  # 真老格式，无 md 孪生 → 计入"待转"上报
+                    continue
+                if ext == ".docx":
+                    continue  # md 孪生件（微信读书/AGI 之路），md 已收录
+                if ext not in exts or any(k in rel for k in excludes):
+                    continue
+                size = p.stat().st_size
+                if (ext == ".pdf" and size > PDF_MAX_BYTES) or \
+                        (ext == ".md" and size > MD_MAX_BYTES):
+                    oversized += 1
+                    continue
+                eligible[rel] = p.stat().st_mtime
+        skipped_docs += docs
+        if name not in doc["channels"]:  # 首跑：播种全量水位，只消化精选
+            picks = [r for r in ZHIKU_STARTER.get(name, []) if r in eligible]
+            candidates = picks
+            log(f"[S2] 智库[{name}] 首跑播种 {len(eligible)} 文件"
+                f"（跳过 Word {docs} / 超大 {oversized}），"
+                f"精选 {len(picks)} 份本周消化")
+        else:
+            changed = [r for r, mt in eligible.items() if known.get(r) != mt]
+            seen = set(pending)
+            candidates = pending + [r for r in changed if r not in seen]
+        take, defer = candidates[:cap], candidates[cap:]
+        doc["pending"][name] = defer
+        doc["channels"][name] = eligible  # 水位含全部已见（欠账文件靠 pending 驱动）
+        for rel in take:
+            materials.append({"source": name, "title": Path(rel).stem,
+                              "path": str(root / rel)})
+        if defer:
+            log(f"[S2] 智库[{name}] {len(defer)} 份排进下周（周上限 {cap}）")
+    CHANNEL_STATE_FILE.write_text(
+        json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
+    for m in materials:
+        log(f"[S2] 智库新料 [{m['source']}] {m['title']}")
+    return materials, skipped_docs
+
+
 def stage_s2(log, state):
-    log("[S2] 混沌增量：census 刷新 → 缺口熔断检查 → 幂等批量提取")
+    log("[S2] 增量采集：智库多源水位扫描 → 混沌 census → 幂等批量提取")
+    materials, skipped_docs = _scan_zhiku(log)
+    zhiku_note = f"智库新到 {len(materials)} 份材料"
+    if skipped_docs:
+        zhiku_note += f"（另有 {skipped_docs} 个 Word 老格式待转）"
+
     census_file = HUNDUN_DATA / "_recon" / "census.json"
     rc, out = sh([PY, "scripts/hundun_census.py"], cwd=STATION, timeout=900)
     log(f"[S2] census rc={rc} {(out or '').strip().splitlines()[-1:]}")
     if rc != 0 or not census_file.is_file():
-        state["s2"] = {"ok": False, "note": f"census 失败 rc={rc}（登录态/网络？）"}
+        state["s2"] = {"ok": False,
+                       "note": f"census 失败 rc={rc}（登录态/网络？）；{zhiku_note}",
+                       "new_materials": materials, "skipped_docs": skipped_docs}
         return False
     census = json.loads(census_file.read_text(encoding="utf-8"))["courses"]
     missing = [c for c in census.values()
@@ -219,7 +318,8 @@ def stage_s2(log, state):
         note = (f"缺口 {len(missing)} 门 > 熔断阈值 {MAX_MISSING_CIRCUIT}"
                 f"（疑似语料目录异常），本段中止待人工核查")
         log(f"[S2] {note}")
-        state["s2"] = {"ok": False, "note": note}
+        state["s2"] = {"ok": False, "note": f"{note}；{zhiku_note}",
+                       "new_materials": materials, "skipped_docs": skipped_docs}
         return False
 
     before_md = {p.name for p in AI_COURSE_DIR.glob("*.md")} \
@@ -228,18 +328,21 @@ def stage_s2(log, state):
     last = "\n".join((out or "").strip().splitlines()[-3:])
     log(f"[S2] batch rc={rc}\n{last}")
     if rc != 0:
-        state["s2"] = {"ok": False, "note": f"批量提取失败 rc={rc}"}
+        state["s2"] = {"ok": False, "note": f"批量提取失败 rc={rc}；{zhiku_note}",
+                       "new_materials": materials, "skipped_docs": skipped_docs}
         return False
 
     after_md = {p.name for p in AI_COURSE_DIR.glob("*.md")}
     new_md = sorted(after_md - before_md)
     courses = [{"title": n[:-3], "path": str(AI_COURSE_DIR / n)}
                for n in new_md]
-    note = f"+{len(courses)} 门 AI 新课（全站缺口 {len(missing)} 门均已补采）"
+    note = (f"+{len(courses)} 门 AI 新课（全站缺口 {len(missing)} 门均已补采）；"
+            f"{zhiku_note}")
     log(f"[S2] {note}")
     for c in courses:
         log(f"[S2] NEW {c['title']}")
-    state["s2"] = {"ok": True, "note": note, "new_courses": courses}
+    state["s2"] = {"ok": True, "note": note, "new_courses": courses,
+                   "new_materials": materials, "skipped_docs": skipped_docs}
     return True
 
 
@@ -295,13 +398,29 @@ def _apply_staged(log) -> int:
     return applied
 
 
+def _current_version() -> str:
+    """SKILL.md 尾注的当前版本号（如 V4.1.14）。"""
+    text = SKILL_SRC.joinpath("SKILL.md").read_text(
+        encoding="utf-8", errors="replace")
+    vers = re.findall(r"Super-Skill (V\d+(?:\.\d+)*):", text)
+    return vers[-1] if vers else "V4.1.14"
+
+
+def _next_version(v: str) -> str:
+    parts = v[1:].split(".")
+    parts[-1] = str(int(parts[-1]) + 1)
+    return "V" + ".".join(parts)
+
+
 def stage_s3(log, state):
-    courses = (state.get("s2") or {}).get("new_courses") or []
-    if not courses:
-        log("[S3] 0 门新课，跳过蒸馏（S1/S4/S5 照常）")
-        state["s3"] = {"ok": True, "note": "无新课，跳过蒸馏",
+    s2s = state.get("s2") or {}
+    courses = s2s.get("new_courses") or []
+    materials = s2s.get("new_materials") or []
+    if not courses and not materials:
+        log("[S3] 0 门新课 + 0 份智库材料，跳过蒸馏（S1/S4/S5 照常）")
+        state["s3"] = {"ok": True, "note": "无新增材料，跳过蒸馏",
                        "distill": {"changed": False,
-                                   "summary": "本周无混沌新课"}}
+                                   "summary": "本周无新增知识原料"}}
         return True
 
     rc, out = git("status", "--porcelain")
@@ -319,21 +438,31 @@ def stage_s3(log, state):
     DISTILL_OUT.mkdir(parents=True, exist_ok=True)
 
     template = PROMPT_TEMPLATE.read_text(encoding="utf-8")
-    listing = "\n".join(f"- 《{c['title']}》→ {c['path']}" for c in courses)
+    listing_c = "\n".join(f"- 《{c['title']}》→ {c['path']}" for c in courses) \
+        or "（本周无）"
+    listing_m = "\n".join(f"- 【{m['source']}】{m['title']} → {m['path']}"
+                          for m in materials) or "（本周无）"
+    ver_old = _current_version()
+    ver_new = _next_version(ver_old)
     week = dt.date.today().isocalendar()
     prompt = (template
               .replace("{{RUN_DATE}}", dt.date.today().isoformat())
               .replace("{{RUN_ID}}", f"{week[0]}-W{week[1]:02d}")
               .replace("{{N}}", str(len(courses)))
-              .replace("{{NEW_COURSES}}", listing))
+              .replace("{{NEW_COURSES}}", listing_c)
+              .replace("{{M}}", str(len(materials)))
+              .replace("{{NEW_MATERIALS}}", listing_m)
+              .replace("{{VER_OLD}}", ver_old)
+              .replace("{{VER_NEW}}", ver_new))
     (LOGS / "distill_prompt.md").write_text(prompt, encoding="utf-8")
 
     claude = find_claude()
     is_cmd = claude.suffix.lower() == ".cmd"
-    log(f"[S3] 无头蒸馏：{claude}（{len(courses)} 门，超时 {CLAUDE_TIMEOUT}s）")
+    log(f"[S3] 无头蒸馏：{claude}（混沌 {len(courses)} 门 + 智库 {len(materials)} 份，"
+        f"{ver_old}→{ver_new}，超时 {CLAUDE_TIMEOUT}s）")
     argv = [str(claude), "-p", "--permission-mode", "acceptEdits",
-            "--add-dir", str(HUNDUN_DATA),
-            "--max-turns", "80", "--output-format", "text"]
+            "--add-dir", str(HUNDUN_DATA), "--add-dir", str(ZHIKU_ROOT),
+            "--max-turns", "100", "--output-format", "text"]
     rc, out = sh(argv, cwd=REPO, timeout=CLAUDE_TIMEOUT,
                  input_text=prompt, is_cmd=is_cmd)
     (LOGS / "distill_output.md").write_text(out or "", encoding="utf-8")
@@ -517,11 +646,12 @@ def _plain_report(state) -> str:
                 f"，版本 {ver_new}"
         lines.append(tail + "）")
     elif is_ok(3):
-        if courses:
-            lines.append("🎁 这周没有新增本事：新课都读过了，暂时没有值得"
+        mats = st(2).get("new_materials") or []
+        if courses or mats:
+            lines.append("🎁 这周没有新增本事：新材料都读过了，暂时没有值得"
                          "单独记的新干货，你的 Super-Skill 保持原样")
         else:
-            lines.append("🎁 这周没有新增本事：混沌学园本周没有新课上架，"
+            lines.append("🎁 这周没有新增本事：各知识来源本周都没有新内容上架，"
                          "你的 Super-Skill 保持原样")
     else:
         lines.append("🎁 这周的新本事没能上线：处理课程时出了点问题，已自动"
@@ -541,14 +671,28 @@ def _plain_report(state) -> str:
         else:
             routine.append("🔧 技巧体检：这次没跑成，不影响其他环节")
     s2 = st(2)
+    mats = s2.get("new_materials") or []
     if s2 and not is_ok(2):
         routine.append("📚 混沌学园：这周没能连上（网络或账号原因），下周自动再试")
-    elif s2 and courses:
-        names = "、".join(f"《{c['title'][:20]}》" for c in courses[:3])
-        more = f" 等 {len(courses)} 门" if len(courses) > 3 else ""
-        routine.append(f"📚 混沌学园：本周新到 {names}{more}")
-    elif s2 and is_ok(2) and not courses and d.get("changed"):
-        routine.append("📚 混沌学园：本周没有新课上架（新本事来自既有课程的补课）")
+    elif s2 and (courses or mats):
+        parts = []
+        if courses:
+            names = "、".join(f"《{c['title'][:20]}》" for c in courses[:3])
+            more = f" 等 {len(courses)} 门" if len(courses) > 3 else ""
+            parts.append(f"混沌学园新到 {names}{more}")
+        if mats:
+            srcs = []
+            for m in mats:
+                if m["source"] not in srcs:
+                    srcs.append(m["source"])
+            parts.append(f"智库新到 {len(mats)} 份（{'、'.join(srcs)}）")
+        routine.append("📚 本周读的材料：" + "；".join(parts))
+    elif s2 and is_ok(2) and not courses and not mats and d.get("changed"):
+        routine.append("📚 本周没有新增材料（新本事来自既有库存的补课）")
+    skipped_docs = s2.get("skipped_docs") or 0
+    if skipped_docs:
+        routine.append(f"📎 另有 {skipped_docs} 份 Word 老格式讲义这次读不了，"
+                       "已记在账上，转成可读格式后再学")
     if st(4) and not is_ok(4):
         routine.append("💻 本机安装：新本事还没装到你机器上、暂时不生效，"
                        "需要抽空看一眼")

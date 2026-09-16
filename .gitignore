@@ -69,6 +69,7 @@ evolver/.git/
 # Weekly automation runtime artifacts (journal/state — machine-local)
 automation/logs/
 automation/state.json
+automation/channel_state.json
 automation/distill_out/
 automation/_perm_test_C.md
 __pycache__/

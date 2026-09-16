@@ -18,7 +18,7 @@ schtasks /Query /TN "SuperSkillWeekly" /V /FO LIST
 | 段 | 内容 | 失败策略 |
 |----|------|----------|
 | S1 | `npx skills update -g`（注册表技能）+ 48 内嵌子技能结构审计（frontmatter/name/≤500行） | best-effort，不挡管线 |
-| S2 | `hundun_census.py` 刷新 → **缺口 >40 门熔断** → `hundun_batch.py` 幂等增量（0.2s 节流 / 403 自动重登）→ 圈出本周 AI 新课 | 隔离失败（主链继续） |
+| S2 | **智库多源水位扫描**（04 智库五渠道：一堂/万维钢/微信读书/洞见研报/通往AGI之路；新文件/改动 → 周上限截断，余量记账下周；首跑只消化精选）→ `hundun_census.py` 刷新 → **缺口 >40 门熔断** → `hundun_batch.py` 幂等增量（0.2s 节流 / 403 自动重登）→ 圈出本周 AI 新课 | 隔离失败（主链继续；智库材料独立存活） |
 | S3 | 无头 claude 蒸馏新课 → 四类资产归档 → 对账去重 → **暂存协议**（成品全文写 `automation/distill_out/` + manifest.json，编排器校验白名单后代落 `.claude/skills/super-skill/`——`.claude/**` 是权限敏感路径，LLM 直写必被拒，由确定性层执行写入）+ SKILL.md 接线 + CHANGELOG + 版本 bump；**干净工作树闸门**防混入人工改动 | 失败/无增量/声明与暂存不符 → `git checkout` 回滚 |
 | S4 | robocopy 镜像 `.claude/skills/super-skill` → `%USERPROFILE%\.claude\skills\super-skill` | 失败即整体 ❌ |
 | S5 | 提交 → 三层推送回退：`git push` → 剥代理重推 → `api_push.py`（gh api 数据通道，仅快进） | 全败保留本地提交，企微告警 |
@@ -37,6 +37,7 @@ schtasks /Query /TN "SuperSkillWeekly" /V /FO LIST
 
 ## 关键事实
 
+- **知识来源 = 混沌 + 智库五渠道**：蒸馏原料不限于混沌新课——`E:\AI-Station\04 智库\` 下的一堂（创业五步法/AI实操）、万维钢调研方法论、微信读书（智能商业/调研方法等，EPC 工程书排除）、洞见研报 FDE 系列（智慧水利排除）、通往AGI之路（3396 md，waytoagi-sync 维护）全部纳入周度水位扫描（`automation/channel_state.json`）。排除渠道：`混沌学园/`（与 data/hundun/AI课程 394 文件完全同源）、混沌/调研框架库/internal（空）。.doc 老格式读不了（计数上报"待转格式"）；.docx 是 md 孪生件直接忽略；超大文件（md>1.5MB / pdf>15MB）不收。
 - **claude 二进制**：npm 全局 shim 在本机 Win10 19045 报「不支持当前 Windows 版本」；实际可用的是 VSCode 扩展原生包 `~\.vscode\extensions\anthropic.claude-code-*\resources\native-binary\claude.exe`（认证共享，编排器按版本号自动择新）。
 - **账号安全**：混沌凭据只经 `E:\AI-Station\config\hundun.secret.ini`（gitignored）由既有脚本读取；周级低频 + 0.2s 节流 + 缺口熔断（>40 门视为语料目录异常，中止待人工核查）。
 - **只增不删**：蒸馏红线——不改写既有条目语义；语料本体（data/hundun）永不入仓库。
