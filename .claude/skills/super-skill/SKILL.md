@@ -35,7 +35,7 @@ Super-Skill integrates best practices from industry leaders:
 | [LangChain](https://github.com/langchain-ai/langchain) | 122K+ | Chain-based workflows |
 | [AutoGen](https://github.com/microsoft/autogen) | 52K+ | Multi-agent conversations |
 | [LangGraph](https://github.com/langchain-ai/langgraph) | 24K+ | Graph-based orchestration |
-| [CrewAI](https://github.com/crewAIInc/crewAI) | 30K+ | Role-based task delegation |
+| [CrewAI](https://github.com/crewAIInc/crewai) | 30K+ | Role-based task delegation |
 | [Context Hub](https://github.com/andrewyng/context-hub) | Andrew Ng | Curated API docs |
 | [MCP Protocol](https://github.com/modelcontextprotocol) | Official | Tool integration standard |
 | [Anthropic Skills](https://github.com/anthropics/skills) | Official | Skill building guidelines |
@@ -82,12 +82,15 @@ Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (5
 | **CRASH** | Fix or skip | Timeout/OOM/NaN → log error → next idea |
 
 ### Simplicity Criterion
+
 Small improvement + ugly complexity = NOT worth it · small gain from **deleting code** = keep · equal perf + simpler = keep · ~0 gain + much simpler = keep.
 
 ### NEVER STOP Protocol
-Do not pause between experiments (the human may be asleep). Out of ideas → re-read code, combine approaches, try radical changes, search best practices.
+
+Do not pause between experiments (the human may be asleep). Out of ideas → re-read code, combine approaches, search best practices.
 
 ### Budget Constraints
+
 `TIME_BUDGET_PER_EXPERIMENT=300` · `MAX_EXPERIMENTS_PER_SESSION=100` · `AUTONOMOUS_BRANCH_PREFIX="autoresearch"`.
 
 **See**: [skills/autonomous-loop/SKILL.md](skills/autonomous-loop/SKILL.md) for full documentation.
@@ -134,7 +137,7 @@ raw idea → [1] idea-intake → [2] research-orchestrator → [3] proposal-forg
 ```
 
 1. **[idea-intake](skills/idea-intake/SKILL.md)** — ambiguity-score; **Hybrid Clarification Gate** (autonomous unless score 4–7, then ≤3 Qs once) → `IDEA_SEED.md`
-2. **[research-orchestrator](skills/research-orchestrator/SKILL.md)** — 9 channels (GitHub/Sogou WeChat/HN/npm/PyPI/App Store/Reddit/ProductHunt/competitor-site) + gap analysis + dedup + quality gate + checkpoint. Ports ResearchFactory-Eng architecture. → `RESEARCH_DOCKET/`, `RESEARCH_DIGEST.md`, `GAP_REPORT.md`
+2. **[research-orchestrator](skills/research-orchestrator/SKILL.md)** — 9 channels (GitHub/Sogou WeChat/HN/npm/PyPI/App Store/Reddit/ProductHunt/competitor-site) + gap analysis + dedup + quality gate + checkpoint. Ports ResearchFactory-Eng architecture. → `RESEARCH_DOCKET/`, `RESEARCH_DIGEST.md`, `GAP_REPORT.md`; 检索后怎么读怎么判怎么写（思维密集度选源 / 五本书梯度 / 报告五步）— [research-methodology](references/research-methodology.md)
 3. **[proposal-forge](skills/proposal-forge/SKILL.md)** — maturity index + **ten× delta index** (falsifiable 10× gate) + **任鑫选品五法** (三圈交集 + 离钱近·有套路·不严谨三筛 + 第一天变现 + **新能力→产品十问** — [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md)) + blue/red-ocean + data-driven pricing (per-seat / per-value / **per-outcome** — 服务预算 6× 软件预算、"模型越强你越便宜") → 4-dim scorecard → `PROPOSAL.md`, `BUSINESS_MODEL.md`, `SCORECARD.json`; 全生命周期武器组合见 [hundun-arsenal](references/hundun-arsenal.md) 六场景地图 (场景一/二在此阶段)；Build-vs-Wait 判据 "下一代模型更强，会让我更值钱还是更没用？" — [ai-native-coordination](references/ai-native-coordination.md)
 
 **Proposal Approval Gate** ✋: scorecard verdict = `proceed` → present proposal, ask approve/revise/reject **once** → on approve, auto-populate VISION/REQUIREMENTS/ARCHITECTURE and continue to Phase 0. Only new human touchpoint.
@@ -219,6 +222,7 @@ Judge ← evaluates result ← Worker
 ```
 
 - **Autonomous Loop**: Modify → Test → Evaluate → Keep/Discard × N experiments; **检查四层**: 自动门禁 · 对抗性检查 (检查者与干活者上下文隔离——防 AI mock 数据骗过绿灯) · 人类抽检按带宽排 · 兜底回滚 — [ai-native-coordination](references/ai-native-coordination.md)
+- **Agent 角色配置 (训虾派)**: 配置文档=角色能力上限——新 agent/subagent 用系统工程式批量配置上岗（口喷 10%→最佳实践底座补全 90%），不做碎片磨合；六维段位评估 + 有/无配置 A/B 验收 — [yitang-agent-forge](references/yitang-agent-forge.md)
 - **Iceberg Rule**: Fix one bug → scan for pattern across codebase. One problem in, one category out
 - **Anti-Rationalization**: Never accept "I can't" without evidence of exhausting all options
 - TDD-first, small commits, continuous integration
@@ -411,7 +415,7 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 ```
 
 ### Strategy Presets
-`balanced` (all Medium) · `innovate` (Low/Low/High) · `harden` (High/Med/Low) · `repair-only` (High/Low/None) — Repair/Optimize/Innovate columns; full table in [EVOLUTION.md](EVOLUTION.md).
+`balanced` (all Medium) · `innovative` (Low/Low/High) · `harden` (High/Med/Low) · `repair-only` (High/Low/None) — Repair/Optimize/Innovate columns; full table in [EVOLUTION.md](EVOLUTION.md).
 
 ## Reference Files
 
@@ -429,7 +433,9 @@ GEP_PROMPT_MAX_CHARS=50000         # Max prompt size
 | [references/renxin-ai-product-methodology.md](references/renxin-ai-product-methodology.md) | 任鑫 AI 产品方法论 — 三圈交集+三筛选品 · JTBD 三步法 · 第一天变现/按价值定价 · 老板模式人机分工（混沌 14 课蒸馏，应用层选品裁决）· 新能力→产品转化（十问扫描/纸笔残留/锤子找钉子/版权两问——第 100 课补给） |
 | [references/stitching-monster.md](references/stitching-monster.md) | 缝合怪工程教义 — 三缝合律（世界最好零件 × 显式交接契约 × 整机生产级跑通）· 阿姆达尔瓶颈优先 · 推进四件事 · 缝合处=数据回流点（任鑫《AI原生组织转型》） |
 | [references/hundun-arsenal.md](references/hundun-arsenal.md) | 混沌武器库 — 六场景作战地图（机会洞察/战略定位/MVP/技术底座/增长变现/组织协作，647 门课 3031 万字频次验证）· 使用心法三句话 · 13 技能卡（业务留档五步/GEO 四卡/组织五卡）· 外部语料挖掘流水线 |
-| [references/ai-native-coordination.md](references/ai-native-coordination.md) | AI 原生协调层作战手册 — 对齐（N²→N 唯一事实源/纪要的终点是改掉那个对象/规范写进环境）· 推进四件事+检查四层 · 闭环三线复盘（"问题的终点是变成一条检查项"）· 落地三动作（修路/点火/分圈）· 12 槽位工程实证（Anthropic 80% 合并代码/Flox 50×/Town 三原则/beads 账本）· 反方边界（95% 试点零 P&L/J-Curve）· 投资人创业者视角（per-outcome 定价/套壳三问/8 wedge）· 落地参谋检索纪律 |
+| [references/ai-native-coordination.md](references/ai-native-coordination.md) | AI 原生协调层作战手册 — 对齐（N²→N 唯一事实源/纪要的终点是改掉那个对象/规范写进环境）· 推进四件事+检查四层 · 闭环三线复盘（"问题的终点是变成一条检查项"）· 落地三动作（修路/点火/分圈）· 12 槽位工程实证（Anthropic 80% 合并代码/Flox 50×/Town 三原则/beads 账本）· 反方边界（95% 试点零 P&L/J-Curve）· 投资人创业者视角（per-outcome 定价/套壳三问/8 wedge/FDE 交付范式）· 落地参谋检索纪律 |
+| [references/research-methodology.md](references/research-methodology.md) | 调研方法论双源 — 万维钢桌研（思维密集度选源 · 五本书梯度 · 强力研读"读两遍只读两遍+笔记取代原书" · 调研式五步法"读书→采访专家→交叉点前沿→形成观点→费曼检验+专家审稿" · 想法立项+素材互链）× 何晓斌田野（六步程序 5W1H · 解剖麻雀/望远镜混合设计 · 访谈关系六原则 · 报告五步+用资料三原则"精准新"） |
+| [references/yitang-agent-forge.md](references/yitang-agent-forge.md) | 训虾派·AI 角色配置工程 — 三流派诊断（做事/养虾/训虾——养=给唯一分身攒复利，训=批量复制新角色）· IPO+文档=能力上限 · 双三角（人守审美/体系/创造力）· 口喷输入法 10%→90% · 演戏法喂文档 · 六维段位评估+配置 A/B · 民主集中会议 |
 | [EVOLUTION.md](EVOLUTION.md) | GEP Protocol documentation |
 | [MEMORY.md](MEMORY.md) | Knowledge persistence |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
@@ -478,10 +484,10 @@ Say "Build me a task management app" → Super-Skill auto-runs Phase 0–12 with
 
 ## Version
 
-**V4.1.14** - 2026-09-16 - **任鑫第 100 课补蒸馏 (外部智慧自学习第五跑·周度 W38)**: 《如何用AI做出新产品》六新能力讲对账去重——主干已存任鑫方法论 (新能力×新场景×新人群/静态→定制服务/洞察=信息+推理)，仅 7 项真空增量入 [renxin-ai-product-methodology](references/renxin-ai-product-methodology.md) 新小节「新能力→产品转化」: **纸笔残留透镜** (分页/三笔记一文档=旧媒介残影，审计"理所当然"的结构) · **拿着锤子找钉子** (早期生搬硬套新能力以打开思路，拒做老框架微调) · **新能力十问扫描** (语言化运作→多元解读→多形态生成→静态动态化→感知环境→最有效形态→常识实习生→垂直专业→用户任务→信息+推理=洞察) · **视觉少样本泛化** (5 字→14000 字字体、画两下即识别——标注瓶颈崩塌) · **数字人=交互非广播** (千人千面 NPC 化) · **可汗式引导** (不给答案，判困惑向前一步) · **版权灰色两问** (转化价值否？获利否？先划底线再找机会)。wired: proposal-forge 十问 · Phase 4 转化透镜 · reference 表 renxin 行；hooks 流程框图压缩为单行 (body 回到 500 行预算内)。
+**V4.1.15** - 2026-09-16 - **调研方法论双源 + 训虾派角色配置工程 + FDE 交付范式 (外部智慧自学习第六跑·周度 W38)**: 04 智库五渠道新材料 6 份（1 份采集失败 skip）。新建 [research-methodology](references/research-methodology.md)——万维钢桌研（**思维密集度**=准备时间÷阅读时间 · **五本书梯度**畅销→热门→专家→硬书→前沿 · **强力研读**读两遍只读两遍+笔记写到取代原书 · **调研式五步法**读书→采访专家"你的问题你负责"→前沿=交叉点→观点允许反转→费曼检验+专家审稿 · 想法立项+素材互链外部存储）× 何晓斌田野（**六步程序 5W1H** · 解剖麻雀/望远镜混合 · **访谈关系六原则** · **报告五步**立意-定题-思路-架子-资料+用资料三原则"精准新"）。新建 [yitang-agent-forge](references/yitang-agent-forge.md)——训虾派：**配置文档=角色能力上限**（做事/养虾/训虾三流派——养=给唯一分身攒复利，训=用养出的体系批量复制）· IPO 模型 · 双三角（人守审美/体系/创造力）· **口喷输入法** 10%→90%（前提最佳实践底座）· 演戏法喂文档 · 六维段位评估+六个训练触发器+有/无配置 A/B · 民主集中会议。[ai-native-coordination](references/ai-native-coordination.md) §七补 **FDE 前沿部署交付范式**（Palantir 首创：以客户系统实际运行为交付终点 · 不是人力外包是产品研发入口 · Echo+Delta 双团队回流 · AI 压低定制成本→规模化）。wired: Idea Factory 调研读判写 · Phase 8 Agent 角色配置 · reference 表 +2 行。
 
-**V3.21.0–V4.1.13** - 2026-05/09 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (Approval Gate, ten× delta index) → AI-Mastery-7 → We-AIPO GEP Capsule → `clash-proxy` + `real-engineering` (47→48) → **开发宪法 V1→V2.1** ([dev-constitution](references/dev-constitution.md): **C0 复利元则** + C1–C16 + R1–R12 + enforcement map + ~40-project evidence; companions weaipo/pai + [cc-command-playbook](references/cc-command-playbook.md)) → **智库→Super-Skill 自学习一~四跑**: V4.1.10 任鑫产品方法论 ([renxin-ai-product-methodology](references/renxin-ai-product-methodology.md): 三圈交集+三筛/JTBD/第一天变现) · V4.1.11 缝合怪 ([stitching-monster](references/stitching-monster.md): 三缝合律/阿姆达尔瓶颈/推进四件事) · V4.1.12 混沌武器库 ([hundun-arsenal](references/hundun-arsenal.md): 六场景作战地图/13 技能卡, 647 课 3031 万字频次验证) · V4.1.13 AI 原生协调层手册 (对齐/推进/闭环 + 落地三动作 + 检查四层 + 三线复盘 + 12 槽位实证)。Details: [CHANGELOG.md](CHANGELOG.md).
+**V3.21.0–V4.1.14** - 2026-05/09 - OpenWolf (5 sub-skills + 6-hook lifecycle) → IdeaForge front-end (Approval Gate, ten× delta index) → AI-Mastery-7 → We-AIPO GEP Capsule → `clash-proxy` + `real-engineering` (47→48) → **开发宪法 V1→V2.1** ([dev-constitution](references/dev-constitution.md): **C0 复利元则** + C1–C16 + R1–R12 + enforcement map + ~40-project evidence; companions weaipo/pai + [cc-command-playbook](references/cc-command-playbook.md)) → **智库→Super-Skill 自学习一~五跑**: V4.1.10 任鑫产品方法论 ([renxin-ai-product-methodology](references/renxin-ai-product-methodology.md): 三圈交集+三筛/JTBD/第一天变现) · V4.1.11 缝合怪 ([stitching-monster](references/stitching-monster.md): 三缝合律/阿姆达尔瓶颈/推进四件事) · V4.1.12 混沌武器库 ([hundun-arsenal](references/hundun-arsenal.md): 六场景作战地图/13 技能卡, 647 课 3031 万字频次验证) · V4.1.13 AI 原生协调层手册 (对齐/推进/闭环 + 落地三动作 + 检查四层 + 三线复盘 + 12 槽位实证) · V4.1.14 任鑫第 100 课补蒸馏 (新能力→产品转化七条: 纸笔残留/锤子找钉子/十问扫描/视觉少样本/数字人交互/可汗式引导/版权两问)。Details: [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-*Super-Skill V4.1.14: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + AI 原生协调层手册 (对齐/推进/闭环 + 三落地动作 + 检查四层 + 三线复盘) + 缝合怪工程教义 (三缝合律/瓶颈优先) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现/新能力十问) + 混沌武器库 (六场景作战地图/13 技能卡) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*
+*Super-Skill V4.1.15: Idea→Product Factory — 开发宪法 V2.1 (C0 复利元则 + C1–C16 / R1–R12 + CC 指挥手册) + AI 原生协调层手册 (对齐/推进/闭环 + 三落地动作 + 检查四层 + 三线复盘 + FDE 交付范式) + 缝合怪工程教义 (三缝合律/瓶颈优先) + 任鑫 AI 产品方法论 (三筛选品/JTBD/第一天变现/新能力十问) + 混沌武器库 (六场景作战地图/13 技能卡) + 调研方法论双源 (思维密集度/五本书梯度/报告五步) + 训虾派角色配置工程 (文档=上限/口喷输入法/段位评估) + AI-Mastery + Self-Consistency + We-AIPO Capsule + clash-proxy (API push) + real-engineering*

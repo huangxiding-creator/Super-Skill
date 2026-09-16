@@ -5,6 +5,21 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.15] - 2026-09-16
+
+### Added — 调研方法论双源 + 训虾派角色配置工程 + FDE 交付范式 (external-wisdom run #6, 周度 W38)
+Sixth run of the external-wisdom self-learning pipeline. 水位: `data/hundun` 0 份新增; 04 智库五渠道新到 6 份 (一堂 / 万维钢调研方法论 / 微信读书 / 洞见研报 ×2 / 通往AGI之路), 5 份可读、1 份采集失败 skip. 语料本体永不入库, 授权目录就地精读.
+
+- **[references/research-methodology.md](references/research-methodology.md)** (NEW, 万维钢总论 × 何晓斌《怎么做调研，如何写报告》双源): **桌研 (万维钢)** — **思维密集度** (=准备时间÷阅读时间) 信息源性价比排序 · **五本书梯度** (畅销→热门→专家→硬书→前沿) 知识资产选源 · **强力研读** "读两遍只读两遍" + 笔记四标准 + **笔记写到取代原书** · 外部存储 (**想法立项**先占位 + 素材互链, "记下来了，你就不用惦记它了") · **调研式五步法** (读书 → 采访专家"你的问题你得负责" → **前沿=不同领域交叉点** → 形成观点允许反转 → 费曼检验+专家审稿) · 思维模型件 7 件 (37% 最优搜集/过度拟合/学术积木论/专家五重境界/律师机制/tradeoff) · 批判边界 4 条. **田野 (何晓斌)** — 三分类定位 (AI 产品开发者 = 企业类 × 探索性) · **六步程序 5W1H** 每步有交付物 · **解剖麻雀 (定性) × 望远镜 (定量)** 混合设计 · **访谈关系六原则** (真话的交换条件) · **报告五步** (立意-定题-思路-架子-资料 + 用资料三原则"精准新"; "是什么—为什么—怎么办"骨架). 双源合璧: 桌研定方向 → 田野验真伪 → 报告收口; 落地映射 research-orchestrator 源分层 / Phase 1 信源审计 / RESEARCH_DIGEST 收口 / 用户访谈.
+- **[references/yitang-agent-forge.md](references/yitang-agent-forge.md)** (NEW, 一堂《龙虾实践2：训虾派方法论与灵魂赋能体系》深度笔记): 训虾派·AI 角色配置工程 — **三流派诊断** (做事/养虾/训虾; 与本仓库张力裁决: **养=给唯一分身攒复利, 训=用养出的体系批量复制新角色**) · **文档配置水平 = 角色能力上限** (IPO 模型: 高价值输入 × 处理建模 × 1000~3000 字配置 5~7 文档, 新角色 5~10 分钟上岗) · **双三角模型** (人守审美/体系/创造力; AI 练基本功/数据/场景) · 角色生产流水线 6 步 (**口喷输入法** 10%→90% 前提最佳实践底座 · 演戏法喂文档 · 映射 Claude Code: SKILL.md=运行协议 / CLAUDE.md=灵魂文档 / agent 定义=身份) · **六维段位评估** + 六个训练触发器 + **有/无配置 A/B 对照验收** ("评角色必须 A/B 对照，不能凭印象") · 民主集中会议 (多角色议事, 人做最终决定).
+- **[references/ai-native-coordination.md](references/ai-native-coordination.md) §七 补给**: **FDE 前沿部署交付范式** — 来源: 洞见研报 FDE 研报索引摘编 (国盛《FDE：软件服务的范式革命》/ 浙商 / 华西 / 金元 / 国泰海通 / 华泰, 2026-08~09); **国盛 pdf 原文因本机渲染工具缺失 (pdftoppm 未装) 未逐页精读, 观点取自索引卡片摘要, 证据等级=二手摘编, 已在正文注明**. Palantir 首创 FDE (Forward Deployed Engineer, 前沿部署工程师): 深入客户业务、把模型接到企业数据与工作流, **以客户系统实际运行为交付终点**; 三条可迁移律: ① **FDE 不是人力外包, 是产品研发入口** ("项目做得越多, 后续交付越快" = C0 复利的商业模式表述) ② **Echo (驻场交付) + Delta (产品化沉淀) 双团队** (只驻场不回炉 = 外包) ③ **AI 压低定制交付成本 → 定制交付规模化** (OpenAI/Anthropic 均已组建 Frontier/FDE 团队; 与 per-outcome 定价互证: "伪装成服务公司的软件公司"的组织形态就是 FDE). 裁决表 +1 行; 金句 +1.
+
+### Skipped
+- 《2026 Agentic Coding Trends Report.pdf.md》(通往AGI之路): 采集失败 — 文件仅 27 行飞书 "No permission to access" 提示页转储, 无正文, 无可蒸馏内容.
+
+### Wired
+- `SKILL.md`: Idea Factory research-orchestrator bullet 补"检索后怎么读怎么判怎么写 (思维密集度选源 / 五本书梯度 / 报告五步)"; Phase 8 新增 **Agent 角色配置 (训虾派)** line (配置文档=角色能力上限, 口喷 10%→90%, 六维段位评估 + A/B 验收); Reference Files 表 +2 行 (research-methodology / yitang-agent-forge), ai-native-coordination 行补 "FDE 交付范式"; **V4.1.15** 版本块 (V4.1.14 并入 V3.21.0–V4.1.14 区间行, 第 100 课七条注记保留); footer → V4.1.15 (body 493 行, <500 预算).
+
 ## [4.1.14] - 2026-09-16
 
 ### Added — 任鑫第 100 课定向补蒸馏 (external-wisdom run #5, 周度 W38)
@@ -503,7 +518,7 @@ Integrated high-agency methodology V2/V3 from [tanweai/pua](https://github.com/t
 ### Research Sources
 - [tanweai/pua](https://github.com/tanweai/pua) - High-agency AI methodology
 - Methodology router: 8 task types → 7 corporate flavors
-- Failure mode switching: 6 patterns with automatic flavor switching
+- Failure mode switching: 6 patterns with automatic switching
 - Anti-rationalization: 7 AI excuses with counter-arguments
 - Iceberg rule, owner awareness, calibration block, dignified exit
 
@@ -594,7 +609,7 @@ Applied the autoresearch simplicity criterion to Super-Skill's own SKILL.md.
 
 #### Changes Applied
 | Change | Lines Saved | Rationale |
-|--------|------------|-----------|
+|--------|------------|----------|
 | Fixed 3 stale version refs | 0 (correctness) | Accuracy |
 | Removed JSON config block | -13 | Lives in settings.json |
 | Removed Context Hub commands | -12 | Lives in sub-skill |
@@ -690,7 +705,7 @@ Applied the autoresearch simplicity criterion to Super-Skill itself.
 
 #### Changes Applied (KEEP decisions)
 | Change | Lines | Rationale |
-|--------|-------|-----------|
+|--------|-------|------------|
 | Removed duplicate standards table | -17 | Identical information, stale version |
 | Trimmed frontmatter description | -400 chars | 70% shorter, same information density |
 | Moved version history to CHANGELOG | -100 | Single source of truth |
