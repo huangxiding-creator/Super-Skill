@@ -330,10 +330,12 @@ def stage_s4(log, state):
     rc, out = sh(["robocopy", str(SKILL_SRC), str(SKILL_GLOBAL),
                   "/MIR", "/XD", "__pycache__", ".git",
                   "/XF", "*.pyc",
-                  "/NFL", "/NDL", "/NJ", "/NJS", "/NP"], timeout=600)
+                  "/NFL", "/NDL", "/NJH", "/NJS", "/NP"], timeout=600)
     ok = rc <= 7  # robocopy 0-7 均为成功
     note = f"robocopy rc={rc}（镜像完成）" if ok else f"robocopy rc={rc} 失败"
     log(f"[S4] {note}")
+    if not ok:
+        log(f"[S4] 详情：{(out or '')[-300:]}")
     state["s4"] = {"ok": ok, "note": note}
     return ok
 
@@ -392,6 +394,49 @@ def overall_ok(state) -> tuple[bool, bool]:
     return core, core and not s2.get("ok", False)
 
 
+def _wecom_js() -> Path | None:
+    js = Path(os.environ.get("APPDATA", "")) / "npm" / "node_modules" / \
+        "@wecom" / "cli" / "bin" / "wecom.js"
+    return js if js.is_file() else None
+
+
+def _wecom_oauth_send(content: str) -> tuple[bool, str]:
+    """wecom-cli 个人 OAuth 通道：机器人直达授权人（不受可信 IP 限制）。
+
+    实测（2026-09-16）：自建应用 API 60020 家宽动态 IP 墙；本通道 success=true。
+    """
+    js = _wecom_js()
+    if not js:
+        return False, "wecom-cli 未安装"
+    rc, out = sh(["node", str(js), "identity", "whoami"], timeout=30)
+    m = re.search(r"授权真人用户身份.*?ID：([A-Za-z0-9_-]+)", out or "")
+    if not m:
+        return False, f"whoami 解析失败 rc={rc}"
+    payload = json.dumps({"chat_id": m.group(1), "msg_type": "markdown",
+                          "markdown": {"content": content}},
+                         ensure_ascii=False)
+    rc, out = sh(["node", str(js), "message", "aibot", "send",
+                  "--json", payload], timeout=30)
+    if rc == 0 and '"success": true' in (out or "").replace(" ", " "):
+        return True, "OAuth 机器人通道"
+    return False, f"send rc={rc}: {(out or '')[-120:]}"
+
+
+def _wecom_webhook_send(title: str, body: str) -> tuple[bool, str]:
+    """群机器人 webhook 通道（需用户在 secret.ini 配 [wecom] webhook=...）。"""
+    ini = STATION / "config" / "wecom.secret.ini"
+    if not ini.is_file():
+        return False, "webhook 未配置"
+    import configparser
+    parser = configparser.ConfigParser()
+    parser.read(ini, encoding="utf-8")
+    if not parser.get("wecom", "webhook", fallback="").strip():
+        return False, "webhook 未配置"
+    rc, out = sh([PY, "tools/notify_wecom.py", title, body],
+                 cwd=STATION, timeout=60)
+    return rc == 0, f"webhook rc={rc}"
+
+
 def stage_s6(log, state):
     icons = {True: "✅", False: "❌"}
     ok, s2_quarantined = overall_ok(state)
@@ -399,8 +444,8 @@ def stage_s6(log, state):
         verdict = "⚠️ 主链成功·混沌段隔离"
     else:
         verdict = "✅ 成功" if ok else "❌ 失败"
-    title = f"Super-Skill 周度自升级 {verdict}"
-    lines = []
+    title = f"**Super-Skill 周度自升级 {verdict}**"
+    lines = [title, ""]
     for i in range(1, 6):
         st = state.get(f"s{i}") or {}
         lines.append(f"S{i} {icons.get(bool(st.get('ok')), '⚠️')} "
@@ -411,11 +456,16 @@ def stage_s6(log, state):
     if len(courses) > 10:
         lines.append(f"- …等 {len(courses)} 门")
     lines.append(f"耗时 {state.get('duration_min', '?')} 分钟")
-    body = "\n".join(lines)
-    rc, _ = sh([PY, "tools/notify_wecom.py", title, body],
-               cwd=STATION, timeout=60)
-    log(f"[S6] 企微通知 rc={rc}")
-    state["s6"] = {"ok": rc == 0, "note": "通知已发" if rc == 0 else "通知失败"}
+    content = "\n".join(lines)
+
+    sent, chan = _wecom_oauth_send(content)
+    if not sent:
+        log(f"[S6] OAuth 通道失败：{chan}，尝试 webhook 回退")
+        sent, chan = _wecom_webhook_send(title, content)
+    note = f"通知已发（{chan}）" if sent else \
+        f"通知通道全败（{chan}），结果见 logs/ 与 state.json"
+    log(f"[S6] {note}")
+    state["s6"] = {"ok": sent, "note": note}
     return True
 
 
