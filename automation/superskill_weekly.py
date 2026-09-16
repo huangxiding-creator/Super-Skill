@@ -38,6 +38,12 @@ if sys.stdout is None:  # pythonw 无控制台
     sys.stdout = open(os.devnull, "w", encoding="utf-8")
 if sys.stderr is None:
     sys.stderr = open(os.devnull, "w", encoding="utf-8")
+for _s in (sys.stdout, sys.stderr):  # GBK 控制台/管道下防 UnicodeEncodeError
+    if hasattr(_s, "reconfigure"):
+        try:
+            _s.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:  # noqa: BLE001 - 显示层降级不影响管线
+            pass
 
 # ---------------------------------------------------------------- 路径常量
 REPO = Path(__file__).resolve().parents[1]          # 07 任务/Super-Skill
@@ -440,15 +446,18 @@ def main(argv=None) -> int:
 
     handlers = {"s1": stage_s1, "s2": stage_s2, "s3": stage_s3,
                 "s4": stage_s4, "s5": stage_s5, "s6": stage_s6}
-    for name in [s.strip() for s in args.stages.split(",") if s.strip()]:
-        if name not in handlers:
-            log(f"[{name}] 未知段，跳过")
-            continue
-        try:
-            handlers[name](log, state)
-        except Exception as exc:  # noqa: BLE001 - 单段异常不杀管线
-            log(f"[{name}] 段异常: {exc!r}")
-            state[name] = {"ok": False, "note": f"段异常 {exc}"}
+    try:
+        for name in [s.strip() for s in args.stages.split(",") if s.strip()]:
+            if name not in handlers:
+                log(f"[{name}] 未知段，跳过")
+                continue
+            try:
+                handlers[name](log, state)
+            except Exception as exc:  # noqa: BLE001 - 单段异常不杀管线
+                log(f"[{name}] 段异常: {exc!r}")
+                state[name] = {"ok": False, "note": f"段异常 {exc}"}
+    finally:
+        release_lock()
 
     state["duration_min"] = round((time.time() - t0) / 60, 1)
     state["last_run_ok"], state["s2_quarantined"] = overall_ok(state)
