@@ -1,34 +1,38 @@
 # -*- coding: utf-8 -*-
-"""GitHub Git Data API 推送（第三层回退通道）。
+"""GitHub Git Data API 推送（S5 第三层回退通道，gh api 版）。
 
 背景：github.com:443 receive-pack 经机场代理常被污染（curl 200 而 git 死），
-api.github.com 是不同 CDN 通道，gh CLI 直连实测可用（本机已登录
-huangxiding-creator，凭据在系统 keyring——本脚本零凭据落盘）。
+api.github.com 是不同 CDN 通道，gh CLI 直连实测可用（本机已登录，凭据在
+系统 keyring——本脚本零凭据落盘）。
 
-流程：取远端 ref → 校验本地为快进 → 逐变更文件建 blob（base64）→
-base_tree 建树 → 建提交 → PATCH ref。等价一次 git push 单提交。
-仅支持快进；分叉（远端有本地没有的提交）直接报错退出。
+移植 E:\AI-Station\tools\api_push.py 的三处根治性修复（勿回退）：
+1. **树比对**而非 git diff：远端可能含本地未知的 API 提交，git diff 对
+   未知 SHA 静默失败返回空；逐文件 blob sha 比对不依赖共同历史。
+2. **CJK 路径必须 quotepath=false**：否则 `\347\253\231` 转义致静默跳文件。
+3. **上传 HEAD blob 原始字节**（git cat-file）而非工作区文件：autocrlf 下
+   工作区 CRLF / HEAD 对象 LF，读工作区会造"blob sha ≠ 本地树 sha"幻影差异。
 
 用法: python api_push.py [--repo OWNER/NAME] [--branch master]
-      缺省从当前 git remote / 当前分支推导；cwd 须为目标仓库。
+      缺省从 origin remote 与当前分支推导；cwd 须为目标仓库。
 """
 from __future__ import annotations
 
 import argparse
 import base64
 import json
+import re
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+NO_WINDOW = 0x08000000
 
 
 def git(*args):
-    p = subprocess.run(["git", *args], cwd=str(REPO_ROOT),
-                       capture_output=True, timeout=60,
-                       creationflags=0x08000000)
+    p = subprocess.run(["git", *args], cwd=str(REPO_ROOT), capture_output=True,
+                       timeout=60, creationflags=NO_WINDOW)
     out = (p.stdout or b"").decode("utf-8", errors="replace").strip()
     if p.returncode != 0:
         raise SystemExit(f"git {' '.join(args)} 失败: "
@@ -47,7 +51,7 @@ def gh_api(method: str, path: str, payload: dict | None = None):
         body_file.close()
         argv += ["--input", body_file.name]
     p = subprocess.run(argv, cwd=str(REPO_ROOT), capture_output=True,
-                       timeout=120, creationflags=0x08000000)
+                       timeout=120, creationflags=NO_WINDOW)
     out = (p.stdout or b"").decode("utf-8", errors="replace")
     if body_file:
         Path(body_file.name).unlink(missing_ok=True)
@@ -65,65 +69,71 @@ def main() -> int:
 
     repo = args.repo
     if not repo:
-        url = git("remote", "get-url", "origin")
-        m = __import__("re").search(r"github\.com[/:]([^/]+/[^/.]+)", url)
+        m = re.search(r"github\.com[/:]([^/]+/[^/.]+)",
+                      git("remote", "get-url", "origin"))
         if not m:
-            raise SystemExit(f"无法从 origin 解析仓库: {url}")
+            raise SystemExit("无法从 origin 解析仓库")
         repo = m.group(1)
     branch = args.branch or git("rev-parse", "--abbrev-ref", "HEAD")
-    local_sha = git("rev-parse", "HEAD")
 
     ref = gh_api("GET", f"repos/{repo}/git/ref/heads/{branch}")
     remote_sha = ref["object"]["sha"]
-    if remote_sha == local_sha:
-        print(f"[api_push] {repo}@{branch} 已同步于 {local_sha[:10]}")
+    base_commit = gh_api("GET", f"repos/{repo}/git/commits/{remote_sha}")
+    base_tree = base_commit["tree"]["sha"]
+
+    # 修复①：远端树 vs 本地 HEAD 树逐文件 blob sha（含修复② quotepath）
+    rt = gh_api("GET", f"repos/{repo}/git/trees/{base_tree}?recursive=1")
+    remote_blobs = {e["path"]: e["sha"] for e in rt.get("tree", [])
+                    if e.get("type") == "blob"}
+    ls = git("-c", "core.quotepath=false", "ls-tree", "-r", "HEAD")
+    local_blobs = {}
+    for line in ls.splitlines():
+        meta, path = line.split("\t", 1)
+        local_blobs[path] = meta.split()[2]
+    changed = [p for p, sha in local_blobs.items()
+               if remote_blobs.get(p) != sha]
+    deleted = [p for p in remote_blobs if p not in local_blobs]
+    print(f"[api_push] {repo}@{branch} 变更 {len(changed)} 删除 {len(deleted)}")
+
+    tree = []
+    for path in deleted:  # 删除传播：sha=None 从 base_tree 摘除
+        tree.append({"path": path, "mode": "100644", "type": "blob",
+                     "sha": None})
+    for path in changed:
+        # 修复③：上传 HEAD 对象原始字节而非工作区文件
+        p = subprocess.run(["git", "cat-file", "blob", f"HEAD:{path}"],
+                           cwd=str(REPO_ROOT), capture_output=True,
+                           timeout=30, creationflags=NO_WINDOW)
+        if p.returncode != 0:
+            continue
+        blob = gh_api("POST", f"repos/{repo}/git/blobs", {
+            "content": base64.b64encode(p.stdout).decode("ascii"),
+            "encoding": "base64"})
+        tree.append({"path": path, "mode": "100644", "type": "blob",
+                     "sha": blob["sha"]})
+    if not tree:
+        print(f"[api_push] 树已同步于 {git('rev-parse', 'HEAD')[:10]}（同树可异 SHA）")
         return 0
 
-    # 仅支持快进：远端头必须是本地的祖先
-    check = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", remote_sha, local_sha],
-        cwd=str(REPO_ROOT), capture_output=True,
-        creationflags=0x08000000)
-    if check.returncode != 0:
-        print(f"[api_push] 分叉：远端 {remote_sha[:10]} 非本地祖先，拒绝推送",
-              file=sys.stderr)
-        return 2
-
-    diff = git("diff", "--name-status", f"{remote_sha}..{local_sha}")
-    entries = []
-    for line in diff.splitlines():
-        if not line.strip():
-            continue
-        parts = line.split("\t")
-        status, path = parts[0], parts[-1].replace("\\", "/")
-        if status.startswith("D"):
-            entries.append({"path": path, "mode": "100644",
-                            "type": "blob", "sha": None})
-            continue
-        if status.startswith("R"):  # R100 old new → 删旧 + 加新
-            entries.append({"path": parts[1].replace("\\", "/"),
-                            "mode": "100644", "type": "blob", "sha": None})
-        blob = gh_api("POST", f"repos/{repo}/git/blobs", {
-            "content": base64.b64encode(
-                (REPO_ROOT / path).read_bytes()).decode("ascii"),
-            "encoding": "base64"})
-        entries.append({"path": path, "mode": "100644",
-                        "type": "blob", "sha": blob["sha"]})
-    if not entries:
-        print("[api_push] 无文件差异但 SHA 不同（疑似空提交），放弃")
-        return 3
-
-    base_commit = gh_api("GET", f"repos/{repo}/git/commits/{remote_sha}")
-    tree = gh_api("POST", f"repos/{repo}/git/trees", {
-        "base_tree": base_commit["tree"]["sha"], "tree": entries})
-    message = git("log", "-1", "--pretty=%B")
-    commit = gh_api("POST", f"repos/{repo}/git/commits", {
-        "message": message, "tree": tree["sha"],
-        "parents": [remote_sha]})
+    t = gh_api("POST", f"repos/{repo}/git/trees",
+               {"base_tree": base_tree, "tree": tree})
+    msg = git("log", "-1", "--pretty=%B")
+    c = gh_api("POST", f"repos/{repo}/git/commits", {
+        "message": msg, "tree": t["sha"], "parents": [remote_sha]})
     gh_api("PATCH", f"repos/{repo}/git/refs/heads/{branch}",
-           {"sha": commit["sha"], "force": False})
-    print(f"[api_push] 推送成功: {remote_sha[:10]} → {commit['sha'][:10]}"
-          f"（{len(entries)} 个文件）")
+           {"sha": c["sha"], "force": False})
+
+    # 硬校验：远端提交树必须与本地 HEAD 树逐 sha 等价（ref 相同≠内容等价）
+    local_tree = git("rev-parse", "HEAD^{tree}")
+    verify = gh_api("GET", f"repos/{repo}/git/ref/heads/{branch}")
+    vc = gh_api("GET", f"repos/{repo}/git/commits/{verify['object']['sha']}")
+    ok = vc.get("tree", {}).get("sha") == local_tree
+    if not ok:
+        print(f"[api_push] 树校验失败 remote={vc.get('tree', {}).get('sha')}"
+              f" local={local_tree}", file=sys.stderr)
+        return 1
+    print(f"[api_push] 推送成功 → {verify['object']['sha'][:10]}"
+          f"（{len(tree)} 个文件，树校验通过）")
     return 0
 
 
