@@ -18,8 +18,8 @@ schtasks /Query /TN "SuperSkillWeekly" /V /FO LIST
 | 段 | 内容 | 失败策略 |
 |----|------|----------|
 | S1 | `npx skills update -g`（注册表技能）+ 48 内嵌子技能结构审计（frontmatter/name/≤500行） | best-effort，不挡管线 |
-| S2 | **智库多源水位扫描**（04 智库五渠道：一堂/万维钢/微信读书/洞见研报/通往AGI之路；新文件/改动 → 周上限截断，余量记账下周；首跑只消化精选）→ `hundun_census.py` 刷新 → **缺口 >40 门熔断** → `hundun_batch.py` 幂等增量（0.2s 节流 / 403 自动重登）→ 圈出本周 AI 新课 | 隔离失败（主链继续；智库材料独立存活） |
-| S3 | 无头 claude 蒸馏新课 → 四类资产归档 → 对账去重 → **暂存协议**（成品全文写 `automation/distill_out/` + manifest.json，编排器校验白名单后代落 `.claude/skills/super-skill/`——`.claude/**` 是权限敏感路径，LLM 直写必被拒，由确定性层执行写入）+ SKILL.md 接线 + CHANGELOG + 版本 bump；**干净工作树闸门**防混入人工改动 | 失败/无增量/声明与暂存不符 → `git checkout` 回滚 |
+| S2 | **智库多源水位扫描**（04 智库五渠道：一堂/万维钢/微信读书/洞见研报/通往AGI之路；新文件/改动 → 周上限截断，余量记账下周；首跑只消化精选）→ **Jev 预筛**（routing 位：低值材料 <0.5 不进蒸馏省 token，fail-soft 缺席全量放行）→ `hundun_census.py` 刷新 → **缺口 >40 门熔断** → `hundun_batch.py` 幂等增量（0.2s 节流 / 403 自动重登）→ 圈出本周 AI 新课 | 隔离失败（主链继续；智库材料独立存活） |
+| S3 | 无头 claude 蒸馏新课 → 四类资产归档 → 对账去重 → **暂存协议**（成品全文写 `automation/distill_out/` + manifest.json，编排器校验白名单后代落 `.claude/skills/super-skill/`——`.claude/**` 是权限敏感路径，LLM 直写必被拒，由确定性层执行写入）→ **确定性硬门**（暂存 SKILL.md <500 行 + 版本脚注在位，违规整轮拒绝）→ **Jev 独立核验**（completion 位：逐条判文件是否兑现 manifest 声称，hollow 升级到企微报告）+ SKILL.md 接线 + CHANGELOG + 版本 bump；**干净工作树闸门**防混入人工改动 | 失败/无增量/声明与暂存不符/硬门违规 → `git checkout` 回滚 |
 | S4 | robocopy 镜像 `.claude/skills/super-skill` → `%USERPROFILE%\.claude\skills\super-skill` | 失败即整体 ❌ |
 | S5 | 提交 → 三层推送回退：`git push` → 剥代理重推 → `api_push.py`（gh api 数据通道，仅快进） | 全败保留本地提交，企微告警 |
 | S6 | 企微通知：**站在用户角度的价值报告**（先讲这周 Super-Skill 学会了什么新本事、用户得到什么，例行检查一句话带过，技术细节只进日志）；通道回退 OAuth 机器人直达 → webhook → 日志降级 | best-effort |
@@ -37,6 +37,7 @@ schtasks /Query /TN "SuperSkillWeekly" /V /FO LIST
 
 ## 关键事实
 
+- **判断层（2026-09-22 Jev×TypeSafe 融合）**：`automation/jev_legs.py` 复用站内 `paistation.judgment.JudgmentClient`（熔断/一键开关/fail-soft 三契约），两位接线= S2 材料预筛（routing）+ S3 manifest 核验（completion）；确定性检查（行数/版本脚注）用代码不烧判断（免费模型优先铁律）。实验先行：`jev_fusion_experiments.py` 两轮（V1 证据构造缺陷→V2 修复），分离实证见 `logs/jev_fusion_exp_20260922_v2.json`；调用轨迹审计 `logs/jev_traj.jsonl`（只落 hash 与数值摘要）。开关：`PAI_JEV=0` env 硬关 > `config/jev.ini` enabled=0 > key 缺失，任何形态缺席=管线回退接线前行为。
 - **知识来源 = 混沌 + 智库五渠道**：蒸馏原料不限于混沌新课——`E:\AI-Station\04 智库\` 下的一堂（创业五步法/AI实操）、万维钢调研方法论、微信读书（智能商业/调研方法等，EPC 工程书排除）、洞见研报 FDE 系列（智慧水利排除）、通往AGI之路（3396 md，waytoagi-sync 维护）全部纳入周度水位扫描（`automation/channel_state.json`）。排除渠道：`混沌学园/`（与 data/hundun/AI课程 394 文件完全同源）、混沌/调研框架库/internal（空）。.doc 老格式读不了（计数上报"待转格式"）；.docx 是 md 孪生件直接忽略；超大文件（md>1.5MB / pdf>15MB）不收。
 - **claude 二进制**：npm 全局 shim 在本机 Win10 19045 报「不支持当前 Windows 版本」；实际可用的是 VSCode 扩展原生包 `~\.vscode\extensions\anthropic.claude-code-*\resources\native-binary\claude.exe`（认证共享，编排器按版本号自动择新）。
 - **账号安全**：混沌凭据只经 `E:\AI-Station\config\hundun.secret.ini`（gitignored）由既有脚本读取；周级低频 + 0.2s 节流 + 缺口熔断（>40 门视为语料目录异常，中止待人工核查）。

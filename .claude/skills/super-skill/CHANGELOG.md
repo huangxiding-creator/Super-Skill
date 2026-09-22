@@ -5,6 +5,23 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.16] - 2026-09-22
+
+### Added — 判断层：Jev × TypeSafe System One 深度融合 (experiment-first integration)
+官方方法论 "identify where Jev could replace LLM-based routing, completion judgment, or verification. **Run experiments before changing the implementation**" 全程践行——两轮实验 (`automation/jev_fusion_experiments.py`, V1 状态构造缺陷 → V2 证据组装修复) 分离实证后才动管线。
+
+- **[references/judgment-layer.md](references/judgment-layer.md)** (NEW): 判断层作战手册 — **Noul/Choice/Score 三原语** (返回类型化答案+概率非生成文本; state 放证据、instructions 放判断、criteria 放答案定义) · **三铁律**: ① 免费模型优先——确定性检查 (正则/行数/枚举) 永远用代码, Jev 只占免费做不到的语义位 ($0.0001 量级/次); ② fail-soft——缺席 (开关关/熔断/网络) 降级回原行为绝不反噬主链, 一键开关 `PAI_JEV` env > `config/jev.ini` > key 缺失; ③ **证据先行**——code 组装证据 (短文全文/关键词定向捞段/剥 base64), Jev 只管判断 (sde_cascade 模式); V1→V2 铁教训: 证据缺席≠模型错误 (头采样致 SKILL.md 中段增量 0.16 假阴, 标题党登录墙页 0.54 假阳; 证据组装后两侧零跨界) · 问句措辞钉死 (E3 谱系: 抽象问句诱导保守 0.17-0.27, 具体问句 0.94/0.08).
+- **`assets/jev_ask.py`** (NEW, 随身判断原语 CLI, 零依赖): `noul` (完成判定/DoD 核验: verify & escalate, <0.5 升级人眼或推理模型) + `choice` (路由分诊: 分布对比竞争项再填参) · key 取 `TYPESAFE_API_KEY` env 或 `--key-file` ini, **凭据永不入 git 永不打日志** · 输出恒 JSON (故障也是 `{"ok":false}` 退出码 0, 管道友好).
+- **周度管线三位接线** (`automation/jev_legs.py` + `superskill_weekly.py`):
+  - **S2 材料预筛** (routing 位): 智库新料进蒸馏前 Noul 判相关性, 低值 (<0.5) 跳过省周度 token 预算. 实测: 正样本 (一堂龙虾/万维钢总论/怎么做调研) 0.62-0.91, 负样本 (EPC 工程书×2/飞书登录墙页) 0.03-0.12; 链接索引页 0.15 属正确跳过 (索引非内容).
+  - **S3 manifest 独立核验** (completion-judgment 位): 蒸馏 claude 自报 changed 后, Jev 逐条复核「文件是否兑现 manifest 声称」, hollow 记入 state 并在企微报告升级给用户. 实测: V4.1.15 真实 5 条 manifest 正 0.80-0.95, 换绑+虚构负样本 0.02-0.24.
+  - **S3 确定性硬门** (verification 位, 代码免费位): 暂存 SKILL.md ≥500 行或丢版本脚注 → 整轮拒绝落位回滚 (提示词红线的执法者; 版本脚注缺失会致下次蒸馏版本检测回退错版本).
+  - S6 企微报告 +独立质检行 (兑现 N 项"不是空头支票" / 悬空升级待复核).
+- 复用站内久经考验的 `paistation.judgment.JudgmentClient` (熔断器: 连续 3 败冷却 300s 半开试探; 调用轨迹审计 `logs/jev_traj.jsonl` 只落 hash 与数值摘要).
+
+### Wired
+- SKILL.md: Reference Files 表 +1 行 (judgment-layer) · 版本史 +V4.1.16 段 · 脚注 V4.1.15→V4.1.16 (497 行 <500 预算).
+
 ## [4.1.15] - 2026-09-16
 
 ### Added — 调研方法论双源 + 训虾派角色配置工程 + FDE 交付范式 (external-wisdom run #6, 周度 W38)

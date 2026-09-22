@@ -3,14 +3,21 @@
 
 Windows 计划任务「SuperSkillWeekly」每周日 22:00（北京时间）拉起：
   S1 子技能升级   npx skills update -g + 48 个内嵌子技能结构审计
-  S2 混沌增量采集 census 刷新 → 幂等批量提取（0.2s 节流 / 403 自动重登 /
-                  新课缺口 > 40 熔断）→ 圈出本周 AI 新课
-  S3 智能蒸馏融合 无头 claude 蒸馏新课 → 识别增量价值 → 融合进
-                  references/ + SKILL.md 接线 + CHANGELOG + 版本号；
-                  失败或无增量 → 回滚（干净工作树闸门防混入人工改动）
+  S2 混沌增量采集 智库水位扫描（Jev 预筛：低值材料不进蒸馏）→ census 刷新
+                  → 幂等批量提取（0.2s 节流 / 403 自动重登 / 缺口>40 熔断）
+                  → 圈出本周 AI 新课
+  S3 智能蒸馏融合 无头 claude 蒸馏新课 → 识别增量价值 → 确定性硬门
+                  （SKILL.md <500 行 / 版本脚注在位）→ Jev 独立核验（文件
+                  是否兑现 manifest 声称）→ 融合进 references/ + SKILL.md
+                  接线 + CHANGELOG + 版本号；失败或无增量 → 回滚
   S4 全局安装     robocopy 镜像 → %USERPROFILE%\\.claude\\skills\\super-skill
   S5 Git 提交推送 git push → 剥代理重推 → gh api 数据通道（三层回退）
   S6 企微通知     tools/notify_wecom.py 摘要（成功/失败均通知）
+
+判断层（2026-09-22 Jev×TypeSafe 融合，automation/jev_legs.py）：routing/
+completion-judgment/verification 三位接线，实验先行（jev_fusion_experiments.
+py）；一键开关 PAI_JEV env > config/jev.ini > key 缺失，全故障 fail-soft
+回退原行为，熔断防雪崩。免费模型优先：确定性检查用代码，Jev 只占语义位。
 
 运维：
   暂停   新建 automation/PAUSE 文件（main 首行早退，免提权）
@@ -232,6 +239,46 @@ def _existing_cids() -> set:
     return done
 
 
+def _jev_legs():
+    """同目录判断腿模块（脚本直跑无包上下文，sys.path 补位）。"""
+    import importlib
+    if str(AUTO) not in sys.path:
+        sys.path.insert(0, str(AUTO))
+    return importlib.import_module("jev_legs")
+
+
+def _screen_materials(log, materials):
+    """Jev 材料预筛（routing 位）：低值材料不进蒸馏，省周度 token 预算。
+
+    fail-soft 契约：Jev 缺席（开关关/熔断/站外/证据空）→ 一律放行，
+    行为与接线前完全一致；只筛掉 noul<TH 的明确低值项并留痕。
+    """
+    try:
+        legs = _jev_legs()
+        if not legs.available():
+            return materials, "Jev 预筛未参与（开关关或不可用），全量放行"
+    except Exception as exc:  # noqa: BLE001 - 判断腿绝不反噬采集
+        return materials, f"Jev 预筛装配失败（{exc}），全量放行"
+    kept, dropped = [], []
+    for m in materials:
+        p = Path(m["path"])
+        try:
+            text = legs.material_text(p)
+            noul = (legs.screen_material(m["title"], m["source"], p)
+                    if text.strip() else None)
+        except Exception:  # noqa: BLE001
+            noul = None
+        if noul is not None and noul < legs.TH:
+            dropped.append(f"{m['title']}({noul:.2f})")
+            log(f"[S2] Jev 预筛跳过 [{m['source']}] {m['title']}"
+                f"（noul={noul:.2f}）")
+        else:
+            kept.append(m)
+    note = (f"Jev 预筛：放行 {len(kept)} / 跳过 {len(dropped)}"
+            if dropped or kept else "Jev 预筛：本周无待筛材料")
+    return kept, note
+
+
 def _scan_zhiku(log):
     """04 智库多源水位扫描：新文件/改动文件 → 周上限截断 → 余量记账下周。
 
@@ -292,13 +339,14 @@ def _scan_zhiku(log):
         json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     for m in materials:
         log(f"[S2] 智库新料 [{m['source']}] {m['title']}")
-    return materials, skipped_docs
+    materials, screen_note = _screen_materials(log, materials)
+    return materials, skipped_docs, screen_note
 
 
 def stage_s2(log, state):
-    log("[S2] 增量采集：智库多源水位扫描 → 混沌 census → 幂等批量提取")
-    materials, skipped_docs = _scan_zhiku(log)
-    zhiku_note = f"智库新到 {len(materials)} 份材料"
+    log("[S2] 增量采集：智库多源水位扫描（Jev 预筛）→ 混沌 census → 幂等批量提取")
+    materials, skipped_docs, screen_note = _scan_zhiku(log)
+    zhiku_note = f"智库新到 {len(materials)} 份材料（{screen_note}）"
     if skipped_docs:
         zhiku_note += f"（另有 {skipped_docs} 个 Word 老格式待转）"
 
@@ -372,15 +420,36 @@ def _parse_result_json(text: str):
         return None
 
 
-def _apply_staged(log) -> int:
-    """校验 manifest 并把暂存内容落位到 skill 目录。返回落位文件数。"""
+def _apply_staged(log):
+    """校验 manifest 并把暂存内容落位到 skill 目录。
+
+    确定性硬门（免费代码位，蒸馏提示词的 <500 行/版本脚注红线在此执法）：
+    暂存 SKILL.md ≥500 行或丢版本脚注 → 拒绝整个 manifest（产线一致性
+    依赖脚注版本号，缺了下次蒸馏版本检测会回退错版本）。
+    返回 (落位文件数, 落位条目列表)；硬门违规返回 (-1, [])。
+    """
     import shutil
     manifest_f = DISTILL_OUT / "manifest.json"
     if not manifest_f.is_file():
-        return 0
+        return 0, []
     entries = json.loads(manifest_f.read_text(encoding="utf-8"))
-    applied = 0
-    for e in entries if isinstance(entries, list) else []:
+    if not isinstance(entries, list):
+        return 0, []
+    skill_md = next((e for e in entries
+                     if str(e.get("path", "")).replace("\\", "/")
+                     .lstrip("/") == "SKILL.md"), None)
+    if skill_md is not None:
+        staged = DISTILL_OUT / "SKILL.md"
+        if staged.is_file():
+            text = staged.read_text(encoding="utf-8", errors="replace")
+            if text.count("\n") + 1 >= 500:
+                log("[S3] 硬门拒绝：暂存 SKILL.md ≥500 行（红线违规）")
+                return -1, []
+            if not re.search(r"Super-Skill (V\d+(?:\.\d+)*):", text):
+                log("[S3] 硬门拒绝：暂存 SKILL.md 丢版本脚注")
+                return -1, []
+    applied, done = 0, []
+    for e in entries:
         rel = str(e.get("path", "")).replace("\\", "/").lstrip("/")
         src = DISTILL_OUT / rel
         parts = rel.split("/")
@@ -393,9 +462,10 @@ def _apply_staged(log) -> int:
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
         applied += 1
+        done.append(e)
         log(f"[S3] APPLY {e.get('action', '?')} {rel} "
             f"({str(e.get('summary', ''))[:60]})")
-    return applied
+    return applied, done
 
 
 def _current_version() -> str:
@@ -475,7 +545,12 @@ def stage_s3(log, state):
         return False
 
     summary = str(result.get("summary", ""))[:200]
-    applied = _apply_staged(log)  # manifest 为地面真值
+    applied, done_entries = _apply_staged(log)  # manifest 为地面真值
+    if applied < 0:
+        _revert_skill_tree(log)
+        state["s3"] = {"ok": False,
+                       "note": "蒸馏产出违反硬门（SKILL.md 行数/版本脚注），已回滚"}
+        return False
     if applied == 0:
         _revert_skill_tree(log)
         if result.get("changed"):
@@ -498,8 +573,47 @@ def stage_s3(log, state):
         log(f"[S3] REF {ref}")
     result["changed"] = True
     state["s3"] = {"ok": True, "note": summary or f"融合 {applied} 文件",
-                   "distill": result}
+                   "distill": result,
+                   **_jev_verify_applied(log, done_entries)}
     return True
+
+
+def _jev_verify_applied(log, entries):
+    """Jev 独立核验腿（completion-judgment 位）：逐条判「文件是否兑现声称」。
+
+    fail-soft 审计信号——不改行为（只增不删红线下弱兑现不致命），hollow
+    记入 state 供企微报告升级给用户；Jev 缺席=unchecked，管线照旧。
+    实验依据 logs/jev_fusion_exp_20260922_v2.json：正 0.80-0.95 / 负 0.02-0.24。
+    """
+    out = {}
+    try:
+        legs = _jev_legs()
+        if not legs.available():
+            return {"jev_verify": {"screened": False, "note": "未参与（Jev 关）"}}
+        ful, hollow, unchk = 0, [], 0
+        for e in entries:
+            rel = str(e.get("path", "")).replace("\\", "/").lstrip("/")
+            try:
+                ft = (SKILL_SRC / rel).read_text(encoding="utf-8",
+                                                 errors="replace")
+                noul = legs.verify_manifest(str(e.get("summary", "")),
+                                            rel, ft)
+            except Exception:  # noqa: BLE001 - 单条异常不杀核验
+                noul = None
+            if noul is None:
+                unchk += 1
+            elif noul >= legs.TH:
+                ful += 1
+            else:
+                hollow.append(rel)
+                log(f"[S3] Jev 核验悬空 {rel}（noul={noul:.2f}）")
+        out = {"jev_verify": {"screened": True, "fulfilled": ful,
+                              "hollow": hollow, "unchecked": unchk}}
+        log(f"[S3] Jev 核验：兑现 {ful} / 悬空 {len(hollow)} / 未检 {unchk}")
+    except Exception as exc:  # noqa: BLE001 - 核验腿绝不反噬主链
+        log(f"[S3] Jev 核验腿异常（{exc}），跳过")
+        out = {"jev_verify": {"screened": False, "note": f"异常 {exc}"}}
+    return out
 
 
 # ---------------------------------------------------------------- S4 全局安装
@@ -720,6 +834,14 @@ def _plain_report(state) -> str:
     if skipped_docs:
         routine.append(f"📎 另有 {skipped_docs} 份 Word 老格式讲义这次读不了，"
                        "已记在账上，转成可读格式后再学")
+    jv = (st(3) or {}).get("jev_verify") or {}
+    if d.get("changed") and jv.get("screened"):
+        if jv.get("hollow"):
+            routine.append(f"🧠 独立质检：{len(jv['hollow'])} 项新内容与描述"
+                           "对不上，已标出待复核（不影响这周其他新本事）")
+        elif jv.get("fulfilled"):
+            routine.append(f"🧠 独立质检：新本事逐项核对过，{jv['fulfilled']} 项"
+                           "描述与内容都对得上，不是空头支票")
     if st(4) and not is_ok(4):
         routine.append("💻 本机安装：新本事还没装到你机器上、暂时不生效，"
                        "需要抽空看一眼")
