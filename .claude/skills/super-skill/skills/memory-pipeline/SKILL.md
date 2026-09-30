@@ -1,6 +1,6 @@
 ---
 name: memory-pipeline
-description: Dual-phase memory system: extract durable facts from conversations (4 types), then consolidate nightly (dedup, prune, reindex). Keeps MEMORY.md as a concise index, never a content dump.
+description: "Dual-phase memory system: extract durable facts from conversations (4 types), then consolidate nightly (dedup, prune, reindex). Keeps MEMORY.md as a concise index, never a content dump."
 ---
 
 # Memory Pipeline

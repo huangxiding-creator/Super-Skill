@@ -281,6 +281,8 @@ def test_pin_node_puts_global_selector():
 # ---- Clash API: diagnostics ------------------------------------------------- #
 
 def test_dns_hijacked_detects_fake_ip():
+    if sys.platform != "win32":
+        return  # dns_hijacked() is Windows-only by design (Clash TUN DNS); always False elsewhere
     class _R:
         returncode = 0
         stdout = "Name: github.com\nAddresses: 198.18.0.5\n"

@@ -5,6 +5,71 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2026-09-30
+
+### 从说明书到发动机 — prose → executable engine
+Designed from a 5-track survey of **204 open-source repositories** (verified with `gh api`;
+dossier in `upgrade-workspace/research/`, proposal in `upgrade-workspace/PROPOSAL_V5.md`).
+No third-party code is vendored; GPL/AGPL/unlicensed sources were used pattern-only (see `NOTICE.md`).
+
+### Added
+- **Phase contracts + state machine** — `phases.json` (17 phases, 50 checks, 17 check types) and
+  `engine/ss.py` (`init/status/next/gate/advance/goto/approve/reject/wait/resume/pause/config/log/handoff`);
+  append-only ledger; git tag per completed phase.
+- **Working hooks** (8 scripts, fail-open, project-scoped): SessionStart brief + hand-off,
+  UserPromptSubmit reminder, PreToolUse guard, PostToolUse(+Failure) observability/stuck/budget,
+  PreCompact hand-off, Stop phase gate with anti-loop, SubagentStop/SessionEnd logging.
+- **Traceability** — EARS lint, stable `REQ-###(.ACn)` IDs, REQ → task → test matrix (`trace.md`).
+- **Task graph** — dependencies, `ready` queue, atomic claim, parallel waves, cycle detection,
+  complexity scoring, markdown import/export.
+- **Planner → Worker → Judge** subagents (`ss-planner`, `ss-worker` with `isolation: worktree`,
+  `ss-judge`, `ss-researcher`, `ss-spec-reviewer`).
+- **Loop safety** — circuit breaker (no-progress / same-error / permission denials, half-open probe),
+  stuck detector (repeat action, repeat error, alternation, monologue), pressure ladder L1–L4,
+  dual-condition exit; `ss ralph` unattended driver with verify-as-ground-truth, `experiments.tsv`,
+  `progress.txt`.
+- **Budget & observability** — transcript cost meter (ccusage-style de-dup), warn 70 % / deny 100 %,
+  per-phase report, `events.jsonl`.
+- **Memory** — ACE playbook (append-only deltas, helpful/harmful votes, blocking do-not-repeat rules
+  enforced by the guard, cerebrum import), SQLite FTS5 memory index with Chinese trigram search,
+  BM25 sub-skill router.
+- **Self-evolution** — clean-room evolver: DGM archive + parent selection, Pareto front, GEPA-style
+  reflective mutation, staged smoke/full eval, stagnation detection, fitness with simplicity penalty,
+  safe `--apply`.
+- **Evals** — offline benchmark (13 scenarios, 100 %), `claude plugin eval` cases with
+  with/without-skill ablation.
+- **Portability** — `install.py` (global/project/plugin forms, merge + backup, version-gated events,
+  exec form on Windows without Git Bash, `--doctor`, `--uninstall-hooks`), plugin + marketplace
+  manifests (`claude plugin validate` ✔), `.gitattributes` (LF scripts), CI on ubuntu (py3.9/3.12),
+  macOS, Windows + fresh-machine install job, `scripts/run_all_tests.py` gate.
+
+### Fixed
+- `.claude/settings.json` hooks used an invalid schema (`handler`, object matchers, non-existent
+  `$CLAUDE_TOOL_*` variables, session start on `Notification`) — **none of the V4 hooks ever fired**.
+- 7 SKILL.md frontmatters (including the main one) failed YAML parsing, so Claude Code dropped their
+  descriptions at runtime; quoted.
+- `darwin-evolution/SKILL.md` exceeded the 500-line rule (Default Genes moved verbatim to references).
+- `wizard_template.sh` shipped with CRLF line endings (broke `bash -n` on Windows checkouts).
+- Windows non-ASCII path bug in `test_context_lint.py`; Windows-only assertion in `test_clash_proxy.py`.
+- 31 tracked `__pycache__/*.pyc` files removed from git.
+
+### Changed
+- `SKILL.md` is now a 241-line router; the complete V4.1.16 text is preserved verbatim in
+  `references/skill-v4-full.md` (constitution: 只增不删).
+
+### Measured (K1–K5 from the proposal)
+| KPI | V4.1.16 | V5.0.0 |
+|---|---|---|
+| K1 enforcement mechanisms that actually fire | 0 | 35 (13 guard deny/ask rules, 4 stop-gate rules, 7 loop-safety rules, 4 stuck patterns, 6 gate families, budget warn) |
+| K2 phases with machine-checked gates | 0 / 14 | 17 / 17 |
+| K3 automated checks | 131 unit tests | 292 tests + 13 bench scenarios + 50 gate checks + 2 model-eval cases = 357 (target was ≥ 400: **not met**) |
+| K4 evidence harness | none | offline bench 13/13 · live Claude Code sessions: SessionStart injection ✔, guard denied a `.env` read ✔, Stop gate blocked a premature stop ✔ · `claude plugin eval` `trigger-raw-idea` (1 run per arm): **with skill 1.0, without 0.0, Δ +1.0**, $1.73 |
+| K5 self-evolution loop steps executable | 0 / 4 | 4 / 4 (toy run: fitness 0.20 → 0.9998 in 5 iterations) |
+
+Test runs: Windows (Python 3.13) 14/14 groups; Linux/WSL (Python 3.12) 14/14 after the clash-proxy test fix.
+Eval notes: on Windows the eval harness refuses to grant Bash (no shell sandbox), so model evals run
+with Read/Write/Edit/Skill only; one run per arm is a small sample — use `--runs 3` for a firmer Δ.
+
 ## [4.1.16] - 2026-09-22
 
 ### Added — 判断层：Jev × TypeSafe System One 深度融合 (experiment-first integration)
