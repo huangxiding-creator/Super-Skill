@@ -261,6 +261,17 @@ def test_end_to_end_adopts_commits_and_pushes(world):
     assert not _git(world["repo"], "status", "--porcelain", "--untracked-files=no").stdout.strip()
 
 
+def test_two_runs_same_day_keep_both_digests(world):
+    (world["auto"] / "fake_mode.txt").write_text("adopt", encoding="utf-8")
+    assert sd.run(_args(world["repo"])) == 0
+    second = _args(world["repo"])
+    second._fetch = fake_fetch(search=[repo_json("b/fresh", 3000)])
+    assert sd.run(second) == 0
+    digests = sorted(p.name for p in (world["skill"] / "references" / "radar").glob("20*.md"))
+    assert len(digests) == 2 and any(d.endswith("-2.md") for d in digests), digests
+    assert "V5.0.2" in _git(world["remote"], "log", "--oneline", "-1", "master").stdout
+
+
 def test_end_to_end_gate_failure_reverts_everything(world, monkeypatch):
     (world["auto"] / "fake_mode.txt").write_text("adopt", encoding="utf-8")
     monkeypatch.setenv("SUPERSKILL_GATE_CMD", f"{sys.executable}|-c|raise SystemExit(1)")
