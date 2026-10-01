@@ -5,6 +5,12 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.1] - 2026-10-01
+
+### Daily self-update (radar)
+- 新增第三方 skill 安装前安全审查（engine/skill_vet.py），find-skills 自动安装前必须通过 CLEAN/LOW 判定，堵住 Phase 2b 未审查直接 `npx skills add -g -y` 的供应链风险。
+- Digest: [references/radar/2026-10-01.md](references/radar/2026-10-01.md)
+
 ## [5.1.0] - 2026-10-01
 
 ### Added — 每日自更新 (nightly self-update, 23:00 Beijing time)
