@@ -209,6 +209,24 @@ def parse_result(text: str) -> dict | None:
     return None
 
 
+def parse_claude_output(raw: str) -> tuple[str, dict]:
+    """Split `claude -p --output-format json` output into (result text, meta).
+
+    Falls back to treating the whole stdout as text (older CLIs, test doubles).
+    """
+    stdout = (raw or "").split("\n[stderr] ", 1)[0].strip()
+    start = stdout.find("{")
+    if start >= 0:
+        try:
+            data, _ = json.JSONDecoder().raw_decode(stdout[start:])
+            if isinstance(data, dict) and "result" in data:
+                meta = {k: data.get(k) for k in ("total_cost_usd", "num_turns", "is_error", "subtype")}
+                return str(data.get("result") or ""), meta
+        except ValueError:
+            pass
+    return stdout, {}
+
+
 def revert(ctx: Ctx) -> None:
     git(ctx, "checkout", "--", ".")
     git(ctx, "clean", "-fdq", "--", ".claude/skills/super-skill", ".claude-plugin")
@@ -229,12 +247,17 @@ def distill(ctx: Ctx, items: list[dict]) -> dict | None:
     (ctx.logs / f"daily_{ctx.date}_prompt.md").write_text(prompt, encoding="utf-8")
     tools = ("Read,Grep,Glob,WebFetch,WebSearch,Write,Edit,"
              "Bash(gh api:*),Bash(gh search:*),Bash(gh repo view:*)")
-    argv = find_claude() + ["-p", "--permission-mode", "acceptEdits", "--output-format", "text",
+    argv = find_claude() + ["-p", "--permission-mode", "acceptEdits", "--output-format", "json",
                             "--max-turns", str(ctx.args.max_turns),
                             "--max-budget-usd", str(ctx.args.budget_usd), "--allowedTools", tools]
     ctx.log(f"[D2] headless distill (budget ${ctx.args.budget_usd}, ≤{ctx.args.max_turns} turns)")
-    rc, out = sh(argv, cwd=ctx.repo, timeout=ctx.args.timeout, input_text=prompt)
-    (ctx.logs / f"daily_{ctx.date}_output.md").write_text(out or "", encoding="utf-8")
+    rc, raw = sh(argv, cwd=ctx.repo, timeout=ctx.args.timeout, input_text=prompt)
+    out, meta = parse_claude_output(raw)
+    (ctx.logs / f"daily_{ctx.date}_output.md").write_text(out or raw or "", encoding="utf-8")
+    cost = meta.get("total_cost_usd")
+    ctx.report["cost_usd"] = cost
+    if cost is not None:
+        ctx.log(f"[D2] model cost ${cost:.2f}, {meta.get('num_turns')} turns")
     # anything the model wrote outside the staging dir is discarded
     rc2, dirty = git(ctx, "status", "--porcelain", "--", ".claude", ".claude-plugin")
     if dirty.strip():
@@ -244,7 +267,8 @@ def distill(ctx: Ctx, items: list[dict]) -> dict | None:
     if rc != 0 or result is None:
         ctx.stage("D2", False, f"claude rc={rc}, result JSON {'missing' if result is None else 'ok'}")
         return None
-    ctx.stage("D2", True, str(result.get("summary", ""))[:160],
+    spent = f" (${cost:.2f}, {meta.get('num_turns')} turns)" if cost is not None else ""
+    ctx.stage("D2", True, str(result.get("summary", ""))[:160] + spent,
               adopted=len(result.get("adopted") or []), rejected=len(result.get("rejected") or []))
     return result
 
@@ -362,7 +386,7 @@ def gates(ctx: Ctx) -> bool:
     argv = custom.split("|") if custom else [sys.executable, str(ctx.skill / "scripts" / "run_all_tests.py")]
     rc, out = sh(argv, cwd=ctx.skill, timeout=3600)
     (ctx.logs / f"daily_{ctx.date}_gates.log").write_text(out, encoding="utf-8")
-    tail = " | ".join(out.strip().splitlines()[-2:])
+    tail = " | ".join([l for l in out.strip().splitlines() if l.strip()][-2:])
     if rc != 0:
         return ctx.stage("D5", False, f"check suite failed: {tail[:200]}")
     claude = find_claude()

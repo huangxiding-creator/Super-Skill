@@ -86,6 +86,38 @@ def test_radar_watchlist_release_and_hn_dedup():
     assert not items, "same release and same HN story must not resurface"
 
 
+def test_radar_dossier_seeded_watchlist_records_release_baseline():
+    # regression (2026-10-01 live run): dossier-seeded watch repos never got a release baseline,
+    # so every existing release would have been re-reported as "new" every day
+    state = {"seen": {"acme/watched": {"stars": None, "seed": "dossier"}}}
+    items, state = radar.run(CFG, state, fake_fetch(release="v1.0"), TODAY, log=lambda m: None)
+    assert not items and state["seen"]["acme/watched"]["release"] == "v1.0"
+    items, state = radar.run(CFG, state, fake_fetch(release="v1.0"), TODAY, log=lambda m: None)
+    assert not items
+    items, _ = radar.run(CFG, state, fake_fetch(release="v1.1"), TODAY, log=lambda m: None)
+    assert [i["kind"] for i in items] == ["release"]
+
+
+def test_radar_renamed_watch_repo_is_not_new():
+    # regression: ruvnet/claude-flow → ruvnet/ruflo surfaced as a "new" repo
+    cfg = dict(CFG, watchlist=["old/name"])
+    renamed = repo_json("new/name", 7000)
+    state = {"seen": {"old/name": {"stars": None, "seed": "dossier"}}}
+    items, state = radar.run(cfg, state, fake_fetch(search=[renamed], watched=renamed), TODAY, log=lambda m: None)
+    assert not items, items
+    assert state["seen"]["new/name"]["stars"] == 7000 and state["seen"]["old/name"]["renamed_to"] == "new/name"
+
+
+def test_parse_claude_output_json_and_text_fallback():
+    wrapped = json.dumps({"type": "result", "result": "hi\n```json\n{\"a\": 1}\n```", "total_cost_usd": 1.25,
+                          "num_turns": 7, "is_error": False, "subtype": "success"})
+    text, meta = sd.parse_claude_output(wrapped + "\n[stderr] warning")
+    assert text.startswith("hi") and meta["total_cost_usd"] == 1.25 and meta["num_turns"] == 7
+    assert sd.parse_result(text) == {"a": 1}
+    text, meta = sd.parse_claude_output("plain output\n```json\n{\"b\": 2}\n```")
+    assert meta == {} and sd.parse_result(text) == {"b": 2}
+
+
 def test_radar_survives_failing_source():
     def broken(url):
         raise OSError("network down")

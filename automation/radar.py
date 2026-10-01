@@ -178,10 +178,14 @@ def scan_watchlist(fetch: Fetch, cfg: dict, state: dict, log) -> list[dict]:
         except Exception:  # noqa: BLE001 - many repos have no releases
             tag, notes = None, ""
         prev = seen.get(full) or seen.get(name)
-        if prev is None:
-            # first sighting only seeds state; it is not news
-            seen[full] = {"stars": repo.get("stargazers_count"), "pushed_at": repo.get("pushed_at"),
-                          "release": tag, "first_seen": dt.date.today().isoformat()}
+        if prev is None or "release" not in prev:
+            # first watch (incl. dossier-seeded repos): record a baseline, it is not news
+            entry = dict(prev or {})
+            entry.update(stars=repo.get("stargazers_count"), pushed_at=repo.get("pushed_at"), release=tag)
+            entry.setdefault("first_seen", dt.date.today().isoformat())
+            seen[full] = entry
+            if name != full:
+                seen[name] = dict(entry, renamed_to=full)  # renamed repo: both names are known
             continue
         if tag and tag != prev.get("release"):
             items.append(_repo_item(repo, "release", 6.0, f"new release {tag} (was {prev.get('release')})",
