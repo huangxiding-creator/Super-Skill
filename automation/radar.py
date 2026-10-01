@@ -23,6 +23,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -173,6 +174,8 @@ def scan_watchlist(fetch: Fetch, cfg: dict, state: dict, log) -> list[dict]:
         full = repo["full_name"]
         try:
             rel = fetch(f"https://api.github.com/repos/{full}/releases/latest")
+            if rel is None:
+                continue  # time budget used up: no answer is not "no release" — record nothing
             tag = rel.get("tag_name") if isinstance(rel, dict) else None
             notes = (rel.get("body") or "")[:600] if isinstance(rel, dict) else ""
         except Exception:  # noqa: BLE001 - many repos have no releases
@@ -243,12 +246,29 @@ def seed_from_dossier(state: dict, dossier_dir: Path) -> int:
 
 # ---------------------------------------------------------------- entry
 
+BUDGET_S = 900   # whole scan ≤ 15 min even when every request hangs until its 30 s timeout
+
+
+def _with_budget(fetch: Fetch, budget_s: float, log) -> Fetch:
+    """After ``budget_s`` seconds every further request returns None (logged once)."""
+    deadline = time.monotonic() + budget_s
+    told = []
+
+    def limited(url: str):
+        if time.monotonic() >= deadline:
+            if not told:
+                told.append(True)
+                log(f"[radar] time budget ({budget_s / 60:.0f} min) used up — skipping the remaining requests")
+            return None
+        return fetch(url)
+    return limited
+
 def run(cfg: dict | None = None, state: dict | None = None, fetch: Fetch | None = None,
         today: dt.date | None = None, log=print) -> tuple[list[dict], dict]:
     """Return (ranked candidates, updated state). The caller persists state."""
     cfg = cfg if cfg is not None else load_json(CONFIG_FILE, {})
     state = json.loads(json.dumps(state if state is not None else load_json(STATE_FILE, {})))
-    fetch = fetch or make_fetch(github_token())
+    fetch = _with_budget(fetch or make_fetch(github_token()), float(cfg.get("budget_s", BUDGET_S)), log)
     today = today or dt.date.today()
     now_ts = int(dt.datetime.now().timestamp())
     # watchlist first: it registers canonical names of renamed repos before search sees them

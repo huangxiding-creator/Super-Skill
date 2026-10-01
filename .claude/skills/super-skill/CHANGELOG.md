@@ -5,6 +5,35 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.2] - 2026-10-01
+
+### Changed
+- Nightly self-update now runs at **22:00 Beijing time** (was 23:00): `schedule_daily.py` default `DEFAULT_AT = "22:00"`.
+- The Windows trigger's StartBoundary carries the source offset (`…T22:00:00+08:00`), so it fires at 22:00 Beijing time regardless of the machine's zone or DST; it is always the *next* occurrence, so (re-)registering never fires an immediate catch-up run. Task time limit raised to **7 h** (every timeout hit at once: 150 min lock wait + ≈ 190 min of run timeouts, incl. the new 15 min radar budget).
+- **Existing installs keep their old 23:00 trigger until re-registered** — run `python automation/schedule_daily.py` once on every machine that has the `SuperSkillDaily` task. `--status` warns when the registered time differs from the default, shows state and time limit, prints `never` for a task that has not run yet, and no longer fails on a disabled task.
+
+### Added
+- `automation/pipeline_lock.py` — OS-held lock (`msvcrt.locking` / `fcntl.flock` on byte 0 of `~/.claude/super-skill-pipeline.lock`, held on an open file descriptor for the whole run). The OS drops it when the process exits for any reason, so there is no stale lock to break and no check-then-delete race; per user, so every clone on the machine shares it (`SUPERSKILL_LOCK_DIR` overrides). On Sundays the daily and weekly pipelines both start at 22:00 — the second one waits (daily ≤ 150 min: `--wait-minutes` / `SUPERSKILL_LOCK_WAIT_MIN`; weekly ≤ 120 min: `SUPERSKILL_WEEKLY_LOCK_WAIT_MIN`). On Windows each pipeline also puts itself in a kill-on-close Job Object, so a killed run never leaves `claude -p`, git or the test suite running as orphans (POSIX: only the pipeline process is covered).
+- `weekly.lock` is now tagged (`{"os_lock": true}`); a tagged one left by a killed weekly is ignored by the daily run and taken over by the next weekly. An untagged `weekly.lock` (a weekly in the *same* clone still running pre-5.1.2 code) is honoured for 8 h as before. A weekly in a *different* clone is only coordinated once that clone is updated — see "Upgrade" below.
+- `automation/pipeline_recovery.py` (shared by both pipelines) — interrupted-run recovery: a run writes `automation/logs/pipeline_inprogress.json` before it can dirty the tree. The next pipeline (daily **or** weekly) stashes the leftovers (`git stash list`, nothing is discarded) only if every dirty path is a skill/plugin file, HEAD has not moved since, and every dirty file was modified inside the run's time window; otherwise it refuses and keeps the marker for a human. A failing `git status` counts as "unknown", never "clean".
+- A weekly run skipped for lock contention is recorded in `automation/logs/weekly_lock_skips.log` and `automation/state.json`.
+
+### Fixed (safety)
+- Reverts are no longer destructive: instead of checking out the whole repository and force-cleaning untracked files (incl. in `.claude-plugin/`), only files still exactly as the pipeline wrote them are restored; anything else (e.g. an edit typed while the run was going) is stashed. Same for the weekly's S3 rollback.
+- Daily distill (D2) runs in a **throwaway git worktree** of HEAD (temp dir, removed afterwards; stale ones from killed runs are cleaned up): nothing the model writes — pipeline scripts, git-ignored tests the gate would run, settings, a human's files — reaches the live tree; only regular files (no symlinks/junctions) under `automation/daily_out/` are copied back and then whitelisted by D3. The model's `Bash(gh api:*)` permission is gone (it could write to every repository the gh token reaches).
+- A run refuses to continue if the tree changed while the radar ran, and D6 commits exactly the files the run wrote, only if their content is still exactly what it wrote; anything else changed in the meantime is stashed, never committed. All git calls use literal pathspecs (`x[a].md` never also matches `xa.md`).
+- The weekly commits only the files its own S3 applied (`git commit -- <paths>`), skips S3–S5 when the skill dir is already dirty at start, rolls back on any exception after the distill, and honours an interrupted daily run instead of committing its ungated leftovers.
+- `api_push.py` pushes only when the remote tip is an ancestor of local HEAD, or is exactly the commit this clone last published through it ("same tree, different SHA"). Before, a stale clone (another machine, or a weekly clone that never pulls) silently rolled the remote back to its own tree — including over a later revert. It compares and keeps file modes (an exec-bit-only change is published) and submodule gitlinks, records its own push right after the ref update, refuses instead of publishing half a tree, and no longer crashes on Linux/macOS (Windows-only `creationflags`).
+- The weekly fast-forwards from `origin/master` before it runs.
+- The D3 whitelist compares case-insensitively and rejects trailing dots/spaces, `.`/empty components and case variants of existing paths: on NTFS `engine/SS_COMMON.py.` *is* the protected `engine/ss_common.py`.
+- Radar has an overall 15 min budget (`budget_s` in `radar_config.json`); a request skipped by the budget never becomes a "no release" baseline.
+
+### Upgrade
+- On a machine whose `SuperSkillWeekly` task runs from another clone (e.g. `E:\AI-Station\07 任务\Super-Skill`), `git pull` that clone **before its next Sunday run**. Its pre-5.1.2 `api_push.py` would otherwise push its old tree over everything published since.
+
+### Tests
+- 48 new tests (81 in `automation/tests`): Windows 81 passed; Linux 80 passed + 1 Windows-only skip.
+
 ## [5.1.1] - 2026-10-01
 
 ### Daily self-update (radar)
