@@ -1,4 +1,34 @@
-# Super-Skill 周度自升级（automation/）
+# Super-Skill 自动化（automation/）
+
+## 每日自更新（每天 23:00 北京时间，任何电脑可用）
+
+调研 GitHub 与网络上同类项目的最新优秀做法 → 吸收 ≤3 个小而高价值的改进 → 全量门禁 → 提交 → 全局安装 → 推送。
+
+```bash
+python automation/schedule_daily.py            # 注册（Windows 计划任务 / macOS·Linux crontab），自动换算本地时间
+python automation/schedule_daily.py --status   # 查看下次运行
+python automation/superskill_daily.py --dry-run   # 手动演练：只扫描+蒸馏，不改仓库
+python automation/superskill_daily.py             # 立即完整跑一轮
+python automation/schedule_daily.py --remove   # 取消
+```
+
+| 段 | 内容 | 失败策略 |
+|---|---|---|
+| D0 预检 | PAUSE 旗标 · 锁（与周度互斥）· 已跟踪文件必须干净 · 从 origin 快进 | 不干净/分叉 → 跳过，绝不混入人工改动 |
+| D1 雷达 | `radar.py`：GitHub 搜索（`radar_config.json` 关键词/话题，近 7 天活跃）+ 观察名单新版本 + Hacker News；首跑以 `upgrade-workspace/research` 204 个已研究仓库为种子去重 | 单源失败不影响其他源 |
+| D2 蒸馏 | 无头 `claude -p`（`daily_research_prompt.md`，预算 `SUPERSKILL_DAILY_BUDGET` 默认 $3）阅读候选 README/版本说明，**只写暂存区** `automation/daily_out/` + `manifest.json` | 直接改仓库 → 自动丢弃；无结果 JSON → 回滚 |
+| D3 落位 | 确定性白名单：允许 `SKILL.md`/`references/`/`skills/`/`engine/`/`agents/`/`assets/`；**禁止**改裁判与关键接线（`hooks/` `scripts/` `evals/` `install.py` `phases.json` 现有测试） | 违规条目逐条拒绝 |
+| D4 记录 | `references/radar/<日期>.md` 日报 + 索引 · 补丁版本号 +1（SKILL.md 脚注 / plugin.json）· CHANGELOG | — |
+| D5 门禁 | `scripts/run_all_tests.py` 全量 14 组 + `claude plugin validate` | 任一失败 → 整轮回滚 |
+| D6–D8 | 提交 → `install.py --global`（doctor）→ 推送（gh 凭据 → 普通 git → `api_push.py`） | 推送全败保留本地提交 |
+| D9 报告 | `automation/logs/daily_<日期>.md`；设置 `SUPERSKILL_NOTIFY_WEBHOOK` 可推送到企微/通用 webhook | best-effort |
+
+前提：Python ≥ 3.9、git、Claude Code CLI 已登录、`gh auth login` 账号对仓库有推送权限。暂停：新建 `automation/PAUSE`。
+可移植：所有路径都从脚本位置推导，计划任务由 `schedule_daily.py` 在每台电脑上本地生成。
+
+---
+
+## 周度自升级（维护机专用）
 
 每周日 22:00（北京时间）无人值守执行一轮：**子技能更新 → 混沌新课蒸馏融合 → 全局安装 → GitHub 推送 → 企微通知**。
 

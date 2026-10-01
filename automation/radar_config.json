@@ -1,0 +1,35 @@
+{
+  "_doc": "Daily radar for Super-Skill self-update. queries/topics → GitHub search (pushed within lookback_days, stars >= min_stars); watchlist → new releases of best-in-class repos (seeded from upgrade-workspace/research); hn_queries → Hacker News. Edit freely; no code change needed.",
+  "lookback_days": 7,
+  "min_stars": 50,
+  "min_delta": 25,
+  "top_n": 10,
+  "queries": [
+    "claude code skill",
+    "claude code hooks",
+    "claude code plugin",
+    "agent skills SKILL.md",
+    "autonomous coding agent",
+    "spec-driven development ai",
+    "self-improving agent",
+    "coding agent memory",
+    "coding agent evaluation benchmark",
+    "multi-agent orchestration claude"
+  ],
+  "topics": ["claude-code", "agent-skills", "claude-skills", "claude-code-plugin", "coding-agent"],
+  "keywords": ["claude", "skill", "agent", "hook", "spec", "autonomous", "coding", "evolv", "memory",
+               "eval", "benchmark", "orchestrat", "workflow", "subagent", "mcp", "prompt", "context"],
+  "watchlist": [
+    "anthropics/skills", "obra/superpowers", "github/spec-kit", "bmad-code-org/BMAD-METHOD",
+    "eyaltoledano/claude-task-master", "steveyegge/beads", "snarktank/ralph", "frankbria/ralph-claude-code",
+    "All-Hands-AI/OpenHands", "SWE-agent/mini-swe-agent", "Aider-AI/aider", "ruvnet/claude-flow",
+    "affaan-m/everything-claude-code", "SuperClaude-Org/SuperClaude_Framework", "wshobson/agents",
+    "gepa-ai/gepa", "jennyzzt/dgm", "thedotmack/claude-mem", "oraios/serena", "ryoppippi/ccusage",
+    "parcadei/Continuous-Claude-v3", "gotalab/cc-sdd", "Fission-AI/OpenSpec", "glittercowboy/get-shit-done",
+    "mattpocock/skills", "garrytan/gstack", "coleam00/context-engineering-intro", "humanlayer/humanlayer",
+    "OthmanAdi/planning-with-files", "harbor-framework/harbor"
+  ],
+  "hn_queries": ["claude code", "agent skills", "coding agent"],
+  "hn_lookback_days": 2,
+  "hn_min_points": 20
+}

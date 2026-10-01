@@ -177,6 +177,12 @@ beats the seed (backup first). Default fitness for engine changes:
 `python "<base>/evals/bench_offline.py"`. Protocol and genes: [EVOLUTION.md](EVOLUTION.md) ·
 [evolver/README](evolver/README.md) · strategies `balanced|innovate|harden|repair-only`.
 
+**Nightly self-update (repo side):** `automation/superskill_daily.py`, scheduled for 23:00 Beijing time by
+`automation/schedule_daily.py`, scans GitHub, a watchlist of best-in-class repos and Hacker News; a headless run
+stages ≤3 small improvements; a whitelist keeps the verifier (tests, bench, phase contracts, hooks, installer)
+out of reach; the full check suite must pass or the run is reverted; then it commits, reinstalls and pushes.
+Digests: [references/radar](references/radar/README.md).
+
 ## 11. Evals — prove it works
 
 - Offline bench (free, ~5 s, 13 scenarios): `python "<base>/evals/bench_offline.py" --pretty`.
@@ -232,10 +238,16 @@ Full V4 integration matrix: [skills-matrix](references/skills-matrix.md).
 
 ## Version
 
+**V5.1.0** - 2026-10-01 - **每日自更新 (nightly self-update)**: 23:00 Beijing radar (GitHub search + watchlist releases + Hacker News) → headless distill into a staging area → whitelist apply (verifier untouchable) → full check suite or revert → commit → reinstall → push. See `automation/README.md`.
+
 **V5.0.0** - 2026-09-30 - **从说明书到发动机 (prose → executable engine)**: 204-repo research (5 tracks) distilled into an executable core — `phases.json` contracts (17 phases, 17 check types) + `ss.py` state machine (init/next/gate/advance/goto/approve/wait/resume); 8 working hooks (the V4 settings schema never fired); PreToolUse guard (destructive/force-push/secrets/state-tamper/budget/playbook); Stop phase gate with anti-loop; EARS + REQ traceability; dependency task graph; `ss-planner/worker/judge/researcher/spec-reviewer` subagents with worktree isolation; circuit-breaker Ralph driver; cost/budget meter; ACE playbook + FTS5 memory + skill router; clean-room DGM/GEPA evolver; offline bench + plugin evals; portable installer/doctor; plugin + marketplace manifests; CI on 3 OSes. Fixed: 7 SKILL.md frontmatters that failed YAML parsing (including this one). Details: [CHANGELOG.md](CHANGELOG.md).
+
+<!-- daily-self-update -->
+**Latest daily self-update:** none yet — the nightly radar (23:00 Beijing) records each run in [references/radar](references/radar/README.md).
+<!-- /daily-self-update -->
 
 **V4.1.16** - 2026-09-22 - 判断层 (Jev × TypeSafe) — see [skill-v4-full](references/skill-v4-full.md) for V3.21–V4.1.16 history.
 
 ---
 
-*Super-Skill V5.0.0: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*
+*Super-Skill V5.1.0: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*

@@ -5,6 +5,15 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] - 2026-10-01
+
+### Added — 每日自更新 (nightly self-update, 23:00 Beijing time)
+- `automation/radar.py` — deterministic radar: GitHub search (configurable queries/topics, recently pushed, star floor), watchlist of 30 best-in-class repos (new releases), Hacker News; de-dup state seeded from the 204-repo research dossier.
+- `automation/superskill_daily.py` — D0 preflight (PAUSE, lock, clean tree, fast-forward) → D1 radar → D2 headless `claude -p` distill into a staging area → D3 whitelist apply (tests, bench, phase contracts, hooks, installer and existing tests are untouchable) → D4 radar digest + patch bump + CHANGELOG → D5 full check suite + plugin validate or full revert → D6 commit → D7 `install.py --global` → D8 push (gh credentials → git → `api_push.py`) → D9 report/webhook.
+- `automation/schedule_daily.py` — registers the run at 23:00 UTC+8 converted to local time (Windows Task Scheduler with catch-up, or crontab on macOS/Linux); `--status`, `--remove`.
+- `automation/daily_research_prompt.md`, `automation/radar_config.json`, `references/radar/` digest log, SKILL.md "latest daily self-update" marker (fixed size, keeps SKILL.md < 500 lines).
+- `automation/tests/test_daily.py` — 29 tests incl. end-to-end runs against a throwaway repo + bare origin (adopt & push, guard-file rejection, direct-edit revert, gate-failure revert, nothing-to-adopt, dirty-tree refusal, PAUSE, dry run).
+
 ## [5.0.0] - 2026-09-30
 
 ### 从说明书到发动机 — prose → executable engine

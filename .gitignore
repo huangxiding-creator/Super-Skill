@@ -80,3 +80,7 @@ __pycache__/
 evals/results/
 *.bak-superskill-*
 *.tmp-superskill
+
+# Daily self-update runtime (machine-local)
+automation/radar_state.json
+automation/daily_out/
