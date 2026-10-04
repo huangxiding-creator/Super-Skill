@@ -1,6 +1,6 @@
 ---
 name: verification-gate
-description: "Read-only challenge pass after implementation. Distinguishes verified from merely claimed done. Checks tests ran, changes match request, no regressions. Three-state output: verified/unverified/failed."
+description: Read-only challenge pass after implementation. Distinguishes verified from merely claimed done. Checks tests ran, changes match request, no regressions. Three-state output: verified/unverified/failed.
 ---
 
 # Verification Gate

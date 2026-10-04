@@ -1,6 +1,6 @@
 ---
 name: post-run-evolution
-description: "Post-execution review and self-evolution system. TRIGGER after every Super-Skill project completion (Phase 12). Capabilities: (1) Comprehensive project retrospective, (2) Signal extraction for improvement, (3) Gene mutation and evolution, (4) Capsule packaging of successful patterns, (5) Skill quality scoring, (6) Auto-update based on learnings. Ensures continuous improvement across sessions."
+description: Post-execution review and self-evolution system. TRIGGER after every Super-Skill project completion (Phase 12). Capabilities: (1) Comprehensive project retrospective, (2) Signal extraction for improvement, (3) Gene mutation and evolution, (4) Capsule packaging of successful patterns, (5) Skill quality scoring, (6) Auto-update based on learnings. Ensures continuous improvement across sessions.
 ---
 
 # Post-Run Evolution
