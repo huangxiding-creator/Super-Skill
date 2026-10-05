@@ -215,11 +215,31 @@ def stage_s1(log, state):
         if text.count("\n") + 1 > 500:
             errors.append(f"{d.name}: 正文超 500 行")
     audit_note = f"审计 {total} 个子技能，{len(errors)} 处问题"
+
+    # FT-9 外部技能入仓扫描门 (1005 Arc O): npx update 拉来的外部技能过
+    # 禁模式/出站域名白名单/密钥形态确定性扫描 (fail-soft, 不挡管线)
+    scan_note = ""
+    try:
+        sys.path.insert(0, str(STATION / "tools"))
+        from skill_scan import scan_skill
+        highs = 0
+        for d in sorted(skills_dir.iterdir()) if skills_dir.is_dir() else []:
+            if not d.is_dir():
+                continue
+            rep = scan_skill(d)
+            for f in rep.get("findings", []):
+                if f.get("severity") == "HIGH":
+                    highs += 1
+                    log(f"[S1] SKILLSCAN {d.name}: "
+                        f"{f.get('rule', '?')} {f.get('file', '?')}")
+        scan_note = f"；skill_scan 高危 {highs}"
+    except Exception as e:                             # noqa: BLE001
+        scan_note = f"；skill_scan 不可用({type(e).__name__})"
     if errors:
         for e in errors:
             log(f"[S1] AUDIT {e}")
     log(f"[S1] {audit_note}")
-    state["s1"] = {"ok": True, "note": f"{npx_note}；{audit_note}",
+    state["s1"] = {"ok": True, "note": f"{npx_note}；{audit_note}{scan_note}",
                    "audit_total": total, "audit_errors": errors}
     return True
 
