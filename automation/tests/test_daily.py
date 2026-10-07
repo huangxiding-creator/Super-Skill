@@ -311,6 +311,9 @@ def test_end_to_end_adopts_commits_and_pushes(world):
     assert "V5.0.1" in log, "commit must reach origin"
     assert json.loads((world["auto"] / "radar_state.json").read_text())["seen"]["a/hot"]["stars"] == 5000
     assert not _git(world["repo"], "status", "--porcelain", "--untracked-files=no").stdout.strip()
+    report = (world["auto"] / "logs" / f"daily_{dt.date.today().isoformat()}.md").read_text(encoding="utf-8")
+    sha = _git(world["repo"], "rev-parse", "--short", "HEAD").stdout.strip()
+    assert f"D6: committed {sha}" in report, "the report names the commit, not git's CRLF warnings"
 
 
 def test_two_runs_same_day_keep_both_digests(world):

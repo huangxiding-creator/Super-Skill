@@ -611,7 +611,11 @@ def commit(ctx: Ctx, version: str, summary: str, applied: list[dict]) -> bool:
            "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n")
     rc, out = sh(["git", "commit", "-q", "-F", "-", "--", *paths], cwd=ctx.repo, input_text=msg,
                  env={"GIT_LITERAL_PATHSPECS": "1"})
-    return ctx.stage("D6", rc == 0, out.strip()[-160:] or "committed")
+    if rc != 0:
+        return ctx.stage("D6", False, out.strip()[-160:] or "git commit failed")
+    _, sha = git(ctx, "rev-parse", "--short", "HEAD")   # success output is only CRLF warnings
+    return ctx.stage("D6", True, f"committed {sha.strip().splitlines()[0] if sha.strip() else ''} "
+                                 f"({len(paths)} file(s))")
 
 
 def install(ctx: Ctx) -> bool:
