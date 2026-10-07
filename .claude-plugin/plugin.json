@@ -1,7 +1,7 @@
 {
   "name": "super-skill",
   "displayName": "Super-Skill",
-  "version": "5.1.2",
+  "version": "5.1.3",
   "description": "Idea→product factory for Claude Code: raw idea → research → 10× proposal → approval gate → 17 machine-checked phases, with executable hooks (phase gate, guardrails, hand-offs), task graph + traceability, circuit-breaker loops, budgets, evals and benchmark-driven self-evolution.",
   "author": {
     "name": "huangxiding-creator",

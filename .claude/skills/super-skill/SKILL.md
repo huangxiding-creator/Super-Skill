@@ -252,4 +252,4 @@ Full V4 integration matrix: [skills-matrix](references/skills-matrix.md).
 
 ---
 
-*Super-Skill V5.1.2: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*
+*Super-Skill V5.1.3: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*

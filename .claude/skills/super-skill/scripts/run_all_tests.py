@@ -18,6 +18,8 @@ from pathlib import Path
 
 SKILL = Path(__file__).resolve().parent.parent
 PY = sys.executable
+if Path(PY).name.lower() == "pythonw.exe" and Path(PY).with_name("python.exe").is_file():
+    PY = str(Path(PY).with_name("python.exe"))  # pytest under a pythonw parent exits 1 (no std handles)
 KNOWN_CHECKS = {"file_exists", "min_bytes", "glob_count", "no_marker", "json_field", "regex_count",
                 "regex_number", "approval", "state_field", "git_repo", "command", "req_ids", "ears",
                 "trace", "taskgraph_valid", "tasks_done", "loop_guard_closed"}

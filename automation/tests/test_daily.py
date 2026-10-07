@@ -875,3 +875,14 @@ def test_api_push_publishes_mode_only_changes(world, monkeypatch, tmp_path):
     monkeypatch.setattr(sys, "argv", ["api_push", "--repo", "o/r", "--branch", "master"])
     api_push.main()   # the fake cannot pass the final tree check; what matters is what was sent
     assert posted and {"path": "run.sh", "mode": "100755", "type": "blob", "sha": blob} in posted[0]["tree"]
+
+
+def test_children_never_run_under_pythonw(monkeypatch, tmp_path):
+    # live regression (2026-10-02..04): the scheduled task runs pythonw.exe; pytest started from it
+    # with inherited handles exits 1, so every nightly gate reported 2/14 and reverted good work
+    (tmp_path / "pythonw.exe").write_text("", encoding="utf-8")
+    (tmp_path / "python.exe").write_text("", encoding="utf-8")
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "pythonw.exe"))
+    assert sd._console_python() == str(tmp_path / "python.exe")
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "python.exe"))
+    assert sd._console_python() == str(tmp_path / "python.exe")

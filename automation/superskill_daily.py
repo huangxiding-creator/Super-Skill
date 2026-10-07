@@ -52,6 +52,18 @@ IN_PROGRESS = recovery.MARKER       # marker: a run may have dirtied the tree (s
 RECOVERABLE = recovery.RECOVERABLE
 
 NO_WINDOW = 0x08000000 if os.name == "nt" else 0
+
+
+def _console_python() -> str:
+    """python.exe next to pythonw.exe: pytest exits 1 when it inherits a pythonw parent's
+    standard handles (every nightly gate failed 2/14 that way). CREATE_NO_WINDOW keeps it silent."""
+    exe = Path(sys.executable)
+    if exe.name.lower() == "pythonw.exe" and exe.with_name("python.exe").is_file():
+        return str(exe.with_name("python.exe"))
+    return sys.executable
+
+
+CHILD_PY = _console_python()
 MAX_FILES = 12
 MAX_BYTES = 200_000
 ALLOW_PREFIXES = ("references/", "skills/", "engine/", "agents/", "assets/")
@@ -563,7 +575,7 @@ def bump_version(ctx: Ctx, version: str, digest_rel: str, summary: str) -> None:
 
 def gates(ctx: Ctx) -> bool:
     custom = os.environ.get("SUPERSKILL_GATE_CMD")
-    argv = custom.split("|") if custom else [sys.executable, str(ctx.skill / "scripts" / "run_all_tests.py")]
+    argv = custom.split("|") if custom else [CHILD_PY, str(ctx.skill / "scripts" / "run_all_tests.py")]
     rc, out = sh(argv, cwd=ctx.skill, timeout=3600)
     (ctx.logs / f"daily_{ctx.date}_gates.log").write_text(out, encoding="utf-8")
     tail = " | ".join([l for l in out.strip().splitlines() if l.strip()][-2:])
@@ -605,7 +617,7 @@ def commit(ctx: Ctx, version: str, summary: str, applied: list[dict]) -> bool:
 def install(ctx: Ctx) -> bool:
     if ctx.args.no_install:
         return ctx.stage("D7", True, "skipped (--no-install)")
-    rc, out = sh([sys.executable, str(ctx.skill / "install.py"), "--global"], cwd=ctx.repo, timeout=900)
+    rc, out = sh([CHILD_PY, str(ctx.skill / "install.py"), "--global"], cwd=ctx.repo, timeout=900)
     ok = rc == 0 and "doctor: all good" in out
     return ctx.stage("D7", ok, "global install refreshed, doctor all good" if ok else out.strip()[-200:])
 
@@ -620,7 +632,7 @@ def push(ctx: Ctx) -> bool:
         elif layer == "git":
             rc, out = git(ctx, "push", "origin", ctx.args.branch, timeout=300)
         elif layer == "api" and (ctx.auto / "api_push.py").is_file():
-            rc, out = sh([sys.executable, str(ctx.auto / "api_push.py")], cwd=ctx.repo, timeout=600)
+            rc, out = sh([CHILD_PY, str(ctx.auto / "api_push.py")], cwd=ctx.repo, timeout=600)
         else:
             continue
         if rc == 0:

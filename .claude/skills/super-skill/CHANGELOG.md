@@ -5,6 +5,15 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.3] - 2026-10-07
+
+### Fixed
+- Nightly gates no longer fail under Task Scheduler: the task runs `pythonw.exe`, and pytest started from a pythonw parent with inherited handles exits 1 — every nightly run on 10-02…10-04 reported 2/14 and reverted good work. The daily pipeline now starts its children (gates, installer, api push) with the sibling `python.exe` (still windowless via CREATE_NO_WINDOW), and `scripts/run_all_tests.py` does the same for pytest.
+- Restored V5 after a clone still on V4.1.16 pushed its whole tree over origin through the pre-5.1.2 `api_push` (3b924bc, 2026-10-04 22:03). Its one real change since (FT-9 skill-scan in weekly S1) is kept.
+
+### Upgrade
+- Every other clone that runs `SuperSkillWeekly` must `git pull` before its next Sunday run, or the same overwrite repeats (only the 5.1.2+ `api_push` refuses it).
+
 ## [5.1.2] - 2026-10-01
 
 ### Changed
