@@ -13,6 +13,11 @@ Borrowed pattern (no code copied):
   rule suppression so re-scans surface only what is new.  SkillSpector adds
   AST/taint/YARA/LLM stages; this is the small regex first stage only — a
   CLEAN result is "nothing obvious", never "proven safe".
+- Also from SkillSpector: content it cannot inspect (binary/opaque artifacts)
+  is reported, never silently skipped.  Files are classified by content, not
+  by an extension allowlist: native executables / compiled code (BIN1),
+  opaque binaries and archives (BIN2) and symlinks escaping the bundle (LNK1)
+  are findings, and every other text file is scanned whatever its extension.
 
 Usage::
 
@@ -34,11 +39,29 @@ MAX_HITS_PER_RULE = 3          # one noisy rule cannot dominate the score
 MAX_FILES = 2000               # fail-closed bounds: refuse to call huge bundles clean
 MAX_TOTAL_BYTES = 20 * 1024 * 1024
 MAX_FILE_BYTES = 1024 * 1024
+SNIFF_BYTES = 8192             # head read to tell text from binary
 TEXT_EXT = {
     "", ".md", ".mdx", ".txt", ".py", ".sh", ".bash", ".zsh", ".ps1", ".psm1",
     ".bat", ".cmd", ".js", ".mjs", ".cjs", ".ts", ".json", ".yaml", ".yml",
     ".toml", ".ini", ".cfg", ".rb", ".pl",
 }
+# Inert data the agent does not execute: only checked for disguised executables.
+MEDIA_EXT = {
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".ico", ".avif", ".tif", ".tiff",
+    ".pdf", ".ttf", ".otf", ".woff", ".woff2", ".eot",
+    ".mp3", ".wav", ".ogg", ".mp4", ".webm", ".mov",
+    ".docx", ".xlsx", ".pptx", ".odt", ".ods", ".odp",
+}
+# Compiled or host-executed code: the source cannot be reviewed, so never CLEAN.
+EXEC_EXT = {
+    ".exe", ".dll", ".so", ".dylib", ".sys", ".msi", ".scr", ".node", ".wasm",
+    ".jar", ".class", ".pyc", ".pyo", ".pyd",
+    ".vbs", ".vbe", ".jse", ".wsf", ".wsh", ".hta", ".lnk",
+    ".apk", ".deb", ".rpm", ".appimage",
+}
+# PE, ELF, Mach-O (both endians, 32/64, fat/Java class), WebAssembly.
+_EXEC_MAGIC = (b"MZ", b"\x7fELF", b"\xca\xfe\xba\xbe", b"\xcf\xfa\xed\xfe", b"\xce\xfa\xed\xfe",
+               b"\xfe\xed\xfa\xce", b"\xfe\xed\xfa\xcf", b"\x00asm")
 SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv"}
 
 _I = re.IGNORECASE
@@ -99,8 +122,24 @@ def _iter_files(target: Path):
     for p in sorted(target.rglob("*")):
         if any(part in SKIP_DIRS for part in p.relative_to(target).parts):
             continue
-        if p.is_file() and p.suffix.lower() in TEXT_EXT:
+        if p.is_symlink() or p.is_file():
             yield p
+
+
+def _head(path: Path):
+    try:
+        with open(path, "rb") as fh:
+            return fh.read(SNIFF_BYTES)
+    except OSError:
+        return None
+
+
+def _escapes(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root)
+        return False
+    except (ValueError, OSError, RuntimeError):
+        return True
 
 
 def _level(score: int, worst: str) -> str:
@@ -122,11 +161,38 @@ def scan(target, ignore=()) -> dict:
     findings, files, total = [], 0, 0
     if not target.exists():
         raise FileNotFoundError(str(target))
+    root = target.resolve() if target.is_dir() else None
+
+    def flag(rule, category, severity, rel, message):
+        if rule not in ignore:
+            findings.append({"rule": rule, "category": category, "severity": severity,
+                             "file": rel, "line": 0, "message": message})
+
     for path in _iter_files(target):
+        rel = str(path.relative_to(target)) if root is not None else path.name
+        if root is not None and path.is_symlink():
+            # In-bundle links are scanned via their real file; never follow a link out.
+            if _escapes(path, root):
+                flag("LNK1", "opaque-artifact", "high", rel,
+                     "symlink points outside the skill folder — would expose host files after install")
+            continue
+        suffix = path.suffix.lower()
+        head = _head(path)
+        if head is None:
+            continue
+        if suffix in EXEC_EXT or (b"\0" in head and head.startswith(_EXEC_MAGIC)):
+            flag("BIN1", "opaque-artifact", "high", rel,
+                 "executable or compiled code — source not inspectable, review manually")
+            continue
+        if suffix in MEDIA_EXT:
+            continue
+        if suffix not in TEXT_EXT and b"\0" in head:
+            flag("BIN2", "opaque-artifact", "medium", rel,
+                 "opaque binary or archive — not scanned, review manually")
+            continue
         files += 1
         size = path.stat().st_size
         total += size
-        rel = str(path.relative_to(target)) if target.is_dir() else path.name
         if files > MAX_FILES or total > MAX_TOTAL_BYTES:
             findings.append({"rule": "BND1", "category": "bounds", "severity": "high",
                              "file": rel, "line": 0,

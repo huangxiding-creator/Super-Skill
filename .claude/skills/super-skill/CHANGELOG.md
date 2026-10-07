@@ -5,6 +5,12 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.4] - 2026-10-07
+
+### Daily self-update (radar)
+- 堵住第三方 skill 安装前审查的漏洞：可执行文件、编译产物、无法检查的压缩包和指向技能目录外的符号链接不再被静默判为 CLEAN；Judge 新增 Worker 没见过的额外检查（HOLDOUT），防止只针对自己的测试凑通过。
+- Digest: [references/radar/2026-10-07.md](references/radar/2026-10-07.md)
+
 ## [5.1.3] - 2026-10-07
 
 ### Fixed
