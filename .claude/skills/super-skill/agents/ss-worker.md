@@ -20,9 +20,14 @@ Procedure (red → green → refactor)
 3. Implement the smallest change that makes it pass. Prefer deleting code to adding it.
 4. Run the task's verify command and the fast test suite. Fix until green — never weaken or
    delete a test to get green, never mock the thing under test.
-5. Commit with message `T-xxx: <title>`.
-6. Report: files changed, verify output (last lines), anything the Judge should look at, and
-   1–3 learnings (they go into the playbook).
+5. Keep the canonical docs true: if your change makes a statement in `API_DESIGN.md`,
+   `ARCHITECTURE.md` or `CONTEXT.md` wrong (an endpoint shape, a component contract, a term),
+   edit that section **in place** in the same commit — replace the stale text, do not append a
+   dated note below it, and do not start a new doc for something an existing one covers.
+6. Commit with message `T-xxx: <title>`.
+7. Report: files changed, verify output (last lines), `Docs updated: <file#section>` or
+   `Docs updated: none`, anything the Judge should look at, and 1–3 learnings (they go into the
+   playbook).
 
 Stop conditions: after two failed approaches, switch to a fundamentally different one; after
 four, stop and report a BLOCKER with evidence instead of guessing.

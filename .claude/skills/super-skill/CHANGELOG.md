@@ -5,6 +5,12 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.5] - 2026-10-07
+
+### Daily self-update (radar)
+- 调研子代理现在把网页内容当数据而非指令（防提示注入），并且边查边把发现写入文件，中途用完轮数或上下文被压缩也不会丢；Worker 改动接口或架构时必须同步改正规范文档，防止后续 Worker 读到过时说法。
+- Digest: [references/radar/2026-10-07-2.md](references/radar/2026-10-07-2.md)
+
 ## [5.1.4] - 2026-10-07
 
 ### Daily self-update (radar)

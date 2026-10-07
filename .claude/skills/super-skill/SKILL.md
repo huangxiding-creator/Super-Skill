@@ -245,11 +245,11 @@ Full V4 integration matrix: [skills-matrix](references/skills-matrix.md).
 **V5.0.0** - 2026-09-30 - **从说明书到发动机 (prose → executable engine)**: 204-repo research (5 tracks) distilled into an executable core — `phases.json` contracts (17 phases, 17 check types) + `ss.py` state machine (init/next/gate/advance/goto/approve/wait/resume); 8 working hooks (the V4 settings schema never fired); PreToolUse guard (destructive/force-push/secrets/state-tamper/budget/playbook); Stop phase gate with anti-loop; EARS + REQ traceability; dependency task graph; `ss-planner/worker/judge/researcher/spec-reviewer` subagents with worktree isolation; circuit-breaker Ralph driver; cost/budget meter; ACE playbook + FTS5 memory + skill router; clean-room DGM/GEPA evolver; offline bench + plugin evals; portable installer/doctor; plugin + marketplace manifests; CI on 3 OSes. Fixed: 7 SKILL.md frontmatters that failed YAML parsing (including this one). Details: [CHANGELOG.md](CHANGELOG.md).
 
 <!-- daily-self-update -->
-**Latest daily self-update:** V5.1.4 — 2026-10-07 — 堵住第三方 skill 安装前审查的漏洞：可执行文件、编译产物、无法检查的压缩包和指向技能目录外的符号链接不再被静默判为 CLEAN；Judge 新增 Worker 没见过的额外检查（HOLDOUT），防止只针对自己的测试凑通过。 — [digest](references/radar/2026-10-07.md) · [all](references/radar/README.md)
+**Latest daily self-update:** V5.1.5 — 2026-10-07 — 调研子代理现在把网页内容当数据而非指令（防提示注入），并且边查边把发现写入文件，中途用完轮数或上下文被压缩也不会丢；Worker 改动接口或架构时必须同步改正规范文档，防止后续 Worker 读到过时说法。 — [digest](references/radar/2026-10-07-2.md) · [all](references/radar/README.md)
 <!-- /daily-self-update -->
 
 **V4.1.16** - 2026-09-22 - 判断层 (Jev × TypeSafe) — see [skill-v4-full](references/skill-v4-full.md) for V3.21–V4.1.16 history.
 
 ---
 
-*Super-Skill V5.1.4: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*
+*Super-Skill V5.1.5: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*
