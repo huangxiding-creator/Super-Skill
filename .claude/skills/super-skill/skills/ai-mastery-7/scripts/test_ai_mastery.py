@@ -6,6 +6,8 @@ Or:   python test_ai_mastery.py            # standalone, no pytest needed
 Builds a throwaway git repo in a temp dir with a known commit graph, then asserts
 both scripts read it back correctly. Fully offline and deterministic.
 """
+from __future__ import annotations  # `str | None` on Python 3.9
+
 import os
 import shutil
 import subprocess

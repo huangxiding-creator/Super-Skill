@@ -1,6 +1,6 @@
 ---
 name: pre-run-upgrade
-description: Pre-execution sub-skill upgrade and best practices discovery. TRIGGER at the start of every Super-Skill session before Phase 0. Capabilities: (1) Check and upgrade all sub-skills to latest versions, (2) Search GitHub for trending best practices, (3) Discover and integrate new patterns, (4) Update Context Hub registry, (5) Sync evolution learnings. Ensures Super-Skill starts with the most current capabilities and knowledge.
+description: "Pre-execution sub-skill upgrade and best practices discovery. TRIGGER at the start of every Super-Skill session before Phase 0. Capabilities: (1) Check and upgrade all sub-skills to latest versions, (2) Search GitHub for trending best practices, (3) Discover and integrate new patterns, (4) Update Context Hub registry, (5) Sync evolution learnings. Ensures Super-Skill starts with the most current capabilities and knowledge."
 ---
 
 # Pre-Run Upgrade

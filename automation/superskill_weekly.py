@@ -68,7 +68,7 @@ LOCK_FILE = LOGS / "weekly.lock"
 STATE_FILE = AUTO / "state.json"
 PROMPT_TEMPLATE = AUTO / "weekly_distill_prompt.md"
 
-NO_WINDOW = 0x08000000  # CREATE_NO_WINDOW（不弹窗铁律）
+NO_WINDOW = 0x08000000 if os.name == "nt" else 0  # CREATE_NO_WINDOW（不弹窗铁律；仅 Windows）
 _HEX32 = re.compile(r"^[0-9a-f]{32}$")
 MAX_MISSING_CIRCUIT = 40   # 混沌缺口熔断阈值（正常周增量 0~5 门）
 CLAUDE_TIMEOUT = 3600      # 蒸馏 60 分钟（多源材料后放宽）
@@ -123,13 +123,14 @@ class Tee:
         self.fh.close()
 
 
-def sh(args, cwd=None, timeout=300, input_text=None, is_cmd=False):
+def sh(args, cwd=None, timeout=300, input_text=None, is_cmd=False, extra_env=None):
     """统一子进程：无窗口、UTF-8 宽容解码。返回 (rc, stdout)。"""
     argv = args if is_cmd else [str(a) for a in args]
     if is_cmd:  # .cmd/.bat 必须经 cmd /c
         argv = ["cmd", "/c"] + [str(a) for a in args]
     env = dict(os.environ)
     env.setdefault("PYTHONIOENCODING", "utf-8")
+    env.update(extra_env or {})
     try:
         p = subprocess.run(
             argv, cwd=str(cwd) if cwd else None, timeout=timeout,
@@ -145,7 +146,8 @@ def sh(args, cwd=None, timeout=300, input_text=None, is_cmd=False):
 
 
 def git(*args, timeout=120):
-    return sh(["git", *args], cwd=REPO, timeout=timeout)
+    # 字面路径：名为 "x[a].md" 的文件绝不能顺带匹配到 "xa.md"
+    return sh(["git", *args], cwd=REPO, timeout=timeout, extra_env={"GIT_LITERAL_PATHSPECS": "1"})
 
 
 def find_claude() -> Path:
@@ -169,20 +171,50 @@ def find_claude() -> Path:
 
 # ---------------------------------------------------------------- 锁与旗标
 def acquire_lock(log) -> bool:
+    # 与每日自更新（每天 22:00；周日与本管线同一分钟启动）共用操作系统级管线锁
+    # ~/.claude/super-skill-pipeline.lock（pipeline_lock.py）：两条管线都会改写技能树、
+    # 刷新同一份全局安装、推同一分支，重叠运行会互相抹掉对方的改动
+    import pipeline_lock
+    wait_min = float(os.environ.get("SUPERSKILL_WEEKLY_LOCK_WAIT_MIN", "120"))
+    if not pipeline_lock.acquire(None, "weekly", wait_s=wait_min * 60, log=log):
+        return False
     if LOCK_FILE.exists():
+        try:
+            tagged = bool(json.loads(LOCK_FILE.read_text(encoding="utf-8") or "null").get("os_lock"))
+        except (OSError, ValueError, AttributeError):
+            tagged = False
         age_h = (time.time() - LOCK_FILE.stat().st_mtime) / 3600
-        if age_h < 8:
-            log(f"[lock] 已有实例在跑（{age_h:.1f}h 前），退出")
+        if tagged:  # 新版周度写的：既然此刻 OS 锁在我们手里，写它的进程必已退出
+            log(f"[lock] 上一轮周度异常退出留下的 weekly.lock（{age_h:.1f}h），直接接管")
+        elif age_h < 8:
+            log(f"[lock] 已有（旧版）实例在跑（{age_h:.1f}h 前），退出")
+            pipeline_lock.release(None, "weekly")
             return False
-        log(f"[lock] 陈锁（{age_h:.1f}h），破锁续跑")
+        else:
+            log(f"[lock] 陈锁（{age_h:.1f}h），破锁续跑")
         LOCK_FILE.unlink(missing_ok=True)
     LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
-    LOCK_FILE.write_text(str(os.getpid()), encoding="utf-8")
+    LOCK_FILE.write_text(json.dumps({"pid": os.getpid(), "os_lock": True, "since": now()}),
+                         encoding="utf-8")
     return True
 
 
 def release_lock():
     LOCK_FILE.unlink(missing_ok=True)
+    import pipeline_lock
+    pipeline_lock.release(None, "weekly")
+
+
+def _record_lock_skip(messages: list) -> None:
+    """pythonw 下 stdout 指向 devnull：等锁跳过必须落盘留痕（日志 + state.json）。"""
+    LOGS.mkdir(parents=True, exist_ok=True)
+    with open(LOGS / "weekly_lock_skips.log", "a", encoding="utf-8") as fh:
+        for m in messages:
+            fh.write(f"{now()} {m}\n")
+    STATE_FILE.write_text(json.dumps(
+        {"last_run": now(), "last_result": "skipped",
+         "note": "另一条自动化管线（每日自更新或另一个周度实例）仍在运行，超过等待上限，本轮跳过",
+         "lock_messages": messages[-3:]}, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 # ---------------------------------------------------------------- S1 子技能
@@ -424,10 +456,21 @@ _ALLOW_FILES = {"SKILL.md", "CHANGELOG.md", "README.md", "EVOLUTION.md",
                 "MEMORY.md"}
 
 
+def _recovery():
+    if str(AUTO) not in sys.path:
+        sys.path.insert(0, str(AUTO))
+    import pipeline_recovery
+    return pipeline_recovery
+
+
 def _revert_skill_tree(log):
-    log("[S3] 回滚蒸馏产生的部分改动")
-    git("checkout", "--", ".")
-    git("clean", "-fd", ".claude/skills/super-skill")
+    """只回滚技能目录，且不销毁任何东西：改动收进 stash（git stash list 可找回）。
+
+    旧实现 `git checkout -- .` 会抹掉整个仓库里人手的未提交改动（S3 允许 automation/ 脏着跑）。
+    """
+    log("[S3] 回滚蒸馏产生的部分改动（收进 stash，不删除）")
+    _recovery().revert(REPO, git, log, f"weekly revert {dt.date.today().isoformat()}",
+                       scope=(".claude/skills/super-skill/",))
 
 
 def _parse_result_json(text: str):
@@ -473,8 +516,10 @@ def _apply_staged(log):
         rel = str(e.get("path", "")).replace("\\", "/").lstrip("/")
         src = DISTILL_OUT / rel
         parts = rel.split("/")
-        allowed = (rel in _ALLOW_FILES or rel.startswith(_ALLOW_PREFIXES)) \
-            and ".." not in parts and src.is_file()
+        # 只收规范路径：无 ./、//、尾点尾空格（NTFS 会忽略它们，路径就对不上 git status 了）
+        canonical = all(p and p not in (".", "..") and p == p.rstrip(". ") for p in parts)
+        allowed = canonical and (rel in _ALLOW_FILES or rel.startswith(_ALLOW_PREFIXES)) \
+            and src.is_file()
         if not allowed:
             log(f"[S3] MANIFEST 拒绝可疑路径: {rel}")
             continue
@@ -482,7 +527,11 @@ def _apply_staged(log):
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
         applied += 1
-        done.append(e)
+        try:  # git 视角的真实路径（含磁盘上的实际大小写），供 S5 精确提交
+            real = Path(os.path.realpath(dst)).relative_to(Path(os.path.realpath(REPO))).as_posix()
+        except ValueError:
+            real = None
+        done.append({**e, "path": rel, "_repo_path": real})
         log(f"[S3] APPLY {e.get('action', '?')} {rel} "
             f"({str(e.get('summary', ''))[:60]})")
     return applied, done
@@ -550,12 +599,29 @@ def stage_s3(log, state):
     is_cmd = claude.suffix.lower() == ".cmd"
     log(f"[S3] 无头蒸馏：{claude}（混沌 {len(courses)} 门 + 智库 {len(materials)} 份，"
         f"{ver_old}→{ver_new}，超时 {CLAUDE_TIMEOUT}s）")
+    # 从这里起技能树可能被改脏：留中断标记，被杀后由下一条管线安全收拾（pipeline_recovery）
+    _recovery().mark(LOGS, git, "weekly", dt.date.today().isoformat())
     argv = [str(claude), "-p", "--permission-mode", "acceptEdits",
             "--add-dir", str(HUNDUN_DATA), "--add-dir", str(ZHIKU_ROOT),
             "--max-turns", "100", "--output-format", "text"]
     rc, out = sh(argv, cwd=REPO, timeout=CLAUDE_TIMEOUT,
                  input_text=prompt, is_cmd=is_cmd)
+    try:
+        return _finish_s3(log, state, rc, out)
+    except Exception as exc:  # noqa: BLE001 - 任何异常都先回滚，绝不让未过门的产出流到 S4/S5
+        _revert_skill_tree(log)
+        state["s3"] = {"ok": False, "note": f"蒸馏后处理异常（{exc!r}），已回滚"}
+        return False
+
+
+def _finish_s3(log, state, rc, out):
     (LOGS / "distill_output.md").write_text(out or "", encoding="utf-8")
+    direct = _recovery().scoped_dirty(git)
+    if direct is None or direct:   # git 失败 = 未知，不当干净；或模型绕过暂存协议直接改了技能树
+        _revert_skill_tree(log)
+        why = "git status 失败" if direct is None else "蒸馏模型直接改动了技能目录（违反暂存协议）"
+        state["s3"] = {"ok": False, "note": f"{why}，已回滚"}
+        return False
     result = _parse_result_json(out or "")
     if rc != 0 or result is None:
         _revert_skill_tree(log)
@@ -594,6 +660,7 @@ def stage_s3(log, state):
     result["changed"] = True
     state["s3"] = {"ok": True, "note": summary or f"融合 {applied} 文件",
                    "distill": result,
+                   "applied_paths": sorted({e["_repo_path"] for e in done_entries if e.get("_repo_path")}),
                    **_jev_verify_applied(log, done_entries)}
     return True
 
@@ -678,13 +745,36 @@ def _reconcile_remote(log):
     log(f"[S5] 同树异 SHA 已 re-anchor：{local[:8]} -> {remote[:8]}")
 
 
+def _sync_from_origin(log):
+    """开跑前快进到 origin/master：每日自更新（可能在另一台机器上）也在推这个分支，
+    落后的克隆提交后要么推不上去，要么（旧 api_push）把别人的成果静默回滚。"""
+    rc, _ = git("fetch", "origin", "master", timeout=90)
+    if rc != 0:
+        log("[S0] fetch 失败（离线/代理？），按本地状态继续")
+        return
+    if git("merge-base", "--is-ancestor", "HEAD", "origin/master")[0] != 0:
+        log("[S0] 本地有 origin 没有的提交，不自动合并（S5 处理同树异 SHA）")
+        return
+    rc, out = git("merge", "--ff-only", "origin/master")
+    log(f"[S0] 快进到 origin/master {'完成' if rc == 0 else '失败：' + (out or '').strip()[-120:]}")
+
+
 def stage_s5(log, state):
     distill = (state.get("s3") or {}).get("distill") or {}
     summary = distill.get("summary") or "周度自升级（子技能审计 + 混沌语料巡检）"
     date = dt.date.today().isoformat()
 
-    rc, out = git("status", "--porcelain")
-    dirty = bool((out or "").strip())
+    # 只提交本轮 S3 落位的文件：别处或同目录里人手的未提交改动绝不能被无人值守地推上 GitHub
+    rec = _recovery()
+    applied = list((state.get("s3") or {}).get("applied_paths") or [])
+    scoped = rec.scoped_dirty(git)
+    foreign = None if scoped is None else [p for p in scoped if p not in applied]
+    if foreign is None or foreign:
+        note = f"技能目录有非本轮落位的改动 {(foreign or ['git status 失败'])[:3]}，不提交"
+        log(f"[S5] {note}")
+        state["s5"] = {"ok": False, "note": note}
+        return False
+    dirty = bool(scoped) and bool((state.get("s3") or {}).get("ok"))
     if dirty:
         msg = (f"feat(super-skill): 周度自升级 {date} — {summary}\n\n"
                f"- 子技能: npx skills update + 结构审计\n"
@@ -692,8 +782,8 @@ def stage_s5(log, state):
                f"- 蒸馏: {summary}\n"
                f"- 全局安装: robocopy 镜像\n\n"
                f"Co-Authored-By: Claude Code <noreply@anthropic.com>\n")
-        git("add", "-A")
-        rc, out = git("commit", "-m", msg)
+        git("add", "--", *scoped)
+        rc, out = git("commit", "-m", msg, "--", *scoped)  # 只提交这些路径，不带走人手暂存
         log(f"[S5] commit rc={rc} {(out or '').strip().splitlines()[-1:]}")
         if rc != 0:
             state["s5"] = {"ok": False, "note": "git commit 失败"}
@@ -909,7 +999,13 @@ def main(argv=None) -> int:
             encoding="utf-8")
         print(f"{now()} [pause] PAUSE 旗标生效，本轮跳过", flush=True)
         return 0
-    if not acquire_lock(lambda m: print(m, flush=True)):
+    lock_msgs: list = []
+    if str(AUTO) not in sys.path:
+        sys.path.insert(0, str(AUTO))
+    import pipeline_lock
+    pipeline_lock.tie_children_to_this_process()  # 被杀时子进程（claude/robocopy/git）一并结束
+    if not acquire_lock(lambda m: (lock_msgs.append(m), print(m, flush=True))):
+        _record_lock_skip(lock_msgs)
         return 0
 
     ts = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -921,10 +1017,27 @@ def main(argv=None) -> int:
 
     handlers = {"s1": stage_s1, "s2": stage_s2, "s3": stage_s3,
                 "s4": stage_s4, "s5": stage_s5, "s6": stage_s6}
+    rec = _recovery()
+    ok = False
     try:
+        # 上一轮（每日或周度）被杀留下的半成品：能证明是它的就收进 stash，否则 S3–S5 停摆等人
+        ok, note = rec.recover(REPO, LOGS, git)
+        if note:
+            log(f"[S0] {note}")
+        blocked = None if ok else f"上一轮自动化被中断，工作树需人工确认：{note}"
+        if ok:
+            _sync_from_origin(log)
+            start_dirty = rec.scoped_dirty(git)
+            if start_dirty is None or start_dirty:
+                blocked = (f"技能目录有未提交改动（{(start_dirty or ['git status 失败'])[:3]}），"
+                           "本轮不蒸馏/不安装/不提交，防止把人手改动推上 GitHub")
         for name in [s.strip() for s in args.stages.split(",") if s.strip()]:
             if name not in handlers:
                 log(f"[{name}] 未知段，跳过")
+                continue
+            if blocked and name in ("s3", "s4", "s5"):
+                log(f"[{name}] 跳过：{blocked}")
+                state[name] = {"ok": False, "note": blocked}
                 continue
             try:
                 handlers[name](log, state)
@@ -932,7 +1045,11 @@ def main(argv=None) -> int:
                 log(f"[{name}] 段异常: {exc!r}")
                 state[name] = {"ok": False, "note": f"段异常 {exc}"}
     finally:
-        release_lock()
+        try:
+            if ok:  # 拒绝收拾时，那个标记属于上一轮，留给人看
+                rec.clear_if_clean(LOGS, git)
+        finally:
+            release_lock()
 
     state["duration_min"] = round((time.time() - t0) / 60, 1)
     state["last_run_ok"], state["s2_quarantined"] = overall_ok(state)

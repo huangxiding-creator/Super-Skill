@@ -5,6 +5,115 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.2] - 2026-10-01
+
+### Changed
+- Nightly self-update now runs at **22:00 Beijing time** (was 23:00): `schedule_daily.py` default `DEFAULT_AT = "22:00"`.
+- The Windows trigger's StartBoundary carries the source offset (`…T22:00:00+08:00`), so it fires at 22:00 Beijing time regardless of the machine's zone or DST; it is always the *next* occurrence, so (re-)registering never fires an immediate catch-up run. Task time limit raised to **7 h** (every timeout hit at once: 150 min lock wait + ≈ 190 min of run timeouts, incl. the new 15 min radar budget).
+- **Existing installs keep their old 23:00 trigger until re-registered** — run `python automation/schedule_daily.py` once on every machine that has the `SuperSkillDaily` task. `--status` warns when the registered time differs from the default, shows state and time limit, prints `never` for a task that has not run yet, and no longer fails on a disabled task.
+
+### Added
+- `automation/pipeline_lock.py` — OS-held lock (`msvcrt.locking` / `fcntl.flock` on byte 0 of `~/.claude/super-skill-pipeline.lock`, held on an open file descriptor for the whole run). The OS drops it when the process exits for any reason, so there is no stale lock to break and no check-then-delete race; per user, so every clone on the machine shares it (`SUPERSKILL_LOCK_DIR` overrides). On Sundays the daily and weekly pipelines both start at 22:00 — the second one waits (daily ≤ 150 min: `--wait-minutes` / `SUPERSKILL_LOCK_WAIT_MIN`; weekly ≤ 120 min: `SUPERSKILL_WEEKLY_LOCK_WAIT_MIN`). On Windows each pipeline also puts itself in a kill-on-close Job Object, so a killed run never leaves `claude -p`, git or the test suite running as orphans (POSIX: only the pipeline process is covered).
+- `weekly.lock` is now tagged (`{"os_lock": true}`); a tagged one left by a killed weekly is ignored by the daily run and taken over by the next weekly. An untagged `weekly.lock` (a weekly in the *same* clone still running pre-5.1.2 code) is honoured for 8 h as before. A weekly in a *different* clone is only coordinated once that clone is updated — see "Upgrade" below.
+- `automation/pipeline_recovery.py` (shared by both pipelines) — interrupted-run recovery: a run writes `automation/logs/pipeline_inprogress.json` before it can dirty the tree. The next pipeline (daily **or** weekly) stashes the leftovers (`git stash list`, nothing is discarded) only if every dirty path is a skill/plugin file, HEAD has not moved since, and every dirty file was modified inside the run's time window; otherwise it refuses and keeps the marker for a human. A failing `git status` counts as "unknown", never "clean".
+- A weekly run skipped for lock contention is recorded in `automation/logs/weekly_lock_skips.log` and `automation/state.json`.
+
+### Fixed (safety)
+- Reverts are no longer destructive: instead of checking out the whole repository and force-cleaning untracked files (incl. in `.claude-plugin/`), only files still exactly as the pipeline wrote them are restored; anything else (e.g. an edit typed while the run was going) is stashed. Same for the weekly's S3 rollback.
+- Daily distill (D2) runs in a **throwaway git worktree** of HEAD (temp dir, removed afterwards; stale ones from killed runs are cleaned up): nothing the model writes — pipeline scripts, git-ignored tests the gate would run, settings, a human's files — reaches the live tree; only regular files (no symlinks/junctions) under `automation/daily_out/` are copied back and then whitelisted by D3. The model's `Bash(gh api:*)` permission is gone (it could write to every repository the gh token reaches).
+- A run refuses to continue if the tree changed while the radar ran, and D6 commits exactly the files the run wrote, only if their content is still exactly what it wrote; anything else changed in the meantime is stashed, never committed. All git calls use literal pathspecs (`x[a].md` never also matches `xa.md`).
+- The weekly commits only the files its own S3 applied (`git commit -- <paths>`), skips S3–S5 when the skill dir is already dirty at start, rolls back on any exception after the distill, and honours an interrupted daily run instead of committing its ungated leftovers.
+- `api_push.py` pushes only when the remote tip is an ancestor of local HEAD, or is exactly the commit this clone last published through it ("same tree, different SHA"). Before, a stale clone (another machine, or a weekly clone that never pulls) silently rolled the remote back to its own tree — including over a later revert. It compares and keeps file modes (an exec-bit-only change is published) and submodule gitlinks, records its own push right after the ref update, refuses instead of publishing half a tree, and no longer crashes on Linux/macOS (Windows-only `creationflags`).
+- The weekly fast-forwards from `origin/master` before it runs.
+- The D3 whitelist compares case-insensitively and rejects trailing dots/spaces, `.`/empty components and case variants of existing paths: on NTFS `engine/SS_COMMON.py.` *is* the protected `engine/ss_common.py`.
+- Radar has an overall 15 min budget (`budget_s` in `radar_config.json`); a request skipped by the budget never becomes a "no release" baseline.
+
+### Upgrade
+- On a machine whose `SuperSkillWeekly` task runs from another clone (e.g. `E:\AI-Station\07 任务\Super-Skill`), `git pull` that clone **before its next Sunday run**. Its pre-5.1.2 `api_push.py` would otherwise push its old tree over everything published since.
+
+### Tests
+- 48 new tests (81 in `automation/tests`): Windows 81 passed; Linux 80 passed + 1 Windows-only skip.
+
+## [5.1.1] - 2026-10-01
+
+### Daily self-update (radar)
+- 新增第三方 skill 安装前安全审查（engine/skill_vet.py），find-skills 自动安装前必须通过 CLEAN/LOW 判定，堵住 Phase 2b 未审查直接 `npx skills add -g -y` 的供应链风险。
+- Digest: [references/radar/2026-10-01.md](references/radar/2026-10-01.md)
+
+## [5.1.0] - 2026-10-01
+
+### Added — 每日自更新 (nightly self-update, 23:00 Beijing time)
+- `automation/radar.py` — deterministic radar: GitHub search (configurable queries/topics, recently pushed, star floor), watchlist of 30 best-in-class repos (new releases), Hacker News; de-dup state seeded from the 204-repo research dossier.
+- `automation/superskill_daily.py` — D0 preflight (PAUSE, lock, clean tree, fast-forward) → D1 radar → D2 headless `claude -p` distill into a staging area → D3 whitelist apply (tests, bench, phase contracts, hooks, installer and existing tests are untouchable) → D4 radar digest + patch bump + CHANGELOG → D5 full check suite + plugin validate or full revert → D6 commit → D7 `install.py --global` → D8 push (gh credentials → git → `api_push.py`) → D9 report/webhook.
+- `automation/schedule_daily.py` — registers the run at 23:00 UTC+8 converted to local time (Windows Task Scheduler with catch-up, or crontab on macOS/Linux); `--status`, `--remove`.
+- `automation/daily_research_prompt.md`, `automation/radar_config.json`, `references/radar/` digest log, SKILL.md "latest daily self-update" marker (fixed size, keeps SKILL.md < 500 lines).
+- `automation/tests/test_daily.py` — 29 tests incl. end-to-end runs against a throwaway repo + bare origin (adopt & push, guard-file rejection, direct-edit revert, gate-failure revert, nothing-to-adopt, dirty-tree refusal, PAUSE, dry run).
+
+## [5.0.0] - 2026-09-30
+
+### 从说明书到发动机 — prose → executable engine
+Designed from a 5-track survey of **204 open-source repositories** (verified with `gh api`;
+dossier in `upgrade-workspace/research/`, proposal in `upgrade-workspace/PROPOSAL_V5.md`).
+No third-party code is vendored; GPL/AGPL/unlicensed sources were used pattern-only (see `NOTICE.md`).
+
+### Added
+- **Phase contracts + state machine** — `phases.json` (17 phases, 50 checks, 17 check types) and
+  `engine/ss.py` (`init/status/next/gate/advance/goto/approve/reject/wait/resume/pause/config/log/handoff`);
+  append-only ledger; git tag per completed phase.
+- **Working hooks** (8 scripts, fail-open, project-scoped): SessionStart brief + hand-off,
+  UserPromptSubmit reminder, PreToolUse guard, PostToolUse(+Failure) observability/stuck/budget,
+  PreCompact hand-off, Stop phase gate with anti-loop, SubagentStop/SessionEnd logging.
+- **Traceability** — EARS lint, stable `REQ-###(.ACn)` IDs, REQ → task → test matrix (`trace.md`).
+- **Task graph** — dependencies, `ready` queue, atomic claim, parallel waves, cycle detection,
+  complexity scoring, markdown import/export.
+- **Planner → Worker → Judge** subagents (`ss-planner`, `ss-worker` with `isolation: worktree`,
+  `ss-judge`, `ss-researcher`, `ss-spec-reviewer`).
+- **Loop safety** — circuit breaker (no-progress / same-error / permission denials, half-open probe),
+  stuck detector (repeat action, repeat error, alternation, monologue), pressure ladder L1–L4,
+  dual-condition exit; `ss ralph` unattended driver with verify-as-ground-truth, `experiments.tsv`,
+  `progress.txt`.
+- **Budget & observability** — transcript cost meter (ccusage-style de-dup), warn 70 % / deny 100 %,
+  per-phase report, `events.jsonl`.
+- **Memory** — ACE playbook (append-only deltas, helpful/harmful votes, blocking do-not-repeat rules
+  enforced by the guard, cerebrum import), SQLite FTS5 memory index with Chinese trigram search,
+  BM25 sub-skill router.
+- **Self-evolution** — clean-room evolver: DGM archive + parent selection, Pareto front, GEPA-style
+  reflective mutation, staged smoke/full eval, stagnation detection, fitness with simplicity penalty,
+  safe `--apply`.
+- **Evals** — offline benchmark (13 scenarios, 100 %), `claude plugin eval` cases with
+  with/without-skill ablation.
+- **Portability** — `install.py` (global/project/plugin forms, merge + backup, version-gated events,
+  exec form on Windows without Git Bash, `--doctor`, `--uninstall-hooks`), plugin + marketplace
+  manifests (`claude plugin validate` ✔), `.gitattributes` (LF scripts), CI on ubuntu (py3.9/3.12),
+  macOS, Windows + fresh-machine install job, `scripts/run_all_tests.py` gate.
+
+### Fixed
+- `.claude/settings.json` hooks used an invalid schema (`handler`, object matchers, non-existent
+  `$CLAUDE_TOOL_*` variables, session start on `Notification`) — **none of the V4 hooks ever fired**.
+- 7 SKILL.md frontmatters (including the main one) failed YAML parsing, so Claude Code dropped their
+  descriptions at runtime; quoted.
+- `darwin-evolution/SKILL.md` exceeded the 500-line rule (Default Genes moved verbatim to references).
+- `wizard_template.sh` shipped with CRLF line endings (broke `bash -n` on Windows checkouts).
+- Windows non-ASCII path bug in `test_context_lint.py`; Windows-only assertion in `test_clash_proxy.py`.
+- 31 tracked `__pycache__/*.pyc` files removed from git.
+
+### Changed
+- `SKILL.md` is now a 241-line router; the complete V4.1.16 text is preserved verbatim in
+  `references/skill-v4-full.md` (constitution: 只增不删).
+
+### Measured (K1–K5 from the proposal)
+| KPI | V4.1.16 | V5.0.0 |
+|---|---|---|
+| K1 enforcement mechanisms that actually fire | 0 | 35 (13 guard deny/ask rules, 4 stop-gate rules, 7 loop-safety rules, 4 stuck patterns, 6 gate families, budget warn) |
+| K2 phases with machine-checked gates | 0 / 14 | 17 / 17 |
+| K3 automated checks | 131 unit tests | 292 tests + 13 bench scenarios + 50 gate checks + 2 model-eval cases = 357 (target was ≥ 400: **not met**) |
+| K4 evidence harness | none | offline bench 13/13 · live Claude Code sessions: SessionStart injection ✔, guard denied a `.env` read ✔, Stop gate blocked a premature stop ✔ · `claude plugin eval` `trigger-raw-idea` (1 run per arm): **with skill 1.0, without 0.0, Δ +1.0**, $1.73 |
+| K5 self-evolution loop steps executable | 0 / 4 | 4 / 4 (toy run: fitness 0.20 → 0.9998 in 5 iterations) |
+
+Test runs: Windows (Python 3.13) 14/14 groups; Linux/WSL (Python 3.12) 14/14 after the clash-proxy test fix.
+Eval notes: on Windows the eval harness refuses to grant Bash (no shell sandbox), so model evals run
+with Read/Write/Edit/Skill only; one run per arm is a small sample — use `--runs 3` for a firmer Δ.
+
 ## [4.1.16] - 2026-09-22
 
 ### Added — 判断层：Jev × TypeSafe System One 深度融合 (experiment-first integration)

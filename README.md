@@ -2,19 +2,18 @@
 
 # Super-Skill
 
-**AI-Native Autonomous Development Orchestrator | AI原生自主开发编排器**
+**AI-Native Autonomous Development Orchestrator for Claude Code | AI 原生自主开发编排器**
 
-[![Version](https://img.shields.io/badge/version-4.1-blue.svg?style=for-the-badge)](https://github.com/huangxiding-creator/Super-Skill)
+[![Version](https://img.shields.io/badge/version-5.0.0-blue.svg?style=for-the-badge)](.claude/skills/super-skill/CHANGELOG.md)
+[![CI](https://img.shields.io/github/actions/workflow/status/huangxiding-creator/Super-Skill/ci.yml?style=for-the-badge&label=ci)](https://github.com/huangxiding-creator/Super-Skill/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-48+-purple.svg?style=for-the-badge)](.claude/skills/super-skill/skills/)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-orange.svg?style=for-the-badge)](https://docs.anthropic.com/claude-code)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-skill%20%2B%20plugin-orange.svg?style=for-the-badge)](https://docs.claude.com/en/docs/claude-code)
 
-[English](#overview) · [中文](#概述) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [License](LICENSE) · [Issues](https://github.com/huangxiding-creator/Super-Skill/issues)
+[English](#overview) · [中文](#概述) · [Changelog](.claude/skills/super-skill/CHANGELOG.md) · [Engine reference](.claude/skills/super-skill/references/v5-engine.md) · [NOTICE](NOTICE.md)
 
-*One command to orchestrate 14 phases of autonomous software development, powered by self-evolving AI agents.*
+*Raw idea → research → 10× proposal → your approval → 17 machine-checked phases → shipped product.*
 
-*一条命令编排14个阶段的自主软件开发，由自进化AI智能体驱动。*
+*一个想法 → 调研 → 10 倍提案 → 你批准 → 17 个机器校验的阶段 → 交付产品。*
 
 </div>
 
@@ -22,293 +21,170 @@
 
 ## Overview
 
-Super-Skill is a **production-grade Claude Code skill** that transforms how AI builds software. Instead of ad-hoc prompting, it provides a structured 14-phase workflow with built-in self-evolution, autonomous experiment loops, and 48+ integrated specialized skills.
+Super-Skill is a Claude Code skill (and plugin) that runs software development as a gated,
+auditable pipeline. **V5 turns its methodology into an executable engine**: rules that must hold
+are enforced by code — phase contracts, a state machine, hooks and a circuit-breaker loop —
+instead of prose the model is trusted to remember.
 
-**Key innovation**: Applies [karpathy/autoresearch](https://github.com/karpathy/autoresearch)'s experiment loop pattern to software development — automatically run experiments, keep improvements, discard regressions, and never stop until you say so.
+| Without Super-Skill | With Super-Skill V5 |
+|---|---|
+| "Done" is whatever the model claims | A phase is done only when `ss advance` passes its gate (files, EARS requirements, traceability, tests) |
+| The agent stops halfway or asks needless questions | A Stop hook keeps autonomous phases running until the gate passes — with stall detection and a nudge cap |
+| Destructive commands and secrets depend on luck | A PreToolUse guard denies `rm -rf ~`, force-push, `.env`/SSH-key reads and state tampering; approvals always ask you |
+| Context lost on compaction | Hand-off written before compaction, re-injected on resume |
+| Loops burn money on the same error | Circuit breaker + stuck detector + pressure ladder; budgets warn at 70 % and stop at 100 % |
+| No way to know whether the skill helps | Offline benchmark (13 scenarios) + `claude plugin eval` with/without-skill ablation |
 
-### Why Super-Skill?
+## Install
 
-| Before Super-Skill | After Super-Skill |
-|-------------------|-------------------|
-| Manual prompting for each step | 14-phase autonomous workflow |
-| No quality enforcement | Built-in QA, security scans, coverage checks |
-| Context lost between sessions | GEP self-evolution captures learnings |
-| Single-agent development | Hierarchical Planner-Worker-Judge orchestration |
-| Human must supervise | 24-hour unattended autonomous operation |
+Requires **Python ≥ 3.9** (stdlib only) and Claude Code. Works on Windows, macOS and Linux.
 
-### Features
+```bash
+git clone https://github.com/huangxiding-creator/Super-Skill.git
+cd Super-Skill
+python install.py --global --hooks     # copy skill + subagents, register hooks, run doctor
+```
 
-- **14-Phase Autonomous Workflow** — Vision → Feasibility → Discovery → Development → QA → Deploy → Evolve
-- **Autonomous Experiment Loop** — Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) (58K+ stars)
-- **GEP Self-Evolution** — Darwin Gödel Machine pattern for continuous improvement
-- **48+ Integrated Skills** — Testing, security, API design, databases, monitoring, and more
-- **AI-Mastery Protocol (V4.1)** — Boris Cherny's 7 disciplines: plan-first, KB onboarding, rationale mining, weekly retrospective, verifier>generator, long-term memory
-- **Real Engineering (V4.1.4)** — [mattpocock/skills](https://github.com/mattpocock/skills): grilling interviews, CONTEXT.md glossary + ADRs, tracer-bullet tickets, human-only-step wizards, red-first bug diagnosis
-- **6-Hook Lifecycle** — [OpenWolf](https://github.com/cytostack/openwolf)-inspired complete lifecycle interception
-- **Project Anatomy** — File indexing with token estimates (~80% token savings)
-- **Cross-Session Learning** — Cerebrum: Do-Not-Repeat patterns + user preferences + learnings
-- **Token Tracking** — Session waste detection with 5 optimization patterns
-- **Bug Memory** — Auto bug detection (15 patterns) + Jaccard similarity matching
-- **Visual Regression** — Sectioned screenshot capture + AI-powered UI evaluation
-- **Hierarchical Orchestration** — Planner-Worker-Judge pattern for multi-agent coordination
-- **Context Engineering** — JIT context loading, progressive disclosure, compaction survival
-- **3 Interaction Points** — User only involved at: input, requirements approval, plan approval
+The installer writes hook commands using *this* machine's Python, merges them into
+`~/.claude/settings.json` (existing settings are preserved and backed up) and finishes with a
+doctor run. Hooks are no-ops outside Super-Skill projects.
 
----
+Other routes:
+
+```bash
+# plugin (hooks via ${CLAUDE_PLUGIN_ROOT}) — inside Claude Code:
+/plugin marketplace add huangxiding-creator/Super-Skill
+/plugin install super-skill@super-skill
+
+# skills CLI, then register hooks
+npx skills add https://github.com/huangxiding-creator/Super-Skill --global --yes
+python ~/.claude/skills/super-skill/install.py --hooks
+
+python install.py --doctor             # verify on any machine
+python install.py --uninstall-hooks    # remove only Super-Skill hooks
+```
+
+Use one hook route per machine (installer **or** plugin).
+
+## Use
+
+Describe what you want in Claude Code — *"I have an idea for …"* or *"build me …"*. The skill
+initialises a run and drives it:
+
+```text
+ss init --project todo --from IF1      # raw idea (or --from P0 / P4)
+ss next                                # what to do now
+ss gate                                # which checks fail and why
+ss advance                             # passes the gate → next phase
+ss approve proposal                    # YOU confirm (the guard always asks)
+ss task add "persist todos" --covers REQ-001.AC1 --verify "pytest -q"
+ss ralph --max-iterations 30           # unattended one-task-per-iteration loop
+ss cost report                         # per-phase time, failures, cost estimate
+```
+
+`ss` = `python <skill>/engine/ss.py`; the session brief prints the exact command for your machine.
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                     NOTIFICATION HOOK (Session Start)            │
-│                     Pre-Run Upgrade: Version → Upgrade → Sync    │
-├──────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  Phase 0: Vision ─────────────────────────────────────┐         │
-│  Phase 1: Feasibility ────────────────────────────────┤         │
-│  Phase 2: GitHub Discovery ───────────────────────────┤         │
-│  Phase 2b: Skills Discovery ──────────────────────────┤         │
-│  Phase 3: Knowledge Base ─────────────────────────────┤ 14      │
-│  Phase 4: Requirements ──── (User Approval Gate) ─────┤ Phases  │
-│  Phase 5: Architecture & Design ──────────────────────┤         │
-│  Phase 6: WBS (Work Breakdown) ───────────────────────┤         │
-│  Phase 7: Project Init ───────────────────────────────┤         │
-│  Phase 8: Autonomous Dev ── (Experiment Loop) ────────┤         │
-│  Phase 9: QA ─────────────────────────────────────────┤         │
-│  Phase 10: Ralph Loop (10x Optimize) ─────────────────┤         │
-│  Phase 11: Deploy ────────────────────────────────────┤         │
-│  Phase 12: Evolution ─────────────────────────────────┘         │
-│                                                                  │
-├──────────────────────────────────────────────────────────────────┤
-│                     STOP HOOK (Session End)                      │
-│                     Post-Run Evolution: Retrospective → Improve  │
-└──────────────────────────────────────────────────────────────────┘
+            ┌──────────── hooks (fail-open, project-scoped) ────────────┐
+SessionStart│ brief + hand-off   PreToolUse│ guard   PostToolUse│ log, stuck, budget │
+PreCompact  │ hand-off           Stop      │ phase gate (anti-loop)                  │
+            └────────────────────────────────────────────────────────────┘
+                                   │
+ IF1 Intake → IF2 Research → IF3 Proposal ✋ → P0 Vision → P1 Feasibility → P2 Discovery → P2b Skills
+ → P3 Knowledge → P4 Requirements ✋ → P5 Architecture → P6 Task graph → P7 Init → P8 Build
+ (ss-planner → ss-worker×N in worktrees → ss-judge) → P9 QA → P10 Ralph → P11 Deploy → P12 Evolve
+                                   │
+  phases.json contracts · state.json · ledger · tasks.json · trace matrix · loop guard · playbook
+  · FTS5 memory · cost meter · evolver (DGM/GEPA, clean-room) · offline bench · plugin evals
 ```
 
----
+✋ = the only two approvals you give. Everything else is autonomous and gated.
 
-## Demo
+## Proof
 
-> **Demo GIF coming soon!** Record your Super-Skill session and submit it via a PR. Showing Super-Skill building a full-stack app in one command.
->
-> **演示GIF即将推出！** 录制你的 Super-Skill 会话并通过PR提交。
+- `python .claude/skills/super-skill/scripts/run_all_tests.py` — engine, hooks, installer
+  (including a fresh-machine install simulation), evolver, all sub-skill tests, the offline
+  benchmark and structural validation. CI runs it on ubuntu (py3.9, 3.12), macOS and Windows.
+- `python .claude/skills/super-skill/evals/bench_offline.py --pretty` — 13 deterministic scenarios.
+- `claude plugin eval . --runs 1` — model evals with and without the skill ([evals/](evals/)).
 
----
-
-## Quick Start
-
-### Install
-
-```bash
-# Clone the repository
-git clone https://github.com/huangxiding-creator/Super-Skill.git
-cd Super-Skill
-
-# Install globally (requires Claude Code)
-npx skills add .claude/skills/super-skill --global --yes
-```
-
-### Use
-
-Just describe what you want to build in Claude Code:
+## Project structure
 
 ```
-> Build me a task management app with real-time collaboration
+.claude/skills/super-skill/
+  SKILL.md            router (≤300 lines)        phases.json   phase contracts
+  engine/             ss.py + state machine, gates, task graph, trace, loop guard, ralph,
+                      cost meter, playbook, memory index, skill router (+ tests)
+  hooks/              8 hook scripts + hooks.json (plugin)
+  agents/             ss-planner · ss-worker · ss-judge · ss-researcher · ss-spec-reviewer
+  evolver/            benchmark-driven self-evolution      evals/  offline bench
+  skills/             48 sub-skills                         references/  doctrine + engine docs
+  install.py          portable installer + doctor
+.claude-plugin/       plugin.json + marketplace.json
+evals/                claude plugin eval cases
+upgrade-workspace/    V5 proposal + 204-repo research dossier
+automation/           weekly self-upgrade pipeline (maintainer machine)
 ```
 
-Super-Skill automatically triggers and orchestrates all 14 phases.
+## Standing on giants' shoulders
 
-### One-Line Install
+V5 was designed from a survey of **204 open-source projects** (skill ecosystems, autonomous coding
+agents, spec-driven workflows, self-evolving agents & memory, orchestration/hooks/evals) — see
+[upgrade-workspace/research](upgrade-workspace/research/) and [NOTICE.md](NOTICE.md). Key
+influences: spec-kit, cc-sdd, beads, ralph (snarktank, frankbria), OpenHands, mini-swe-agent,
+superpowers, planning-with-files, Continuous-Claude, ccusage, ACE, DGM, GEPA, Voyager,
+karpathy/autoresearch, mattpocock/skills, Boris Cherny's AI-mastery talk.
 
-```bash
-npx skills add https://github.com/huangxiding-creator/Super-Skill --global --yes
-```
+## Contributing & licence
 
----
-
-## 48+ Integrated Skills
-
-| Category | Skills |
-|----------|--------|
-| **Core** | `autonomous-loop`, `pre-run-upgrade`, `post-run-evolution`, `darwin-evolution`, `high-agency`, `cognitive-modes`, `real-engineering` |
-| **Development** | `api-patterns`, `data-patterns`, `state-management`, `real-time-websockets`, `code-transformation` |
-| **Quality** | `testing-automation`, `security-scanning`, `accessibility-a11y`, `systematic-debugging` |
-| **Infrastructure** | `cicd-automation`, `auto-git-create`, `monitoring-observability`, `mcp-integration` |
-| **Optimization** | `performance-optimization`, `error-recovery`, `context-management`, `prompt-engineering` |
-| **Discovery** | `github-discovery`, `find-skills`, `get-api-docs`, `brainstorming`, `continuous-learning-v2` |
-| **Specialized** | `search-indexing`, `internationalization-i18n`, `feature-flags`, `file-storage`, `automated-documentation` |
-
----
-
-## Autonomous Experiment Loop
-
-Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch):
-
-```
-┌─── Infinite Loop (runs until human interrupts) ───┐
-│                                                     │
-│  1. READ    → Analyze current state                 │
-│  2. MODIFY  → Implement experimental improvement    │
-│  3. COMMIT  → Git commit with description           │
-│  4. TEST    → Run tests, capture output             │
-│  5. EVALUATE → Parse against acceptance criteria    │
-│  6. DECIDE  → KEEP (improved) or DISCARD (worse)   │
-│  7. LOG     → Record to experiments.tsv             │
-│  8. NEXT    → Next experiment idea                  │
-│                                                     │
-│  Simplicity Criterion:                              │
-│  - Delete code that improves = KEEP                 │
-│  - Add complexity for marginal gain = DISCARD       │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
-
----
-
-## Project Structure
-
-```
-Super-Skill/
-├── .claude/
-│   ├── settings.json              # Hooks configuration
-│   └── skills/
-│       └── super-skill/
-│           ├── SKILL.md           # Main skill definition
-│           ├── CHANGELOG.md       # Version history
-│           ├── EVOLUTION.md       # GEP Protocol docs
-│           ├── skills/            # 33 sub-skills
-│           │   ├── autonomous-loop/
-│           │   ├── pre-run-upgrade/
-│           │   ├── post-run-evolution/
-│           │   ├── darwin-evolution/
-│           │   ├── high-agency/
-│           │   ├── cognitive-modes/
-│           │   └── ... (27 more)
-│           ├── references/        # Detailed docs
-│           └── assets/            # GEP Protocol assets
-├── evolver/                       # GEP Evolver engine
-├── README.md                      # This file
-├── CONTRIBUTING.md                # Contribution guide
-└── LICENSE                        # MIT License
-```
-
----
-
-## Influenced By
-
-| Project | Stars | What We Took |
-|---------|-------|-------------|
-| [karpathy/autoresearch](https://github.com/karpathy/autoresearch) | 58K+ | Autonomous experiment loop, simplicity criterion |
-| [langchain-ai/langchain](https://github.com/langchain-ai/langchain) | 122K+ | Chain-based workflow patterns |
-| [microsoft/autogen](https://github.com/microsoft/autogen) | 52K+ | Multi-agent conversation patterns |
-| [crewAIInc/crewAI](https://github.com/crewAIInc/crewAI) | 30K+ | Role-based task delegation |
-| [andrewyng/context-hub](https://github.com/andrewyng/context-hub) | - | Curated API documentation |
-| [garrytan/gstack](https://github.com/garrytan/gstack) | - | 6 cognitive modes |
-| [tanweai/pua](https://github.com/tanweai/pua) | - | High-agency execution methodology |
-| [anthropics/skills](https://github.com/anthropics/skills) | - | Skill building best practices |
-| [mattpocock/skills](https://github.com/mattpocock/skills) | - | Real-engineering flows: grilling, CONTEXT.md+ADR, tracer-bullet tickets, wizards, red-first diagnosis |
-| Boris Cherny (Claude Code talk) | - | 7 AI-mastery disciplines: plan-first, verifier>generator, KB onboarding, rationale mining, weekly retrospective, long-term memory |
-
----
-
-## Roadmap
-
-- [ ] Web dashboard for experiment tracking
-- [ ] Multi-project support
-- [ ] Custom phase plugins
-- [ ] Benchmark suite (SWE-bench, HumanEval)
-- [ ] MCP server for external tool integration
-- [ ] Community skill marketplace
-
----
-
-## Contributing
-
-We welcome contributions! AI/vibe-coded PRs welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-**Ways to contribute:**
-- Add new sub-skills
-- Improve existing phases
-- Report bugs and suggest features
-- Share your experience stories
-- Translate documentation
-
-## Contributors
-
-Thanks to all the people who contributed to this project!
-
-<a href="https://github.com/huangxiding-creator/Super-Skill/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=huangxiding-creator/Super-Skill" />
-</a>
-
----
-
-## License
-
-[MIT License](LICENSE) - Free for personal and commercial use.
-
----
-
-<div align="center">
-
-**If you find Super-Skill useful, please consider giving it a star!**
-
-[![Star History Chart](https://api.star-history.com/svg?repos=huangxiding-creator/Super-Skill&type=Date)](https://star-history.com/#huangxiding-creator/Super-Skill&Date)
-
-</div>
+PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Run `scripts/run_all_tests.py` before
+opening one. MIT licence.
 
 ---
 
 ## 概述
 
-Super-Skill 是一个**生产级 Claude Code 技能**，通过结构化的14阶段工作流、内置自进化机制、自主实验循环和48+专业集成技能，彻底改变 AI 构建软件的方式。
+Super-Skill 是一个 Claude Code 技能（也是插件），把软件开发变成**有闸门、可审计**的流水线。
+**V5 把方法论变成了可执行的引擎**：必须遵守的规则由代码强制执行——阶段契约、状态机、hooks、熔断循环——而不是寄希望于模型记住文字。
 
-**核心创新**：将 [karpathy/autoresearch](https://github.com/karpathy/autoresearch) 的实验循环模式应用于软件开发 — 自动运行实验、保留改进、丢弃退化，直到你叫停为止。
+| 没有 Super-Skill | 使用 Super-Skill V5 |
+|---|---|
+| "完成"全凭模型自述 | 只有 `ss advance` 通过闸门（文件、EARS 需求、追溯矩阵、测试）才算完成 |
+| 做到一半停下或无谓提问 | Stop hook 让自主阶段持续推进直到闸门通过，带停滞检测与次数上限 |
+| 危险命令和密钥全靠运气 | PreToolUse 守卫拦截 `rm -rf ~`、强推、读 `.env`/SSH 密钥、篡改状态；审批一律交给你确认 |
+| 上下文压缩后失忆 | 压缩前写交接文档，恢复时自动注入 |
+| 同一个错误循环烧钱 | 熔断器 + 卡死检测 + 压力升级梯；预算 70% 预警、100% 停止 |
+| 不知道技能到底有没有用 | 离线基准（13 场景）+ `claude plugin eval` 装/不装对照评测 |
 
-### 为什么选择 Super-Skill？
+### 安装
 
-| 使用前 | 使用后 |
-|--------|--------|
-| 每步手动提示 | 14阶段自主工作流 |
-| 无质量保障 | 内置QA、安全扫描、覆盖率检查 |
-| 会话间上下文丢失 | GEP自进化捕获经验教训 |
-| 单智能体开发 | 层级式 Planner-Worker-Judge 编排 |
-| 需要人工监督 | 24小时无人值守自主运行 |
-
-### 核心特性
-
-- **14阶段自主工作流** — 愿景 → 可行性 → 发现 → 开发 → QA → 部署 → 进化
-- **自主实验循环** — 灵感来自 [karpathy/autoresearch](https://github.com/karpathy/autoresearch)（58K+ Stars）
-- **GEP自进化** — 达尔文哥德尔机模式，持续自我改进
-- **48+集成技能** — 测试、安全、API设计、数据库、监控等
-- **Hooks自动执行** — 通过 Claude Code hooks 实现运行前升级 + 运行后进化
-- **层级编排** — Planner-Worker-Judge 模式实现多智能体协调
-- **上下文工程** — JIT上下文加载、渐进式披露、压缩生存
-- **3个交互点** — 用户仅在：输入、需求确认、方案审批时参与
-
-### 快速开始
+需要 **Python ≥ 3.9**（仅标准库）和 Claude Code，支持 Windows / macOS / Linux：
 
 ```bash
-# 克隆仓库
 git clone https://github.com/huangxiding-creator/Super-Skill.git
 cd Super-Skill
-
-# 全局安装（需要 Claude Code）
-npx skills add .claude/skills/super-skill --global --yes
+python install.py --global --hooks     # 复制技能与子智能体、注册 hooks、自动体检
 ```
 
-在 Claude Code 中描述你想构建的内容即可：
+安装器用**本机**的 Python 生成 hook 命令，合并写入 `~/.claude/settings.json`（保留并备份原有设置），最后运行体检。在非 Super-Skill 项目里 hooks 不做任何事。
+也可以用插件方式（`/plugin marketplace add huangxiding-creator/Super-Skill` → `/plugin install super-skill@super-skill`）或 `npx skills add` 后运行 `install.py --hooks`。任何电脑上都可用 `python install.py --doctor` 自检。
 
-```
-> 帮我构建一个带实时协作的任务管理应用
-```
+### 使用
 
-Super-Skill 会自动触发并编排全部14个阶段。
+在 Claude Code 里直接说"我有个想法……"或"帮我做一个……"。技能会 `ss init` 启动一次运行，然后按 17 个阶段推进；你只需要在**提案审批（IF3）**和**需求审批（P4）**两处确认。常用命令见上方 *Use* 一节。
 
-### 贡献
+### 证明它有效
 
-欢迎贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 了解指南。
+- `python .claude/skills/super-skill/scripts/run_all_tests.py` —— 引擎、hooks、安装器（含"全新电脑"安装模拟）、进化器、全部子技能测试、离线基准、结构校验；CI 在 ubuntu / macOS / Windows 上运行。
+- `python .claude/skills/super-skill/evals/bench_offline.py --pretty` —— 13 个确定性场景。
+- `claude plugin eval . --runs 1` —— 装/不装技能的模型对照评测。
+
+### 站在巨人肩膀上
+
+V5 基于对 **204 个开源项目**的调研设计（技能生态、自主编码智能体、规范驱动开发、自进化与记忆、编排/hooks/评测），详见 [upgrade-workspace/research](upgrade-workspace/research/) 与 [NOTICE.md](NOTICE.md)。全部 V4 方法论（开发宪法 V2.1、缝合怪、任鑫方法论、混沌武器库、协调层、调研方法论、训虾派、判断层）完整保留在 `references/`。
 
 ### 许可证
 
-[MIT 许可证](LICENSE) - 个人和商业用途免费。
+[MIT](LICENSE) —— 个人与商业用途免费。

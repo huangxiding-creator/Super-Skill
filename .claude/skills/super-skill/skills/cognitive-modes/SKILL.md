@@ -1,6 +1,6 @@
 ---
 name: cognitive-modes
-description: Six cognitive modes for AI development from Y Combinator CEO Garry Tan. TRIGGER when users need different perspectives: product vision, architecture review, paranoid code review, release automation, browser testing, or retrospectives. Modes: CEO (10-star vision), Eng Manager (architecture), Paranoid Reviewer (bugs), Release Engineer (ship), QA Engineer (browser automation), Engineering Manager (retrospectives).
+description: "Six cognitive modes for AI development from Y Combinator CEO Garry Tan. TRIGGER when users need different perspectives: product vision, architecture review, paranoid code review, release automation, browser testing, or retrospectives. Modes: CEO (10-star vision), Eng Manager (architecture), Paranoid Reviewer (bugs), Release Engineer (ship), QA Engineer (browser automation), Engineering Manager (retrospectives)."
 ---
 
 # Cognitive Modes for AI Development
