@@ -5,6 +5,12 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.6] - 2026-10-11
+
+### Daily self-update (radar)
+- 新增两张模式卡：用脚本算只把结果放进上下文（省上下文、抗压缩），以及第三方 skill 灰区安装前的第二意见审查清单与重扫基线。
+- Digest: [references/radar/2026-10-11.md](references/radar/2026-10-11.md)
+
 ## [5.1.5] - 2026-10-07
 
 ### Daily self-update (radar)
