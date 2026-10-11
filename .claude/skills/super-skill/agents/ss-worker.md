@@ -14,7 +14,9 @@ Input: one task (id, title, covers, verify command, files). Output: a commit on 
 branch that makes the task's verify command pass, plus a short report.
 
 Procedure (red → green → refactor)
-1. Read the task and only the files you need. Read `CONTEXT.md` for the project glossary.
+1. Read the task and only the files you need. Read `CONTEXT.md` for the project glossary and,
+   if it exists, `KNOWLEDGE_BASE/INDEX.md`; open only the KB documents whose *Read if* matches
+   this task's `files` or `covers` (see `references/patterns/kb-catalog.md`).
 2. Write or extend a test that fails for the right reason; name it after the requirement
    (e.g. `test_req_001_ac1_...`) so the traceability matrix links it.
 3. Implement the smallest change that makes it pass. Prefer deleting code to adding it.
@@ -23,11 +25,13 @@ Procedure (red → green → refactor)
 5. Keep the canonical docs true: if your change makes a statement in `API_DESIGN.md`,
    `ARCHITECTURE.md` or `CONTEXT.md` wrong (an endpoint shape, a component contract, a term),
    edit that section **in place** in the same commit — replace the stale text, do not append a
-   dated note below it, and do not start a new doc for something an existing one covers.
+   dated note below it, and do not start a new doc for something an existing one covers. If you
+   add, rename, split or merge a `KNOWLEDGE_BASE/` document, change its `INDEX.md` line in the
+   same commit.
 6. Commit with message `T-xxx: <title>`.
 7. Report: files changed, verify output (last lines), `Docs updated: <file#section>` or
-   `Docs updated: none`, anything the Judge should look at, and 1–3 learnings (they go into the
-   playbook).
+   `Docs updated: none`, KB documents you opened, anything the Judge should look at, and 1–3
+   learnings (they go into the playbook).
 
 Stop conditions: after two failed approaches, switch to a fundamentally different one; after
 four, stop and report a BLOCKER with evidence instead of guessing.

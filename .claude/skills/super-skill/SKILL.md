@@ -80,8 +80,12 @@ Then loop: `ss next` → do the phase work with its sub-skill → `ss gate` → 
   [research-methodology](references/research-methodology.md); method + algorithms: [ideaforge](references/ideaforge.md).
 - **P0 Vision** — C1 hardest problem, C2 boldness is legal, C3 world-best-and-landable.
 - **P2 Discovery** — score ≥80 % → clone-and-adapt (缝合怪律一); reuse `RESEARCH_DOCKET/github` if IF2 ran.
+- **P2b Skills** — every third-party skill passes `engine/skill_vet.py` (CLEAN/LOW) before install;
+  grey zone (MEDIUM, opaque bundle, network/shell/credential access) → second opinion first:
+  [skill-vet-second-opinion](references/patterns/skill-vet-second-opinion.md).
 - **P3 Knowledge Base** — 修路: 业务过程留痕 + 5-minute ontology; `CONTEXT.md` glossary (lint: `context_lint.py`).
-  [ai-native-coordination](references/ai-native-coordination.md)
+  [ai-native-coordination](references/ai-native-coordination.md). Keep a `KNOWLEDGE_BASE/INDEX.md` catalog — one
+  line per document with a *Read if* trigger: [kb-catalog](references/patterns/kb-catalog.md).
 - **P4 Requirements** — write every requirement as `- REQ-001 [MUST]: When <event>, the system shall <response>.`
   (Chinese: `当…时，系统应…`) with acceptance criteria `REQ-001.AC1`; no `[NEEDS CLARIFICATION]` left;
   JTBD 三步法. Run `ss-spec-reviewer`, then present for approval.
@@ -143,6 +147,11 @@ All hooks are fail-open and do nothing outside a directory containing `.super-sk
 - JIT context: load files with tools when needed; `ss route "<goal>"` ranks the sub-skills to load
   (top-5 instead of all 48).
 - Progressive disclosure: this file is the router; details live in `references/` (≤2 levels deep).
+- Think in Code: a computation over many files or a large output runs as a script that prints only
+  the result; output that must be read is shaped (errors verbatim, head/tail, counts) with the original
+  saved to an uncommitted file: [think-in-code](references/patterns/think-in-code.md).
+- KB orientation: read `KNOWLEDGE_BASE/INDEX.md` first and open only the documents whose *Read if*
+  matches the task: [kb-catalog](references/patterns/kb-catalog.md).
 - Compaction survival: hand-off before compaction, re-injected on resume.
 - Anatomy / token discipline: [anatomy-scanner](skills/anatomy-scanner/SKILL.md), [token-tracker](skills/token-tracker/SKILL.md).
 
@@ -233,6 +242,7 @@ Full V4 integration matrix: [skills-matrix](references/skills-matrix.md).
 | [references/judgment-layer.md](references/judgment-layer.md) | 判断层 (Jev×TypeSafe) — Noul/Choice/Score |
 | [references/ideaforge.md](references/ideaforge.md) | Idea Factory method + algorithms |
 | [references/skills-matrix.md](references/skills-matrix.md) | Sub-skill integration mapping |
+| [references/patterns/think-in-code.md](references/patterns/think-in-code.md) | Pattern cards — [think-in-code](references/patterns/think-in-code.md) · [kb-catalog](references/patterns/kb-catalog.md) · [skill-vet-second-opinion](references/patterns/skill-vet-second-opinion.md) |
 | [EVOLUTION.md](EVOLUTION.md) · [evolver/README.md](evolver/README.md) | GEP protocol + V5 evolver |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
 
@@ -245,11 +255,11 @@ Full V4 integration matrix: [skills-matrix](references/skills-matrix.md).
 **V5.0.0** - 2026-09-30 - **从说明书到发动机 (prose → executable engine)**: 204-repo research (5 tracks) distilled into an executable core — `phases.json` contracts (17 phases, 17 check types) + `ss.py` state machine (init/next/gate/advance/goto/approve/wait/resume); 8 working hooks (the V4 settings schema never fired); PreToolUse guard (destructive/force-push/secrets/state-tamper/budget/playbook); Stop phase gate with anti-loop; EARS + REQ traceability; dependency task graph; `ss-planner/worker/judge/researcher/spec-reviewer` subagents with worktree isolation; circuit-breaker Ralph driver; cost/budget meter; ACE playbook + FTS5 memory + skill router; clean-room DGM/GEPA evolver; offline bench + plugin evals; portable installer/doctor; plugin + marketplace manifests; CI on 3 OSes. Fixed: 7 SKILL.md frontmatters that failed YAML parsing (including this one). Details: [CHANGELOG.md](CHANGELOG.md).
 
 <!-- daily-self-update -->
-**Latest daily self-update:** V5.1.6 — 2026-10-11 — 新增两张模式卡：用脚本算只把结果放进上下文（省上下文、抗压缩），以及第三方 skill 灰区安装前的第二意见审查清单与重扫基线。 — [digest](references/radar/2026-10-11.md) · [all](references/radar/README.md)
+**Latest daily self-update:** V5.1.7 — 2026-10-11 — 知识库新增目录与“何时读”条件，会话和 Worker 只打开与任务相关的文档；大日志/大 JSON 读取时只保留报错、异常和首尾，原文存到不提交的文件里随时可查；今天的模式卡也已接入 SKILL.md，加载技能时能看到。 — [digest](references/radar/2026-10-11-2.md) · [all](references/radar/README.md)
 <!-- /daily-self-update -->
 
 **V4.1.16** - 2026-09-22 - 判断层 (Jev × TypeSafe) — see [skill-v4-full](references/skill-v4-full.md) for V3.21–V4.1.16 history.
 
 ---
 
-*Super-Skill V5.1.6: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*
+*Super-Skill V5.1.7: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*

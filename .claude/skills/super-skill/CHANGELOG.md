@@ -5,6 +5,12 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.7] - 2026-10-11
+
+### Daily self-update (radar)
+- 知识库新增目录与“何时读”条件，会话和 Worker 只打开与任务相关的文档；大日志/大 JSON 读取时只保留报错、异常和首尾，原文存到不提交的文件里随时可查；今天的模式卡也已接入 SKILL.md，加载技能时能看到。
+- Digest: [references/radar/2026-10-11-2.md](references/radar/2026-10-11-2.md)
+
 ## [5.1.6] - 2026-10-11
 
 ### Daily self-update (radar)
