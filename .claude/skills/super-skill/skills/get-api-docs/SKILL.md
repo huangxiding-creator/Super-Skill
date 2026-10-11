@@ -1,6 +1,6 @@
 ---
 name: get-api-docs
-description: "Curated API documentation fetcher using Context Hub (chub). TRIGGER when users need library/framework API docs, SDK references, or up-to-date documentation. Capabilities: (1) Search curated docs from chub registry, (2) Fetch versioned API docs by ID, (3) Add persistent annotations, (4) Submit feedback to improve docs. Core workflow: chub search → chub get → annotate → feedback. Integrates Andrew Ng's Context Hub for reliable, AI-optimized documentation."
+description: Curated API documentation fetcher using Context Hub (chub). TRIGGER when users need library/framework API docs, SDK references, or up-to-date documentation. Capabilities: (1) Search curated docs from chub registry, (2) Fetch versioned API docs by ID, (3) Add persistent annotations, (4) Submit feedback to improve docs. Core workflow: chub search → chub get → annotate → feedback. Integrates Andrew Ng's Context Hub for reliable, AI-optimized documentation.
 ---
 
 # Get API Docs - Context Hub Integration

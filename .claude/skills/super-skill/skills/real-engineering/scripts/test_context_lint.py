@@ -193,10 +193,8 @@ def test_wizard_template_shell_syntax() -> None:
         return  # no usable bash in this environment — skip
     if probe.returncode != 0 or "probe-ok" not in (probe.stdout or ""):
         return  # resolved bash is not usable (WSL stub etc.) — skip
-    # cwd + bare filename: on Windows, bash mangles non-ASCII absolute paths
     proc = subprocess.run(
-        ["bash", "-n", template.name],
-        cwd=str(template.parent),
+        ["bash", "-n", template.as_posix()],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         timeout=60,
     )
