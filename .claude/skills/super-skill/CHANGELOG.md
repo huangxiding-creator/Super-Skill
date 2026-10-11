@@ -5,6 +5,15 @@ All notable changes to Super-Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.8] - 2026-10-11
+
+### Changed
+- The self-update runs **on demand only** (user request 2026-10-11): the `SuperSkillDaily` task was removed on this machine and nothing registers one automatically; run `python automation/superskill_daily.py` (or ask Claude to update Super-Skill). `schedule_daily.py` stays available for anyone who wants a schedule and now also supports weekly runs (`--day mon --at 02:00`, a 7-day interval anchored at a `+08:00` instant, so it is zone- and DST-proof); `--status` checks time, weekday and interval.
+- Radar windows widened to 8 days (GitHub `lookback_days`, `hn_lookback_days`) to suit less frequent runs; seen items are still deduplicated.
+
+### Fixed
+- D0 no longer fast-forwards into a snapshot pushed by a stale clone. A second overwrite happened on 2026-10-11 22:03 (4d0e8e6, tree identical to 118fb57, V5 deleted again); that night's update (V5.1.7) was refused by the guarded `api_push` and republished after an "ours" merge (6e4dcc4). The pipeline now does this itself, but only for a *pure rollback* — every incoming commit's tree already exists in local history and the tip lacks the pipeline; a change with new content stops for a human, and a normal revert on GitHub is fast-forwarded as usual.
+
 ## [5.1.7] - 2026-10-11
 
 ### Daily self-update (radar)

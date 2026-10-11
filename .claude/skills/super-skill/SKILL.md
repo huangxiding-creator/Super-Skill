@@ -186,8 +186,8 @@ beats the seed (backup first). Default fitness for engine changes:
 `python "<base>/evals/bench_offline.py"`. Protocol and genes: [EVOLUTION.md](EVOLUTION.md) ·
 [evolver/README](evolver/README.md) · strategies `balanced|innovate|harden|repair-only`.
 
-**Nightly self-update (repo side):** `automation/superskill_daily.py`, scheduled for 22:00 Beijing time by
-`automation/schedule_daily.py`, scans GitHub, a watchlist of best-in-class repos and Hacker News; a headless run
+**On-demand self-update (repo side):** `automation/superskill_daily.py`, run when the user asks for an update
+(no schedule is registered; `automation/schedule_daily.py` can add one), scans GitHub, a watchlist of best-in-class repos and Hacker News; a headless run
 stages ≤3 small improvements; a whitelist keeps the verifier (tests, bench, phase contracts, hooks, installer)
 out of reach; the full check suite must pass or the run is reverted; then it commits, reinstalls and pushes.
 Digests: [references/radar](references/radar/README.md).
@@ -262,4 +262,4 @@ Full V4 integration matrix: [skills-matrix](references/skills-matrix.md).
 
 ---
 
-*Super-Skill V5.1.7: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*
+*Super-Skill V5.1.8: executable Idea→Product Factory — phase contracts + state machine + working hooks (guard / stop gate / hand-off) + EARS traceability + task graph + Planner-Worker-Judge subagents + circuit-breaker Ralph loop + budgets + ACE playbook + FTS5 memory + DGM/GEPA evolver + offline bench & plugin evals + portable installer; all V4 doctrine preserved (开发宪法 V2.1 · 缝合怪 · 任鑫方法论 · 混沌武器库 · 协调层 · 调研方法论 · 训虾派 · 判断层)*

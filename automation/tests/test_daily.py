@@ -162,10 +162,41 @@ def test_versions():
 BJ = dt.timezone(dt.timedelta(hours=8))
 
 
-def test_schedule_default_is_22_beijing():
-    assert schedule_daily.DEFAULT_AT == "22:00" and schedule_daily.DEFAULT_TZ_OFFSET == 8.0
+def test_schedule_default_is_monday_0200_beijing():
+    assert schedule_daily.DEFAULT_AT == "02:00" and schedule_daily.DEFAULT_TZ_OFFSET == 8.0
     args = schedule_daily.build_parser().parse_args([])
-    assert args.at == "22:00" and args.tz_offset == 8.0
+    assert args.at == "02:00" and args.tz_offset == 8.0 and args.day == "mon"
+    assert schedule_daily.parse_day(args.day) == 0 and schedule_daily.every_days(0) == 7
+    assert schedule_daily.schedule_label("mon", "02:00", 8) == "every Monday 02:00 UTC+8"
+    assert schedule_daily.parse_day("daily") is None and schedule_daily.every_days(None) == 1
+    with pytest.raises(ValueError):
+        schedule_daily.parse_day("someday")
+
+
+@pytest.mark.parametrize("now,expected", [
+    # Sunday 22:49 Beijing (when the change was requested) -> the next morning
+    (dt.datetime(2026, 10, 11, 22, 49, tzinfo=BJ), dt.datetime(2026, 10, 12, 2, 0, tzinfo=BJ)),
+    (dt.datetime(2026, 10, 12, 1, 59, tzinfo=BJ), dt.datetime(2026, 10, 12, 2, 0, tzinfo=BJ)),
+    (dt.datetime(2026, 10, 12, 2, 0, tzinfo=BJ), dt.datetime(2026, 10, 19, 2, 0, tzinfo=BJ)),
+    (dt.datetime(2026, 10, 14, 9, 0, tzinfo=BJ), dt.datetime(2026, 10, 19, 2, 0, tzinfo=BJ)),
+    # 17:30 UTC on Sunday is already Monday 01:30 in Beijing
+    (dt.datetime(2026, 10, 11, 17, 30, tzinfo=dt.timezone.utc), dt.datetime(2026, 10, 12, 2, 0, tzinfo=BJ)),
+    # New York, Sunday 14:30 EDT = Monday 02:30 Beijing -> already past: next week
+    (dt.datetime(2026, 10, 11, 14, 30, tzinfo=dt.timezone(dt.timedelta(hours=-4))),
+     dt.datetime(2026, 10, 19, 2, 0, tzinfo=BJ)),
+])
+def test_next_weekly_run_is_next_monday_0200_beijing(now, expected):
+    got = schedule_daily.next_run("02:00", 8, now=now, weekday=0)
+    assert got == expected and got.weekday() == 0 and got.utcoffset() == dt.timedelta(hours=8)
+
+
+def test_cron_slot_uses_the_local_weekday():
+    start = dt.datetime(2026, 10, 12, 2, 0, tzinfo=BJ)      # Monday 02:00 Beijing
+    hhmm, dow = schedule_daily.local_slot(start, 0)
+    local = start.astimezone()
+    assert hhmm == local.strftime("%H:%M") and dow == str((local.weekday() + 1) % 7)
+    assert schedule_daily.local_slot(start, None)[1] == "*"
+    assert schedule_daily.cron_line("02:00", "1").startswith("0 2 * * 1 ")
 
 
 @pytest.mark.parametrize("now,expected", [
@@ -183,9 +214,11 @@ def test_next_run_is_next_beijing_occurrence(now, expected):
 
 
 def test_windows_script_pins_utc8_boundary_and_settings():
-    start = dt.datetime(2026, 10, 2, 22, 0, tzinfo=BJ)
-    ps = schedule_daily.windows_register_script(r"C:\Py's\pythonw.exe", r"E:\a\b.py", r"E:\a", start)
-    assert "$t.StartBoundary = '2026-10-02T22:00:00+08:00'" in ps
+    start = dt.datetime(2026, 10, 12, 2, 0, tzinfo=BJ)
+    ps = schedule_daily.windows_register_script(r"C:\Py's\pythonw.exe", r"E:\a\b.py", r"E:\a", start, 7,
+                                                "every Monday 02:00 UTC+8")
+    assert "$t.StartBoundary = '2026-10-12T02:00:00+08:00'" in ps
+    assert "-Daily -DaysInterval 7 " in ps, "weekly = 7-day interval from the +08:00 instant (zone-proof)"
     assert "-StartWhenAvailable" in ps and "-MultipleInstances IgnoreNew" in ps
     assert f"New-TimeSpan -Hours {schedule_daily.EXEC_LIMIT_HOURS}" in ps
     assert "C:\\Py''s\\pythonw.exe" in ps, "single quotes must be escaped for PowerShell"
@@ -565,10 +598,15 @@ def test_marker_cleared_after_successful_and_reverted_runs(world, monkeypatch):
 # ---------------------------------------------------------------- schedule status
 
 def test_boundary_mismatch_detects_old_registrations():
-    assert schedule_daily.boundary_mismatch("2026-10-02T22:00:00+08:00") is None
-    assert "re-run" in schedule_daily.boundary_mismatch("2026-10-01T23:00:00+08:00")
-    assert "no UTC offset" in schedule_daily.boundary_mismatch("2026-10-02T22:00:00")
-    assert schedule_daily.boundary_mismatch("2026-10-02T14:00:00+00:00") is None   # same instant
+    bm = schedule_daily.boundary_mismatch
+    assert bm("2026-10-12T02:00:00+08:00", every=7) is None
+    assert bm("2026-10-11T18:00:00+00:00", every=7) is None                     # same instant in UTC
+    old = bm("2026-10-02T22:00:00+08:00", every=1)                              # the old nightly task
+    assert "every day 22:00" in old and "every Monday 02:00" in old and "re-run" in old
+    assert "re-run" in bm("2026-10-13T02:00:00+08:00", every=7)                 # Tuesday
+    assert "re-run" in bm("2026-10-12T02:00:00+08:00", every=1)                 # right time, daily
+    assert "no UTC offset" in bm("2026-10-12T02:00:00")
+    assert bm("2026-10-02T22:00:00+08:00", at="22:00", day="daily", every=1) is None
     assert schedule_daily.EXEC_LIMIT_HOURS == 7
 
 
@@ -889,3 +927,70 @@ def test_children_never_run_under_pythonw(monkeypatch, tmp_path):
     assert sd._console_python() == str(tmp_path / "python.exe")
     monkeypatch.setattr(sys, "executable", str(tmp_path / "python.exe"))
     assert sd._console_python() == str(tmp_path / "python.exe")
+
+
+# ---------------------------------------------------------------- stale-clone overwrite (2026-10-04 / 10-11)
+
+def _stale_setup(world):
+    """History: base (with pipeline) -> 'old' (pipeline removed) -> 'back' (restored). Returns the old tree."""
+    repo = world["repo"]
+    _git(repo, "rm", "-q", "automation/superskill_daily.py")
+    _git(repo, "commit", "-qm", "old snapshot without the pipeline")
+    old_tree = _git(repo, "rev-parse", "HEAD^{tree}").stdout.strip()
+    _git(repo, "checkout", "HEAD~1", "--", "automation/superskill_daily.py")
+    _git(repo, "commit", "-qm", "pipeline back")
+    _git(repo, "push", "-q", "origin", "master")
+    return old_tree
+
+
+def _push_tree_to_origin(world, tree, msg):
+    stale = world["repo"].parent / "stale"
+    _git(world["repo"].parent, "clone", "-q", str(world["remote"]), str(stale))
+    tip = _git(stale, "rev-parse", "HEAD").stdout.strip()
+    commit = subprocess.run(["git", "commit-tree", tree, "-p", tip, "-m", msg], cwd=str(stale),
+                            capture_output=True, text=True).stdout.strip()
+    _git(stale, "push", "-q", "origin", f"{commit}:refs/heads/master")
+    return commit
+
+
+def test_stale_clone_overwrite_is_undone_and_republished(world):
+    (world["auto"] / "fake_mode.txt").write_text("nothing", encoding="utf-8")
+    old_tree = _stale_setup(world)
+    good_tree = _git(world["repo"], "rev-parse", "HEAD^{tree}").stdout.strip()
+    stale = _push_tree_to_origin(world, old_tree, "stale snapshot push")
+    assert sd.run(_args(world["repo"])) == 0
+    assert _git(world["repo"], "rev-parse", "HEAD^{tree}").stdout.strip() == good_tree, "V5 kept locally"
+    remote_tip = _git(world["remote"], "rev-parse", "master").stdout.strip()
+    assert _git(world["remote"], "rev-parse", "master^{tree}").stdout.strip() == good_tree, "republished"
+    assert subprocess.run(["git", "merge-base", "--is-ancestor", stale, remote_tip],
+                          cwd=str(world["remote"])).returncode == 0, "origin history kept (fast-forward push)"
+
+
+def test_overwrite_with_unknown_content_is_left_to_a_human(world):
+    (world["auto"] / "fake_mode.txt").write_text("nothing", encoding="utf-8")
+    _stale_setup(world)
+    before = _git(world["repo"], "rev-parse", "HEAD").stdout.strip()
+    other = world["repo"].parent / "other"
+    _git(world["repo"].parent, "clone", "-q", str(world["remote"]), str(other))
+    (other / "automation" / "superskill_daily.py").unlink()
+    (other / "NEW_WORK.md").write_text("someone's real work", encoding="utf-8")
+    _git(other, "add", "-A")
+    _git(other, "commit", "-qm", "real change that also drops the pipeline")
+    _git(other, "push", "-q", "origin", "master")
+    assert sd.run(_args(world["repo"])) == 1
+    assert _git(world["repo"], "rev-parse", "HEAD").stdout.strip() == before, "no fast-forward, no merge"
+    assert (world["auto"] / "superskill_daily.py").exists()
+
+
+def test_a_deliberate_revert_on_github_is_not_undone(world):
+    # a human reverting a bad update keeps the pipeline: plain fast-forward, nothing "healed"
+    (world["auto"] / "fake_mode.txt").write_text("nothing", encoding="utf-8")
+    base_tree = _git(world["repo"], "rev-parse", "HEAD^{tree}").stdout.strip()
+    sk = world["skill"] / "SKILL.md"
+    sk.write_text(sk.read_text(encoding="utf-8") + "bad\n", encoding="utf-8")
+    _git(world["repo"], "commit", "-qam", "bad update")
+    _git(world["repo"], "push", "-q", "origin", "master")
+    revert = _push_tree_to_origin(world, base_tree, "Revert bad update")
+    assert sd.run(_args(world["repo"])) == 0
+    assert _git(world["repo"], "rev-parse", "HEAD").stdout.strip() == revert
+

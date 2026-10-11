@@ -1,6 +1,6 @@
 {
-  "_doc": "Daily radar for Super-Skill self-update. queries/topics → GitHub search (pushed within lookback_days, stars >= min_stars); watchlist → new releases of best-in-class repos (seeded from upgrade-workspace/research); hn_queries → Hacker News. Edit freely; no code change needed.",
-  "lookback_days": 7,
+  "_doc": "Radar for the Super-Skill self-update (weekly by default; windows overlap a little, seen items are deduplicated). queries/topics → GitHub search (pushed within lookback_days, stars >= min_stars); watchlist → new releases of best-in-class repos (seeded from upgrade-workspace/research); hn_queries → Hacker News. Edit freely; no code change needed.",
+  "lookback_days": 8,
   "min_stars": 50,
   "min_delta": 25,
   "top_n": 10,
@@ -30,6 +30,6 @@
     "OthmanAdi/planning-with-files", "harbor-framework/harbor"
   ],
   "hn_queries": ["claude code", "agent skills", "coding agent"],
-  "hn_lookback_days": 2,
+  "hn_lookback_days": 8,
   "hn_min_points": 20
 }

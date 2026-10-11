@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Super-Skill daily self-update (default 22:00 Beijing time, see schedule_daily.py).
+"""Super-Skill scheduled self-update (default every Monday 02:00 Beijing time, see schedule_daily.py).
 
-Mutual exclusion with the weekly pipeline (which also starts at 22:00 on
-Sundays on the maintainer machine) via the shared OS-held lock in
+Mutual exclusion with the weekly pipeline (Sundays 22:00 on the maintainer
+machine, may run past midnight) via the shared OS-held lock in
 ``pipeline_lock.py``. A run killed mid-way (shutdown, time limit) is recovered
 by the next preflight: its leftover skill/plugin changes are stashed, never lost.
 
@@ -231,6 +231,43 @@ def _recover_interrupted_run(ctx: Ctx) -> bool:
     return True
 
 
+PIPELINE_FILE = "automation/superskill_daily.py"
+
+
+def _undo_stale_overwrite(ctx: Ctx) -> bool:
+    """Never fast-forward into a snapshot pushed by a stale clone (2026-10-04 and 10-11).
+
+    A clone that never pulls pushed its old tree over origin through the
+    pre-5.1.2 api_push channel, deleting this pipeline. Such a commit is a *pure
+    rollback*: its tree is identical to a tree already in our history, and that
+    tree lacks this pipeline. Only then is it undone — with an "ours" merge, so
+    origin's history is kept, nothing that exists only on origin can be lost,
+    and the next push is a fast-forward. A deliberate change made on GitHub
+    (even one that deletes the pipeline) has a new tree and is left to a human.
+    """
+    remote = f"origin/{ctx.args.branch}"
+    rc, out = git(ctx, "rev-list", f"HEAD..{remote}")
+    new = out.split("\n[stderr] ", 1)[0].split() if rc == 0 else []
+    if not new or git(ctx, "cat-file", "-e", f"{remote}:{PIPELINE_FILE}")[0] == 0:
+        return True                                    # normal case: plain fast-forward follows
+    _, hist = git(ctx, "log", "--format=%T", "-n", "5000", "HEAD")
+    known = set(hist.split("\n[stderr] ", 1)[0].split())
+    trees = [git(ctx, "rev-parse", f"{c}^{{tree}}")[1].strip().splitlines()[0] for c in new]
+    if not all(t in known for t in trees):
+        return ctx.stage("D0", False, f"{remote} no longer contains the self-update pipeline and carries "
+                                      "content this clone has never seen — not fast-forwarding; needs a human")
+    rc, out = git(ctx, "merge", "-s", "ours", "--no-edit", "-m",
+                  f"revert: undo stale-clone overwrite of {remote} ({len(new)} commit(s), "
+                  f"tip {new[0][:10]})\n\nIts tree equals a snapshot already in this history and lacks "
+                  f"{PIPELINE_FILE}: no new content, so the current tree is kept.\n\n"
+                  "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>", remote)
+    if rc != 0:
+        return ctx.stage("D0", False, f"could not undo the stale-clone overwrite: {out.strip()[-160:]}")
+    ctx.log(f"[D0] {remote} was overwritten by a stale clone ({new[0][:10]}); undone with an 'ours' merge")
+    ctx.report["healed"] = new[0][:10]
+    return True
+
+
 def preflight(ctx: Ctx) -> bool:
     if (ctx.auto / "PAUSE").exists():
         return ctx.stage("D0", False, "PAUSE file present — skipped", skipped=True)
@@ -251,9 +288,13 @@ def preflight(ctx: Ctx) -> bool:
         if rc != 0:
             rc, out = git(ctx, "fetch", "origin", ctx.args.branch)
         if rc == 0:
+            if not _undo_stale_overwrite(ctx):
+                return False
             rc, out = git(ctx, "merge", "--ff-only", f"origin/{ctx.args.branch}")
             if rc != 0:
                 return ctx.stage("D0", False, "local branch diverged from origin — needs a human")
+            if ctx.report.get("healed"):
+                push(ctx)   # republish now: the run may end early without anything else to push
         else:
             ctx.log("[D0] fetch failed (offline?) — continuing on local state")
     return ctx.stage("D0", True, f"branch {branch}, clean")
@@ -605,7 +646,7 @@ def commit(ctx: Ctx, version: str, summary: str, applied: list[dict]) -> bool:
     rc, _ = git(ctx, "diff", "--cached", "--quiet")
     if rc == 0:
         return ctx.stage("D6", True, "nothing to commit")
-    msg = (f"chore(self-update): {version} 每日自更新 {ctx.date} — {summary[:72]}\n\n"
+    msg = (f"chore(self-update): {version} 自更新 {ctx.date} — {summary[:72]}\n\n"
            + "".join(f"- {a['path']}: {str(a.get('summary', ''))[:100]}\n" for a in applied)
            + "\nAutomated by automation/superskill_daily.py (radar → distill → gates → push).\n\n"
            "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n")

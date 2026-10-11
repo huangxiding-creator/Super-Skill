@@ -1,16 +1,20 @@
 # Super-Skill 自动化（automation/）
 
-## 每日自更新（每天 22:00 北京时间，任何电脑可用）
+## 自更新（按需手动运行，任何电脑可用）
 
 调研 GitHub 与网络上同类项目的最新优秀做法 → 吸收 ≤3 个小而高价值的改进 → 全量门禁 → 提交 → 全局安装 → 推送。
+**默认不定时运行**：需要时执行一次（或让 Claude「更新 Super-Skill」）。
 
 ```bash
-python automation/schedule_daily.py            # 注册（Windows 计划任务按 UTC+8 锚定、夏令时不漂移；macOS·Linux crontab 换算本地时间）
-python automation/schedule_daily.py --status   # 查看下次运行
-python automation/superskill_daily.py --dry-run   # 手动演练：只扫描+蒸馏，不改仓库
-python automation/superskill_daily.py             # 立即完整跑一轮
-python automation/schedule_daily.py --remove   # 取消
+python automation/superskill_daily.py             # 立即完整跑一轮（约 10–20 分钟）
+python automation/superskill_daily.py --dry-run   # 演练：只扫描+蒸馏，不改仓库
+# 可选：想要定时再注册（Windows 计划任务按 UTC+8 锚定、时区/夏令时不漂移；macOS·Linux 用 crontab）
+python automation/schedule_daily.py --day mon --at 02:00   # 每周一 02:00；--day daily 为每天
+python automation/schedule_daily.py --status | --remove
 ```
+
+另一台机器上的旧克隆若把旧树推上来覆盖了 GitHub（2026-10-04、10-11 发生过），D0 会识别这种「纯回滚」
+（树与本地历史里的旧快照完全相同且不含本管线），用 ours 合并撤销并重新发布；带新内容的覆盖则停下交给人。
 
 | 段 | 内容 | 失败策略 |
 |---|---|---|
