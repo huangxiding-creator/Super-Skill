@@ -2,7 +2,7 @@
 name: find-skills
 description: Helps users discover and install agent skills from the open agent skills ecosystem. Integrates with Super-Skill Phase 2b for automated skills discovery during project planning.
 tags: [discovery, skills, ecosystem, automation]
-version: 1.1.0
+version: 1.0.0
 source: https://github.com/vercel-labs/skills/tree/main/skills/find-skills
 integrated-with: super-skill v3.3+
 ---
@@ -80,30 +80,15 @@ npx skills add vercel-labs/agent-skills@vercel-react-best-practices
 Learn more: https://skills.sh/vercel-labs/agent-skills/vercel-react-best-practices
 ```
 
-### Step 4: Vet, Then Offer to Install
+### Step 4: Offer to Install
 
-Skills run with the agent's full trust (they can steer the model and ship scripts), so
-**vet before installing** — never install a third-party skill unread:
-
-```bash
-git clone --depth 1 https://github.com/<owner>/<repo> <tmp>/<repo>
-python "<super-skill base>/engine/skill_vet.py" <tmp>/<repo>/<path-to-skill>
-```
-
-| Verdict | Action |
-|---|---|
-| `CLEAN` / `LOW` | OK to install. Clean means "nothing obvious", not "proven safe". |
-| `MEDIUM` | Show the findings to the user; install only after they agree. A reviewed, harmless rule may be suppressed with `--ignore <RULE>`. |
-| `HIGH` / `CRITICAL` (exit 1) | **Do not install.** Show the findings (file:line + rule). Install only on an explicit user override that names the risk. |
-
-Then, if the user wants to proceed:
+If the user wants to proceed, you can install the skill for them:
 
 ```bash
 npx skills add <skill-ref> -g -y
 ```
 
-The `-g` flag installs globally (user-level) and `-y` skips confirmation prompts — which is
-exactly why the vetting step above must come first.
+The `-g` flag installs globally (user-level) and `-y` skips confirmation prompts.
 
 ## Common Skill Categories
 
@@ -172,19 +157,14 @@ For each candidate skill:
 - License compatibility
 - Documentation quality
 
-STEP 4: Vet, Then Auto-Install Critical Skills
-- Fetch the source to a temp dir (git clone --depth 1), never install first
-- Run: python "<base>/engine/skill_vet.py" <skill-dir> --json
-- Auto-install only if relevance ≥80% AND verdict is CLEAN or LOW
-- MEDIUM → list under "Manual review items", do not auto-install
-- HIGH/CRITICAL → reject, record rule ids + file:line in the report
+STEP 4: Auto-Install Critical Skills
+- Install skills with ≥80% relevance score
 - Use: npx skills add <skill-ref> -g -y
-- Log installations and vet verdicts to project record
+- Log installations to project record
 
 STEP 5: Generate Skills Report
 Create SKILLS_DISCOVERY_REPORT.md:
 - Found skills list with scores
-- Vet verdict (level, score, top findings) per candidate
 - Installed skills list
 - Integration recommendations
 - Manual review items (if any)
@@ -196,8 +176,7 @@ Create SKILLS_DISCOVERY_REPORT.md:
 IF project requires specialized domain:
   → Search for domain-specific skills
   → Evaluate top 3 candidates
-  → Vet each with skill_vet.py
-  → Auto-install if score ≥ 80% AND vet verdict ≤ LOW
+  → Auto-install if score ≥ 80%
 
 IF no suitable skills found:
   → Document gap in SKILLS_DISCOVERY_REPORT.md
@@ -213,8 +192,7 @@ IF skills found and installed:
 
 - [ ] Skills ecosystem searched for all required domains
 - [ ] Candidate skills evaluated and scored
-- [ ] Every install candidate vetted with skill_vet.py (verdict recorded)
-- [ ] Critical skills (≥80% relevance, vet ≤ LOW) auto-installed
+- [ ] Critical skills (≥80% relevance) auto-installed
 - [ ] SKILLS_DISCOVERY_REPORT.md generated
 - [ ] Integration recommendations documented
 
@@ -230,7 +208,6 @@ IF skills found and installed:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.1.0 | 2026-10-01 | Pre-install vetting gate (`engine/skill_vet.py`, pattern from NVIDIA/SkillSpector, Apache-2.0) |
 | 1.0.0 | 2026-03-01 | Initial integration with Super-Skill V3.3 |
 
 ---

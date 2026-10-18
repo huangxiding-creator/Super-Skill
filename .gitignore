@@ -73,14 +73,3 @@ automation/channel_state.json
 automation/distill_out/
 automation/_perm_test_C.md
 __pycache__/
-
-# V5 engine runtime / test artifacts
-.pytest_cache/
-.super-skill/
-evals/results/
-*.bak-superskill-*
-*.tmp-superskill
-
-# Daily self-update runtime (machine-local)
-automation/radar_state.json
-automation/daily_out/
